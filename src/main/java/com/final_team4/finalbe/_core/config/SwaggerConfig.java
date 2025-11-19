@@ -1,4 +1,4 @@
-package com.final_team4.finalbe._core;
+package com.final_team4.finalbe._core.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
