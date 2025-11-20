@@ -15,6 +15,7 @@ public class ScheduleDetailResponseDto {
     private LocalDateTime startTime;
     private String repeatInterval;
     private LocalDateTime lastExecutedAt;
+    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public static ScheduleDetailResponseDto from(Schedule schedule) {
@@ -25,6 +26,7 @@ public class ScheduleDetailResponseDto {
                 .startTime(schedule.getStartTime())
                 .repeatInterval(schedule.getRepeatInterval())
                 .lastExecutedAt(schedule.getLastExecutedAt())
+                .createdAt(schedule.getCreatedAt())
                 .updatedAt(schedule.getUpdatedAt())
                 .build();
     }
