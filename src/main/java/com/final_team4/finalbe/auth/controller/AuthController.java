@@ -1,7 +1,7 @@
 package com.final_team4.finalbe.auth.controller;
 
-import com.final_team4.finalbe.auth.dto.TokenIssueRequest;
-import com.final_team4.finalbe.auth.dto.TokenResponse;
+import com.final_team4.finalbe.auth.dto.request.TokenIssueRequest;
+import com.final_team4.finalbe.auth.dto.response.TokenResponse;
 import com.final_team4.finalbe._core.jwt.JwtToken;
 import com.final_team4.finalbe._core.jwt.JwtTokenService;
 import io.swagger.v3.oas.annotations.Operation;
