@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+mybatis:
+  # 매퍼 XML 위치
+  mapper-locations: classpath:mapper/**/*.xml
+
+  # alias 설정 추가하려면 ,로 구분
+  type-aliases-package: com.final_team4.finalbe.schedule.domain
+
+  # camelCase ↔ snake_case 자동 변환
+  configuration:
+    map-underscore-to-camel-case: true
+
+  # MyBatis 로그 출력 설정
+  # 특히 개발 단계에서 SQL 로그를 볼 때 유용
+  configuration-properties:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

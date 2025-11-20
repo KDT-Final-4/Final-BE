@@ -29,6 +29,15 @@ dependencies {
 
     // spring swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+
+    // spring boot Mybatis
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
+
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
