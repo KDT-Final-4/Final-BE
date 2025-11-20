@@ -16,10 +16,6 @@ mybatis:
   # camelCase ↔ snake_case 자동 변환
   configuration:
     map-underscore-to-camel-case: true
-
-  # MyBatis 로그 출력 설정
-  # 특히 개발 단계에서 SQL 로그를 볼 때 유용
-  configuration-properties:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 security:
