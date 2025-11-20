@@ -17,4 +17,12 @@ public class Schedule {
     private LocalDateTime lastExecutedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public void update(String title, LocalDateTime startTime, String repeatInterval, LocalDateTime lastExecutedAt) {
+        this.title = title;
+        this.startTime = startTime;
+        this.repeatInterval = repeatInterval;
+        this.lastExecutedAt = lastExecutedAt;
+        this.updatedAt = LocalDateTime.now();
+    }
 }
