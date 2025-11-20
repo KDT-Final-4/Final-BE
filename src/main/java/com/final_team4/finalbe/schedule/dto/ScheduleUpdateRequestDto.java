@@ -14,7 +14,6 @@ public class ScheduleUpdateRequestDto {
     private LocalDateTime startTime;
     private String repeatInterval;
     private LocalDateTime lastExecutedAt;
-    private LocalDateTime updatedAt;
 
     public Schedule toEntity() {
         return Schedule.builder()
@@ -22,6 +21,7 @@ public class ScheduleUpdateRequestDto {
                 .startTime(startTime)
                 .repeatInterval(repeatInterval)
                 .lastExecutedAt(lastExecutedAt)
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 }
