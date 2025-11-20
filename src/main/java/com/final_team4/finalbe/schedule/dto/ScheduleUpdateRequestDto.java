@@ -1,6 +1,6 @@
 package com.final_team4.finalbe.schedule.dto;
 
-import com.final_team4.finalbe.schedule.domain.Schedule;
+import com.final_team4.finalbe.schedule.domain.RepeatInterval;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,5 +12,6 @@ import java.time.LocalDateTime;
 public class ScheduleUpdateRequestDto {
     private String title;
     private LocalDateTime startTime;
-    private String repeatInterval;
+    private RepeatInterval repeatInterval;
+
 }

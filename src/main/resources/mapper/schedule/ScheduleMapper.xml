@@ -4,10 +4,69 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.final_team4.finalbe.schedule.mapper.ScheduleMapper">
 
-    <select id="findAll" resultType="Schedule">
+    <!--    Create-->
+    <insert id="insert" parameterType="Schedule" >
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            SELECT SEQ_SCHEDULE.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT INTO SCHEDULE (
+            id,
+            user_id,
+            title,
+            start_time,
+            repeat_interval,
+            CREATED_AT
+        ) VALUES (
+            #{id},
+            #{userId},
+            #{title},
+            #{startTime},
+            #{repeatInterval},
+            sysdate
+         )
+    </insert>
+    <!--    Read - List -->
+    <select id="findAll" resultType="Schedule" parameterType="long">
         SELECT
             *
         FROM
             SCHEDULE
+        WHERE
+            user_id = #{userId}
     </select>
+    <!--    Read - One -->
+    <select id="findById" parameterType="long" resultType="Schedule">
+        SELECT
+            *
+        FROM
+            SCHEDULE
+        WHERE
+            id = #{id}
+        and
+            USER_ID = #{userId}
+    </select>
+    <!--    Update-->
+    <update id="update" parameterType="Schedule">
+        UPDATE SCHEDULE
+        SET
+            title = #{title},
+            start_time = #{startTime},
+            repeat_interval = #{repeatInterval},
+            updated_at = SYSDATE
+        WHERE
+            id = #{id}
+        and
+            USER_ID = #{userId}
+    </update>
+    <!--    Delete-->
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM
+            SCHEDULE
+        WHERE
+            id = #{id}
+        and
+            USER_ID = #{userId}
+    </delete>
+
 </mapper>
