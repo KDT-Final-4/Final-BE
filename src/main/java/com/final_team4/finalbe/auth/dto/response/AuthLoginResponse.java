@@ -20,10 +20,10 @@ import lombok.NoArgsConstructor;
     example = """
         {
           "user": {
-            "id": 12,
+            "id": 1,
             "email": "user@example.com",
-            "name": "최수민",
-            "roles": ["ROLE_USER"]
+            "name": "사용자",
+            "role": "ROLE_USER"
           },
           "token": {
             "token": "eyJhbGciOiJIUzI1NiJ9...",
@@ -43,7 +43,7 @@ public class AuthLoginResponse {
         Long userId,
         String email,
         String name,
-        List<String> userRoles,
+        String userRole,
         String tokenValue,
         Instant issuedAt,
         List<String> tokenRoles
@@ -53,7 +53,7 @@ public class AuthLoginResponse {
                 .id(userId)
                 .email(email)
                 .name(name)
-                .roles(userRoles)
+                .role(userRole)
                 .build())
             .token(TokenInfo.builder()
                 .token(tokenValue)

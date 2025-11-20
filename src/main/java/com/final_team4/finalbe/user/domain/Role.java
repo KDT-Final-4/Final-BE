@@ -17,4 +17,28 @@ public class Role {
 
     private String description;
 
+    public static Role from(RoleType roleType) {
+        if (roleType == null) {
+            return null;
+        }
+
+        return Role.builder()
+            .id(roleType.getId())
+            .name(roleType.getName())
+            .description(roleType.getDescription())
+            .build();
+    }
+
+    public static Role fromId(Long roleId) {
+        if (roleId == null) {
+            return null;
+        }
+
+        return from(RoleType.fromId(roleId));
+    }
+
+    public static Long defaultRoleId() {
+        return RoleType.USER.getId();
+    }
+
 }

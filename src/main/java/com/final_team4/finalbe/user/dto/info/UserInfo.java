@@ -1,8 +1,10 @@
 package com.final_team4.finalbe.user.dto.info;
 
-import lombok.*;
-
-import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
@@ -13,6 +15,6 @@ public class UserInfo {
     private Long id;
     private String email;
     private String name;
-    private List<String> roles;
+    private String role;
 
 }
