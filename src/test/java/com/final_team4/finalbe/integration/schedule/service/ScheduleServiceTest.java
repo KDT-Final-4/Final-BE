@@ -2,7 +2,6 @@ package com.final_team4.finalbe.integration.schedule.service;
 
 import com.final_team4.finalbe.schedule.dto.ScheduleDetailResponseDto;
 import com.final_team4.finalbe.schedule.service.ScheduleService;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-@RequiredArgsConstructor
 class ScheduleServiceTest {
 
     @Autowired

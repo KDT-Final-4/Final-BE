@@ -7,12 +7,13 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Schedule {
-    private final Long id;
-    private final Long userId;
-    private final String title;
-    private final LocalDateTime startTime;
-    private final String repeatInterval;
-    private final LocalDateTime lastExecutedAt;
-    private final LocalDateTime updatedAt;
+    private Long id;
+    private Long userId;
+    private String title;
+    private LocalDateTime startTime;
+    private String repeatInterval;
+    private LocalDateTime lastExecutedAt;
+    private LocalDateTime updatedAt;
 }
