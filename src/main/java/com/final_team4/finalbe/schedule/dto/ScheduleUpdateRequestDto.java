@@ -1,6 +1,5 @@
 package com.final_team4.finalbe.schedule.dto;
 
-import com.final_team4.finalbe.schedule.domain.Schedule;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -15,13 +14,4 @@ public class ScheduleUpdateRequestDto {
     private String repeatInterval;
     private LocalDateTime lastExecutedAt;
 
-    public Schedule toEntity() {
-        return Schedule.builder()
-                .title(title)
-                .startTime(startTime)
-                .repeatInterval(repeatInterval)
-                .lastExecutedAt(lastExecutedAt)
-                .updatedAt(LocalDateTime.now())
-                .build();
-    }
 }
