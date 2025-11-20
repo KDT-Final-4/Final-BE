@@ -34,7 +34,7 @@ class ScheduleServiceTest {
         ScheduleCreateResponseDto resultDto = scheduleService.insert(dto);
         // then
         assertThat(resultDto.getTitle()).isEqualTo(dto.getTitle());
-        assertThat(dto.getRepeatInterval()).isEqualTo(RepeatInterval.DAILY);
+        assertThat(resultDto.getRepeatInterval()).isEqualTo(RepeatInterval.DAILY);
     }
 
 

@@ -10,7 +10,7 @@
             SELECT SEQ_SCHEDULE.NEXTVAL FROM DUAL
         </selectKey>
 
-        INSERT INTO schedule (
+        INSERT INTO SCHEDULE (
             id,
             user_id,
             title,
@@ -31,16 +31,16 @@
         SELECT
             *
         FROM
-            schedule
+            SCHEDULE
         WHERE
-            user_id = #{user_id}
+            user_id = #{userId}
     </select>
     <!--    Read - One -->
     <select id="findById" parameterType="long" resultType="Schedule">
         SELECT
             *
         FROM
-            schedule
+            SCHEDULE
         WHERE
             id = #{id}
         and
@@ -48,7 +48,7 @@
     </select>
     <!--    Update-->
     <update id="update" parameterType="Schedule">
-        UPDATE schedule
+        UPDATE SCHEDULE
         SET
             title = #{title},
             start_time = #{startTime},

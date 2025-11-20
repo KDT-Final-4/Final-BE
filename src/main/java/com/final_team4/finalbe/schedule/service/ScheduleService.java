@@ -28,6 +28,9 @@ public class ScheduleService {
     // Read - One
     public ScheduleDetailResponseDto findById(Long userId, Long id) {
         Schedule entity = scheduleMapper.findById(userId, id);
+        if (entity == null) {
+            throw new IllegalArgumentException("해당 일정을 찾을 수 없습니다.");
+        }
         return ScheduleDetailResponseDto.from(entity);
     }
     // Update
