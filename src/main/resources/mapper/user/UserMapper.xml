@@ -23,7 +23,7 @@
         PASSWORD,
         CREATED_AT,
         UPDATED_AT,
-        DELETED,
+        IS_DELETE,
     </sql>
 
     <select id="findById" parameterType="long" resultMap="UserResultMap">
@@ -53,7 +53,7 @@
             PASSWORD,
             CREATED_AT,
             UPDATED_AT,
-            DELETED,
+            IS_DELETE,
         ) VALUES (
             #{roleId},
             #{name},
@@ -61,7 +61,7 @@
             #{password},
             #{createdAt},
             #{updatedAt},
-            #{deleted},
+            #{isDelete},
         )
     </insert>
 </mapper>
