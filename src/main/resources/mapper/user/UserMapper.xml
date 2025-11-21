@@ -12,7 +12,7 @@
         <result column="PASSWORD" property="password"/>
         <result column="CREATED_AT" property="createdAt"/>
         <result column="UPDATED_AT" property="updatedAt"/>
-        <result column="DELETED" property="deleted"/>
+        <result column="IS_DELETE" property="isDelete"/>
     </resultMap>
 
     <sql id="BaseColumns">
@@ -23,7 +23,7 @@
         PASSWORD,
         CREATED_AT,
         UPDATED_AT,
-        IS_DELETE,
+        IS_DELETE
     </sql>
 
     <select id="findById" parameterType="long" resultMap="UserResultMap">
@@ -44,6 +44,16 @@
             EMAIL = #{email}
     </select>
 
+    <select id="findByAvailableEmail" parameterType="string" resultMap="UserResultMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        USERS
+        WHERE
+        EMAIL = #{email}
+        AND IS_DELETE = 0
+    </select>
+
     <insert id="insert" parameterType="com.final_team4.finalbe.user.domain.User"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO USERS (
@@ -53,7 +63,7 @@
             PASSWORD,
             CREATED_AT,
             UPDATED_AT,
-            IS_DELETE,
+            IS_DELETE
         ) VALUES (
             #{roleId},
             #{name},
@@ -61,7 +71,7 @@
             #{password},
             #{createdAt},
             #{updatedAt},
-            #{isDelete},
+            #{isDelete}
         )
     </insert>
 </mapper>
