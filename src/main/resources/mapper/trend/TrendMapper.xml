@@ -6,18 +6,30 @@
 
     <insert id="insert" parameterType="Trend" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO TREND (
-              CATEGORY_ID,
-              KEYWORD,
-              SEARCH_VOLUME,
-              CREATED_AT,
-              SNS_TYPE
+            CATEGORY_ID,
+            KEYWORD,
+            SEARCH_VOLUME,
+            CREATED_AT,
+            SNS_TYPE
         ) VALUES (
-              #{categoryId},
-              #{keyword},
-              #{searchVolume},
-              #{createdAt},
-              #{snsType}
+            #{categoryId},
+            #{keyword},
+            #{searchVolume},
+            #{createdAt},
+            #{snsType}
         )
     </insert>
+
+    <select id="findAll" resultType="Trend">
+        SELECT
+            ID,
+            CATEGORY_ID,
+            KEYWORD,
+            SEARCH_VOLUME,
+            CREATED_AT,
+            SNS_TYPE
+        FROM TREND
+        ORDER BY CREATED_AT DESC, SEARCH_VOLUME DESC
+    </select>
 
 </mapper>
