@@ -5,13 +5,18 @@
 <mapper namespace="com.final_team4.finalbe.trend.mapper.TrendMapper">
 
     <insert id="insert" parameterType="Trend" useGeneratedKeys="true" keyProperty="id">
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            SELECT SEQ_TREND.NEXTVAL FROM DUAL
+        </selectKey>
         INSERT INTO TREND (
+            ID,
             CATEGORY_ID,
             KEYWORD,
             SEARCH_VOLUME,
             CREATED_AT,
             SNS_TYPE
         ) VALUES (
+            #{id},
             #{categoryId},
             #{keyword},
             #{searchVolume},
