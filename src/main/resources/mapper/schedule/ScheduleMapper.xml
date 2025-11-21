@@ -5,7 +5,7 @@
 <mapper namespace="com.final_team4.finalbe.schedule.mapper.ScheduleMapper">
 
     <!--    Create-->
-    <insert id="insert" parameterType="Schedule" >
+    <insert id="insert" parameterType="Schedule">
         <selectKey keyProperty="id" resultType="long" order="BEFORE">
             SELECT SEQ_SCHEDULE.NEXTVAL FROM DUAL
         </selectKey>
@@ -43,8 +43,6 @@
             SCHEDULE
         WHERE
             id = #{id}
-        and
-            USER_ID = #{userId}
     </select>
     <!--    Update-->
     <update id="update" parameterType="Schedule">
