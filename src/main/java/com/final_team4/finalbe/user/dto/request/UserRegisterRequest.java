@@ -3,6 +3,9 @@ package com.final_team4.finalbe.user.dto.request;
 import com.final_team4.finalbe.user.domain.Role;
 import com.final_team4.finalbe.user.domain.RoleType;
 import com.final_team4.finalbe.user.domain.User;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +21,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserRegisterRequest {
+    @Email
+    @NotBlank
     private String email;
+
+    @NotBlank
+    @Size(min = 3, max = 30)
     private String password;
+
+    @NotBlank
     private String name;
+
     @Builder.Default
     private Long roleId = Role.defaultRoleId();
 
