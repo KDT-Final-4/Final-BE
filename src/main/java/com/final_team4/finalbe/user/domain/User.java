@@ -29,17 +29,8 @@ public class User {
 
     private LocalDateTime updatedAt;
 
-    private Integer deleted;
+    private Integer isDelete;
 
-    private String prompt;
-
-    private String apiKey;
-
-    private String llmPublisher;
-
-    private String llmModel;
-
-    private Integer targetTextLength;
 
     public Role getRole() {
         if (role == null && roleId != null) {

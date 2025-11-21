@@ -1,8 +1,13 @@
 package com.final_team4.finalbe._core.jwt;
 
 import java.time.Duration;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@Setter
+@Getter
 @ConfigurationProperties(prefix = "security.jwt")
 public class JwtProperties {
 
@@ -10,27 +15,4 @@ public class JwtProperties {
   private String secret;
   private Duration tempValidity = Duration.ofHours(2);
 
-  public String getIssuer() {
-    return issuer;
-  }
-
-  public void setIssuer(String issuer) {
-    this.issuer = issuer;
-  }
-
-  public String getSecret() {
-    return secret;
-  }
-
-  public void setSecret(String secret) {
-    this.secret = secret;
-  }
-
-  public Duration getTempValidity() {
-    return tempValidity;
-  }
-
-  public void setTempValidity(Duration tempValidity) {
-    this.tempValidity = tempValidity;
-  }
 }
