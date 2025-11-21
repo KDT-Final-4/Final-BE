@@ -42,6 +42,6 @@ public class ScheduleController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@RequestParam Long userId, @PathVariable Long id) {
-        scheduleService.deleteById(id, userId);
+        scheduleService.deleteById(userId, id);
     }
 }
