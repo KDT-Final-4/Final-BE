@@ -38,8 +38,6 @@ public class UserRegisterRequest {
                 .createdAt(now)
                 .updatedAt(now)
                 .deleted(0)
-                .prompt("아직 미정")
-                .llmPublisher("아직 미정")
                 .build();
     }
 

@@ -13,11 +13,6 @@
         <result column="CREATED_AT" property="createdAt"/>
         <result column="UPDATED_AT" property="updatedAt"/>
         <result column="DELETED" property="deleted"/>
-        <result column="PROMPT" property="prompt"/>
-        <result column="API_KEY" property="apiKey"/>
-        <result column="LLM_PUBLISHER" property="llmPublisher"/>
-        <result column="LLM_MODEL" property="llmModel"/>
-        <result column="TARGET_TEXT_LENGTH" property="targetTextLength"/>
     </resultMap>
 
     <sql id="BaseColumns">
@@ -29,11 +24,6 @@
         CREATED_AT,
         UPDATED_AT,
         DELETED,
-        PROMPT,
-        API_KEY,
-        LLM_PUBLISHER,
-        LLM_MODEL,
-        TARGET_TEXT_LENGTH
     </sql>
 
     <select id="findById" parameterType="long" resultMap="UserResultMap">
@@ -64,11 +54,6 @@
             CREATED_AT,
             UPDATED_AT,
             DELETED,
-            PROMPT,
-            API_KEY,
-            LLM_PUBLISHER,
-            LLM_MODEL,
-            TARGET_TEXT_LENGTH
         ) VALUES (
             #{roleId},
             #{name},
@@ -77,11 +62,6 @@
             #{createdAt},
             #{updatedAt},
             #{deleted},
-            #{prompt},
-            #{apiKey},
-            #{llmPublisher},
-            #{llmModel},
-            #{targetTextLength}
         )
     </insert>
 </mapper>
