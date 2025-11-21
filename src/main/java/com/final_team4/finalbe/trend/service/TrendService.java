@@ -18,7 +18,7 @@ public class TrendService {
 
     private final TrendMapper trendMapper;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public TrendCreateResponse createTrend(TrendCreateRequest request) {
         Trend trend = Trend.builder()
                 .categoryId(request.getCategoryId())
