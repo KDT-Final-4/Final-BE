@@ -54,24 +54,23 @@
         AND IS_DELETE = 0
     </select>
 
-    <insert id="insert" parameterType="com.final_team4.finalbe.user.domain.User"
-            useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO USERS (
-            ROLE_ID,
-            NAME,
-            EMAIL,
-            PASSWORD,
-            CREATED_AT,
-            UPDATED_AT,
-            IS_DELETE
+    <insert id="insert" parameterType="com.final_team4.finalbe.user.domain.User" keyProperty="id" useGeneratedKeys="true" keyColumn="id">
+        INSERT INTO users (
+            role_id,
+            name,
+            email,
+            password,
+            is_delete,
+            created_at,
+            updated_at
         ) VALUES (
-            #{roleId},
-            #{name},
-            #{email},
-            #{password},
-            #{createdAt},
-            #{updatedAt},
-            #{isDelete}
-        )
+                     #{roleId},
+                     #{name},
+                     #{email},
+                     #{password},
+                     #{isDelete},
+                     SYSTIMESTAMP,
+                     SYSTIMESTAMP
+                 )
     </insert>
 </mapper>

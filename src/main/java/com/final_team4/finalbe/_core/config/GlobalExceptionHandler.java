@@ -1,6 +1,7 @@
 package com.final_team4.finalbe._core.config;
 
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
+import com.final_team4.finalbe._core.exception.DuplicateEmailException;
 import com.final_team4.finalbe._core.exception.PermissionDeniedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -37,6 +38,20 @@ public class GlobalExceptionHandler {
 
         problemDetail.setTitle("Permission Denied");
         problemDetail.setType(URI.create("/errors/permission-denied"));
+
+        return problemDetail;
+    }
+
+    // 400: 중복 이메일이 존재할 때 발생
+    @ExceptionHandler(DuplicateEmailException.class)
+    public ProblemDetail handleDuplicateEmailException(DuplicateEmailException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                e.getMessage()
+        );
+
+        problemDetail.setTitle("Duplicate Email");
+        problemDetail.setType(URI.create("/errors/duplicate-email"));
 
         return problemDetail;
     }

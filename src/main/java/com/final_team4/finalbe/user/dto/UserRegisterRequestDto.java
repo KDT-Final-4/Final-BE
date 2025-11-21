@@ -1,8 +1,11 @@
-package com.final_team4.finalbe.user.dto.request;
+package com.final_team4.finalbe.user.dto;
 
 import com.final_team4.finalbe.user.domain.Role;
 import com.final_team4.finalbe.user.domain.RoleType;
 import com.final_team4.finalbe.user.domain.User;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,34 +18,37 @@ import java.time.LocalDateTime;
 @Slf4j
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserRegisterRequest {
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserRegisterRequestDto {
+    @Email
+    @NotBlank
     private String email;
+
+    @NotBlank
+    @Size(min = 3, max = 30)
     private String password;
+
+    @NotBlank
     private String name;
-    @Builder.Default
-    private Long roleId = Role.defaultRoleId();
+
 
     public User toEntity() {
         LocalDateTime now = LocalDateTime.now();
-        RoleType resolvedRoleType = resolveRoleType();
-        Role resolvedRole = Role.from(resolvedRoleType);
+        RoleType roleType = RoleType.USER; // 항상 기본 역할
+        Role role = Role.from(roleType);
 
         return User.builder()
                 .email(email)
                 .password(password)
                 .name(name)
-                .roleId(resolvedRole.getId())
-                .role(resolvedRole)
+                .roleId(role.getId())   // 1 고정
+                .role(role)
                 .createdAt(now)
                 .updatedAt(now)
                 .isDelete(0)
                 .build();
     }
 
-    private RoleType resolveRoleType() {
-        Long requestedRoleId = roleId != null ? roleId : Role.defaultRoleId();
-        return RoleType.fromId(requestedRoleId);
-    }
+
 }
