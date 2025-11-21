@@ -4,7 +4,7 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.final_team4.finalbe.trend.mapper.TrendMapper">
 
-    <insert id="insert" parameterType="Trend" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="Trend">
         <selectKey keyProperty="id" resultType="long" order="BEFORE">
             SELECT SEQ_TREND.NEXTVAL FROM DUAL
         </selectKey>
