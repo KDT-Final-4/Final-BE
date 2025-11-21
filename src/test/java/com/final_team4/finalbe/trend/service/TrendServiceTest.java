@@ -9,12 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
@@ -26,23 +23,20 @@ class TrendServiceTest {
     private TrendCreateRequest createRequest(Long categoryId,
                                              String keyword,
                                              Long searchVolume,
-                                             LocalDateTime createdAt,
                                              String snsType) {
-        TrendCreateRequest request = mock(TrendCreateRequest.class);
-        when(request.getCategoryId()).thenReturn(categoryId);
-        when(request.getKeyword()).thenReturn(keyword);
-        when(request.getSearchVolume()).thenReturn(searchVolume);
-        when(request.getCreatedAt()).thenReturn(createdAt);
-        when(request.getSnsType()).thenReturn(snsType);
-        return request;
+        return TrendCreateRequest.builder()
+                .categoryId(categoryId)
+                .keyword(keyword)
+                .searchVolume(searchVolume)
+                .snsType(snsType)
+                .build();
     }
 
     @DisplayName("트렌드 생성 성공")
     @Test
     void createTrend() {
         // given
-        LocalDateTime createdAt = LocalDateTime.now().minusDays(1);
-        TrendCreateRequest request = createRequest(1L, "keyword", 1000L, createdAt, "INSTAGRAM");
+        TrendCreateRequest request = createRequest(1L, "keyword", 1000L, "INSTAGRAM");
 
         // when
         TrendCreateResponse response = trendService.createTrend(request);
@@ -52,34 +46,31 @@ class TrendServiceTest {
         assertThat(response.getCategoryId()).isEqualTo(1L);
         assertThat(response.getKeyword()).isEqualTo("keyword");
         assertThat(response.getSearchVolume()).isEqualTo(1000L);
-        assertThat(response.getCreatedAt()).isEqualTo(createdAt);
         assertThat(response.getSnsType()).isEqualTo("INSTAGRAM");
     }
 
-    @DisplayName("트렌드 전체 조회 성공")
+    @DisplayName("트렌드 페이징 조회 성공")
     @Test
-    void getTrends() {
+    void getTrendsWithPagination() throws InterruptedException {
         // given
-        TrendCreateRequest first = createRequest(1L, "keyword-1", 500L, LocalDateTime.now().minusHours(2), "YOUTUBE");
-        TrendCreateRequest second = createRequest(1L, "keyword-2", 700L, LocalDateTime.now().minusHours(1), "INSTAGRAM");
+        TrendCreateRequest first = createRequest(1L, "keyword-1", 500L, "YOUTUBE");
+        TrendCreateRequest second = createRequest(1L, "keyword-2", 700L, "INSTAGRAM");
+        TrendCreateRequest third = createRequest(1L, "keyword-3", 900L, "TIKTOK");
         trendService.createTrend(first);
+        Thread.sleep(5);
         trendService.createTrend(second);
+        Thread.sleep(5);
+        trendService.createTrend(third);
 
         // when
-        List<TrendResponse> responses = trendService.getTrends();
+        List<TrendResponse> firstPage = trendService.getTrends(0, 2);
+        List<TrendResponse> secondPage = trendService.getTrends(1, 2);
 
         // then
-        assertThat(responses).isNotEmpty();
-        assertThat(responses).extracting(TrendResponse::getKeyword)
-                .contains("keyword-1", "keyword-2");
-
-        TrendResponse keyword2 = responses.stream()
-                .filter(response -> response.getKeyword().equals("keyword-2"))
-                .findFirst()
-                .orElseThrow();
-
-        assertThat(keyword2.getCategoryId()).isEqualTo(1L);
-        assertThat(keyword2.getSearchVolume()).isEqualTo(700L);
-        assertThat(keyword2.getSnsType()).isEqualTo("INSTAGRAM");
+        assertThat(firstPage).hasSize(2);
+        assertThat(firstPage).extracting(TrendResponse::getKeyword)
+                .containsExactly("keyword-3", "keyword-2");
+        assertThat(secondPage).hasSize(1);
+        assertThat(secondPage.getFirst().getKeyword()).isEqualTo("keyword-1");
     }
 }
