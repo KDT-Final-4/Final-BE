@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.final_team4.finalbe.user.mapper.UserMapper">
+
+    <resultMap id="UserResultMap" type="com.final_team4.finalbe.user.domain.User">
+        <id column="ID" property="id"/>
+        <result column="ROLE_ID" property="roleId"/>
+        <result column="NAME" property="name"/>
+        <result column="EMAIL" property="email"/>
+        <result column="PASSWORD" property="password"/>
+        <result column="CREATED_AT" property="createdAt"/>
+        <result column="UPDATED_AT" property="updatedAt"/>
+        <result column="DELETED" property="deleted"/>
+        <result column="PROMPT" property="prompt"/>
+        <result column="API_KEY" property="apiKey"/>
+        <result column="LLM_PUBLISHER" property="llmPublisher"/>
+        <result column="LLM_MODEL" property="llmModel"/>
+        <result column="TARGET_TEXT_LENGTH" property="targetTextLength"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        ID,
+        ROLE_ID,
+        NAME,
+        EMAIL,
+        PASSWORD,
+        CREATED_AT,
+        UPDATED_AT,
+        DELETED,
+        PROMPT,
+        API_KEY,
+        LLM_PUBLISHER,
+        LLM_MODEL,
+        TARGET_TEXT_LENGTH
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="UserResultMap">
+        SELECT
+            <include refid="BaseColumns"/>
+        FROM
+            USERS
+        WHERE
+            ID = #{id}
+    </select>
+
+    <select id="findByEmail" parameterType="string" resultMap="UserResultMap">
+        SELECT
+            <include refid="BaseColumns"/>
+        FROM
+            USERS
+        WHERE
+            EMAIL = #{email}
+    </select>
+
+    <insert id="insert" parameterType="com.final_team4.finalbe.user.domain.User"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO USERS (
+            ROLE_ID,
+            NAME,
+            EMAIL,
+            PASSWORD,
+            CREATED_AT,
+            UPDATED_AT,
+            DELETED,
+            PROMPT,
+            API_KEY,
+            LLM_PUBLISHER,
+            LLM_MODEL,
+            TARGET_TEXT_LENGTH
+        ) VALUES (
+            #{roleId},
+            #{name},
+            #{email},
+            #{password},
+            #{createdAt},
+            #{updatedAt},
+            #{deleted},
+            #{prompt},
+            #{apiKey},
+            #{llmPublisher},
+            #{llmModel},
+            #{targetTextLength}
+        )
+    </insert>
+</mapper>

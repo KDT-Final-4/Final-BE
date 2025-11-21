@@ -1,4 +1,4 @@
-package com.final_team4.finalbe.auth.dto;
+package com.final_team4.finalbe.auth.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
