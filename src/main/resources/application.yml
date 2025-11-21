@@ -11,7 +11,7 @@ mybatis:
   mapper-locations: classpath:mapper/**/*.xml
 
   # alias 설정 추가하려면 ,로 구분
-  type-aliases-package: com.final_team4.finalbe.schedule.domain
+  type-aliases-package: com.final_team4.finalbe.*.domain
 
   # camelCase ↔ snake_case 자동 변환
   configuration:

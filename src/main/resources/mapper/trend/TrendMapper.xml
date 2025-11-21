@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.final_team4.finalbe.trend.mapper.TrendMapper">
+
+    <insert id="insert" parameterType="Trend" useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
+        INSERT INTO TREND (
+            CATEGORY_ID,
+            KEYWORD,
+            SEARCH_VOLUME,
+            CREATED_AT,
+            SNS_TYPE
+        ) VALUES (
+            #{categoryId},
+            #{keyword},
+            #{searchVolume},
+            #{createdAt},
+            #{snsType}
+        )
+    </insert>
+
+    <select id="findAll" resultType="Trend">
+        SELECT
+            ID,
+            CATEGORY_ID,
+            KEYWORD,
+            SEARCH_VOLUME,
+            CREATED_AT,
+            SNS_TYPE
+        FROM TREND
+        ORDER BY CREATED_AT DESC, SEARCH_VOLUME DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+</mapper>
