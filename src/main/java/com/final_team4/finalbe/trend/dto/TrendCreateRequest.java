@@ -1,24 +1,20 @@
 package com.final_team4.finalbe.trend.dto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
-import java.time.LocalDateTime;
-
+@Builder
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TrendCreateRequest {
 
+    @NotNull
     private Long categoryId;
 
     private String keyword;
 
     private Long searchVolume;
-
-    private LocalDateTime createdAt;
 
     private String snsType;
 }

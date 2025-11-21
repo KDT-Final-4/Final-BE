@@ -32,8 +32,9 @@ public class TrendService {
         return TrendCreateResponse.from(trend);
     }
 
-    public List<TrendResponse> getTrends() {
-        List<Trend> trends = trendMapper.findAll();
+    public List<TrendResponse> getTrends(int page, int size) {
+        int offset = page * size;
+        List<Trend> trends = trendMapper.findAll(size, offset);
         return trends.stream()
                 .map(TrendResponse::from)
                 .toList();
