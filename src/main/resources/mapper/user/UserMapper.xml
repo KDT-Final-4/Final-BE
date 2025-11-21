@@ -54,7 +54,7 @@
         AND IS_DELETE = 0
     </select>
 
-    <insert id="insert" parameterType="com.final_team4.finalbe.user.domain.User">
+    <insert id="insert" parameterType="com.final_team4.finalbe.user.domain.User" keyProperty="id" useGeneratedKeys="true" keyColumn="id">
         INSERT INTO users (
             role_id,
             name,

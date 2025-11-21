@@ -57,7 +57,7 @@ class UserServiceTest {
     UserSummaryResponse summaryResponse = UserSummaryResponse.builder()
         .userId(1L)
         .email("codex@example.com")
-        .nickname("codex")
+        .name("codex")
         .build();
     given(userInfoMapper.toUserSummary(any(User.class))).willReturn(summaryResponse);
 

@@ -57,7 +57,7 @@ class UserControllerTest {
         UserSummaryResponse summary = UserSummaryResponse.builder()
                 .userId(1L)
                 .email("codex@example.com")
-                .nickname("codex")
+                .name("codex")
                 .build();
         given(userService.register(any(UserRegisterRequestDto.class))).willReturn(summary);
 
@@ -76,7 +76,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.message").value("회원가입이 완료됐습니다."))
                 .andExpect(jsonPath("$.data.userId").value(1))
                 .andExpect(jsonPath("$.data.email").value("codex@example.com"))
-                .andExpect(jsonPath("$.data.nickname").value("codex"))
+                .andExpect(jsonPath("$.data.name").value("codex"))
                 .andExpect(jsonPath("$.timestamp").exists());
 
         ArgumentCaptor<UserRegisterRequestDto> captor = ArgumentCaptor.forClass(UserRegisterRequestDto.class);

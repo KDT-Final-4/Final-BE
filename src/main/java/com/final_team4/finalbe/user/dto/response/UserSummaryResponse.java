@@ -14,5 +14,5 @@ public class UserSummaryResponse {
 
     private Long userId;
     private String email;
-    private String nickname;
+    private String name;
 }

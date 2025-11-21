@@ -33,7 +33,7 @@ public class UserInfoMapper {
     return UserSummaryResponse.builder()
         .userId(user.getId())
         .email(user.getEmail())
-        .nickname(user.getName())
+        .name(user.getName())
         .build();
   }
 
