@@ -12,13 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class TrendService {
 
     private final TrendMapper trendMapper;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public TrendCreateResponse createTrend(TrendCreateRequest request) {
         Trend trend = Trend.builder()
                 .categoryId(request.getCategoryId())
