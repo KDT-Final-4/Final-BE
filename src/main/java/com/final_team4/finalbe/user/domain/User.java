@@ -31,15 +31,6 @@ public class User {
 
     private Integer deleted;
 
-    private String prompt;
-
-    private String apiKey;
-
-    private String llmPublisher;
-
-    private String llmModel;
-
-    private Integer targetTextLength;
 
     public Role getRole() {
         if (role == null && roleId != null) {
