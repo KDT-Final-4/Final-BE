@@ -13,15 +13,15 @@ public class Schedule {
     private Long userId;
     private String title;
     private LocalDateTime startTime;
-    private String repeatInterval;
+    private RepeatInterval repeatInterval;
     private LocalDateTime lastExecutedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public void update(String title, LocalDateTime startTime, String repeatInterval) {
-        this.title = title;
-        this.startTime = startTime;
-        this.repeatInterval = repeatInterval;
+    public void update(String title, LocalDateTime startTime, RepeatInterval repeatInterval) {
+        if (title != null) this.title = title;
+        if (startTime != null) this.startTime = startTime;
+        if (repeatInterval != null) this.repeatInterval = repeatInterval;
         this.updatedAt = LocalDateTime.now();
     }
 }
