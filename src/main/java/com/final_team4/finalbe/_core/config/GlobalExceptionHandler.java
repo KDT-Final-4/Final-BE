@@ -2,7 +2,6 @@ package com.final_team4.finalbe._core.config;
 
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.exception.PermissionDeniedException;
-import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,7 +14,7 @@ public class GlobalExceptionHandler {
 
 
     // 404: 유저가 찾는 결과가 없을 때 발생
-    @ExceptionHandler(ConcurrentException.class)
+    @ExceptionHandler(ContentNotFoundException.class)
     public ProblemDetail handleContentNotFoundException(ContentNotFoundException e) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.NOT_FOUND,
