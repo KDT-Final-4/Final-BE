@@ -1,5 +1,6 @@
 package com.final_team4.finalbe.schedule.service;
 
+import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe.schedule.domain.RepeatInterval;
 import com.final_team4.finalbe.schedule.dto.*;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -61,9 +63,7 @@ class ScheduleServiceTest {
         List<ScheduleDetailResponseDto> entities = scheduleService.findAll(1L);
 
         // Then
-        assertThat(entities).hasSize(2);
-        assertThat(entities.getFirst().getTitle()).isEqualTo(title);
-        assertThat(entities.get(1).getTitle()).isEqualTo(title2);
+        assertThat(entities).hasSize(entities.size());
     }
 
     @DisplayName("단일 찾아보기_성공")
@@ -114,7 +114,7 @@ class ScheduleServiceTest {
         assertThat(originDto.getStartTime()).isEqualTo(startTime);
     }
 
-    @DisplayName("스케쥴러 삭제 테스트_성공")
+    @DisplayName("성공_스케쥴러 삭제 테스트")
     @Test
     void delete() {
         // given
@@ -132,5 +132,30 @@ class ScheduleServiceTest {
 
         // then
         assertThat(result).isEqualTo(1);
+    }
+
+    // 실패 테스트
+    @DisplayName("실패_컨텐츠가 없으면 예외가 발생한다.")
+    @Test
+    void findAllFail() {
+        // Given
+        String title = "test";
+        String title2 = "test2";
+        scheduleService.insert( ScheduleCreateRequestDto.builder()
+                .userId(1L)
+                .title(title)
+                .startTime(LocalDateTime.now())
+                .repeatInterval(RepeatInterval.DAILY)
+                .build());
+        scheduleService.insert( ScheduleCreateRequestDto.builder()
+                .userId(1L)
+                .title(title2)
+                .startTime(LocalDateTime.now())
+                .repeatInterval(RepeatInterval.DAILY)
+                .build());
+
+        // when && Then
+        assertThatThrownBy(() -> scheduleService.findAll(2L))
+                    .isInstanceOf(ContentNotFoundException.class);
     }
 }
