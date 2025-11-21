@@ -1,9 +1,11 @@
 package com.final_team4.finalbe.user.service;
 
+import com.final_team4.finalbe._core.exception.DuplicateEmailException;
 import com.final_team4.finalbe.user.domain.User;
-import com.final_team4.finalbe.user.dto.request.UserRegisterRequest;
-import com.final_team4.finalbe.user.mapper.UserInfoMapper;
+import com.final_team4.finalbe.user.dto.UserRegisterRequestDto;
+import com.final_team4.finalbe.user.dto.response.UserSummaryResponse;
 import com.final_team4.finalbe.user.mapper.UserMapper;
+import com.final_team4.finalbe.user.mapper.UserInfoMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +22,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void register(@Valid UserRegisterRequest request) {
+    public UserSummaryResponse register(@Valid UserRegisterRequestDto request) {
         ensureEmailAvailable(request.getEmail());
         String encoded = passwordEncoder.encode(request.getPassword());
 
@@ -28,12 +30,12 @@ public class UserService {
                 .password(encoded)
                 .build();
         userMapper.insert(user);
-
+        return userInfoMapper.toUserSummary(user);
     }
 
     private void ensureEmailAvailable(String email) {
         if (userMapper.findByEmail(email) != null) {
-            throw new RuntimeException("이미 존재하는 이메일" + email);
+            throw new DuplicateEmailException("이미 존재하는 이메일입니다 : " + email);
         }
     }
 

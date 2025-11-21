@@ -1,7 +1,7 @@
 package com.final_team4.finalbe.auth.dto.response;
 
 import com.final_team4.finalbe.auth.dto.info.TokenInfo;
-import com.final_team4.finalbe.user.dto.info.UserInfo;
+import com.final_team4.finalbe.user.dto.UserInfoDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.util.List;
@@ -35,7 +35,7 @@ import lombok.NoArgsConstructor;
 )
 public class AuthLoginResponse {
 
-    private UserInfo user;
+    private UserInfoDto user;
     private TokenInfo token;
 
     //UserInfo와 TokenInfo에서 필요한 값을 각각 가져와 합쳐서 반환
@@ -49,7 +49,7 @@ public class AuthLoginResponse {
         List<String> tokenRoles
     ) {
         return AuthLoginResponse.builder()
-            .user(UserInfo.builder()
+            .user(UserInfoDto.builder()
                 .id(userId)
                 .email(email)
                 .name(name)

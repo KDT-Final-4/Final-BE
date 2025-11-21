@@ -1,4 +1,4 @@
-package com.final_team4.finalbe.user.dto.info;
+package com.final_team4.finalbe.user.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserInfo {
+public class UserInfoDto {
 
     private Long id;
     private String email;
