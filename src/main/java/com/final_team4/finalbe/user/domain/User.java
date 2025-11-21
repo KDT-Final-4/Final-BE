@@ -29,7 +29,7 @@ public class User {
 
     private LocalDateTime updatedAt;
 
-    private Integer deleted;
+    private Integer isDelete;
 
 
     public Role getRole() {

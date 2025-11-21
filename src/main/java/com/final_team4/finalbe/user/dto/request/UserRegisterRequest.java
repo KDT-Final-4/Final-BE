@@ -37,7 +37,7 @@ public class UserRegisterRequest {
                 .role(resolvedRole)
                 .createdAt(now)
                 .updatedAt(now)
-                .deleted(0)
+                .isDelete(0)
                 .build();
     }
 
