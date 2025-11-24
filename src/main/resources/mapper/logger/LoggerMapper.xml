@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.final_team4.finalbe.logger.mapper.LoggerMapper">
+
+    <insert id="insert" parameterType="Log" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO LOG (
+            user_id,
+            type_id,
+            job_id,
+            message,
+            created_at
+        ) VALUES (
+            #{userId},
+            #{typeId},
+            #{jobId},
+            #{message},
+            #{createdAt}
+        )
+    </insert>
+
+    <select id="findById" parameterType="long" resultType="Log">
+        SELECT
+            id,
+            user_id,
+            type_id,
+            job_id,
+            message,
+            created_at
+        FROM LOG
+        WHERE id = #{id}
+    </select>
+
+    <select id="findRecentLogs" resultType="Log">
+        SELECT
+            *
+        FROM (
+            SELECT
+                id,
+                user_id,
+                type_id,
+                job_id,
+                message,
+                created_at
+            FROM LOG
+            WHERE user_id = #{userId}
+              AND type_id = #{typeId}
+            ORDER BY created_at DESC
+            FETCH NEXT #{limit} ROWS ONLY
+        )
+        ORDER BY created_at ASC
+    </select>
+
+    <select id="findByJobId" parameterType="long" resultType="Log">
+        SELECT
+            id,
+            user_id,
+            type_id,
+            job_id,
+            message,
+            created_at
+        FROM LOG
+        WHERE job_id = #{jobId}
+        ORDER BY created_at ASC
+    </select>
+
+</mapper>
