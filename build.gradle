@@ -43,6 +43,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
+
+    // Apache Client for RestClient
+    implementation 'org.apache.httpcomponents.client5:httpclient5'
 }
 
 tasks.named('test') {
