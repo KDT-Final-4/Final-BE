@@ -25,14 +25,14 @@ public class RestClientConfig {
 //            .setMaxConnPerRoute(4) // 순간 API 요청 수를 줄이기 위해 5개씩 -> 4개씩으로 줄임
 //            .build();
 
-//    RequestConfig requestConfig = RequestConfig.custom()
-//            .setConnectionRequestTimeout(Timeout.ofMinutes(5))
-//            .setResponseTimeout(5, TimeUnit.MINUTES)   // 읽기(응답 대기)
-//            .build();
+    RequestConfig requestConfig = RequestConfig.custom()
+            .setConnectionRequestTimeout(Timeout.ofSeconds(5))
+            .setResponseTimeout(30, TimeUnit.SECONDS)   // 읽기(응답 대기)
+            .build();
 
     CloseableHttpClient httpClient = HttpClientBuilder.create()
 //            .setConnectionManager(connectionManager)
-//            .setDefaultRequestConfig(requestConfig)
+            .setDefaultRequestConfig(requestConfig)
             .evictExpiredConnections()
 //            .evictIdleConnections(TimeValue.ofMinutes(5))
             .build();
