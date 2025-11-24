@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -22,6 +23,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -46,6 +48,11 @@ class ScheduleSettingControllerTest {
     @DisplayName("스케줄 설정 수정 성공 시 200 OK와 수정된 정보 반환")
     void update_success() throws Exception {
         // given
+        User mockUser = User.builder()
+                .id(1L)
+                .email("test@user.com")
+                .name("testUser")
+                .build();
         ScheduleSettingUpdateResponseDto responseDto = ScheduleSettingUpdateResponseDto.builder()
                 .id(10L)
                 .isRun(true)
@@ -67,7 +74,7 @@ class ScheduleSettingControllerTest {
 
         // when & then
         mockMvc.perform(put("/api/setting/schedule/10")
-                        .param("userId", "1")
+                        .with(user((UserDetails) mockUser))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
@@ -103,7 +110,7 @@ class ScheduleSettingControllerTest {
 
         // when & then
         mockMvc.perform(get("/api/setting/schedule/3")
-//                        .with(user((UserDetails) mockUser))
+                        .with(user((UserDetails) mockUser))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(3))
