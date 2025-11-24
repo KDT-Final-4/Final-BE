@@ -8,6 +8,8 @@ import java.util.List;
 
 @Getter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TrendCreateContentPayload {
     @NotNull
     private final Long userId;
