@@ -35,15 +35,10 @@ public class TrendController {
     }
 
     // 인기검색어 컨텐츠 생성 요청(python에 요청)
-    @GetMapping("/content")
+    @PostMapping("/content")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public TrendCreateContentResponse requestCreateContent(
-            @RequestParam @NotNull Long userId,
-            @RequestParam @NotBlank String keyword) {
-        TrendCreateContentRequest request = TrendCreateContentRequest.builder()
-                .userId(userId)
-                .keyword(keyword)
-                .build();
+            @RequestBody @Valid TrendCreateContentRequest request) {
         return trendService.requestCreateContent(request);
     }
 
