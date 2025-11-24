@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Log {
+  /**
+   * 로그 엔티티. DB LOG 테이블과 매핑됩니다.
+   */
   private Long id;
   private Long userId;
   private LogType logType;

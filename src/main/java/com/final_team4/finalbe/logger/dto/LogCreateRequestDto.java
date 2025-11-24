@@ -16,6 +16,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LogCreateRequestDto {
+  /**
+   * 로그 생성 요청 DTO. 서비스/애플리케이션 로거에서 사용합니다.
+   */
   @NotNull
   private Long userId;
   private LogType logType;
@@ -23,6 +26,9 @@ public class LogCreateRequestDto {
   @NotNull
   private String message;
 
+  /**
+   * 기본값을 채워 엔티티로 변환합니다. 외부에 노출되지 않고 서비스 내부에서만 사용됩니다.
+   */
   public Log toEntity(LogType defaultLogType, Long defaultJobId) {
     LogType resolvedLogType = logType != null ? logType : defaultLogType;
     Long resolvedJobId = jobId != null ? jobId : defaultJobId;

@@ -14,6 +14,9 @@ import java.sql.SQLException;
 @MappedTypes(LogType.class)
 @MappedJdbcTypes(JdbcType.NUMERIC)
 public class LogTypeHandler extends BaseTypeHandler<LogType> {
+  /**
+   * Enum → 숫자 컬럼 변환. MyBatis가 내부적으로 호출하므로 직접 사용할 일 없습니다.
+   */
   @Override
   public void setNonNullParameter(PreparedStatement ps, int i, LogType parameter, JdbcType jdbcType)
       throws SQLException {
