@@ -4,11 +4,11 @@ import com.final_team4.finalbe.logger.domain.type.LogType;
 import com.final_team4.finalbe.logger.dto.LogCreateRequestDto;
 import com.final_team4.finalbe.logger.dto.LogResponseDto;
 import com.final_team4.finalbe.logger.service.LoggerService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -23,8 +23,12 @@ class ApplicationLoggerTest {
   @Mock
   private LoggerService loggerService;
 
-  @InjectMocks
   private ApplicationLogger applicationLogger;
+
+  @BeforeEach
+  void setUp() {
+    applicationLogger = new ApplicationLogger(loggerService, ApplicationLogger.DEFAULT_SYSTEM_USER_ID);
+  }
 
   // logger.log() 호출 시 시스템 유저, INFO 타입, 기본 jobId로 로그 생성이 위임되는지 검증
   @DisplayName("logger.log 호출 시 시스템 유저, INFO 타입으로 로그가 생성된다")
@@ -50,7 +54,7 @@ class ApplicationLoggerTest {
     // then
     verify(loggerService).createLog(captor.capture());
     LogCreateRequestDto sent = captor.getValue();
-    assertThat(sent.getUserId()).isEqualTo(ApplicationLogger.SYSTEM_USER_ID);
+    assertThat(sent.getUserId()).isEqualTo(ApplicationLogger.DEFAULT_SYSTEM_USER_ID);
     assertThat(sent.getLogType()).isEqualTo(LogType.INFO);
     assertThat(sent.getJobId()).isEqualTo(0L);
     assertThat(sent.getMessage()).isEqualTo("hello logger");
@@ -80,7 +84,7 @@ class ApplicationLoggerTest {
     // then
     verify(loggerService).createLog(captor.capture());
     LogCreateRequestDto sent = captor.getValue();
-    assertThat(sent.getUserId()).isEqualTo(ApplicationLogger.SYSTEM_USER_ID);
+    assertThat(sent.getUserId()).isEqualTo(ApplicationLogger.DEFAULT_SYSTEM_USER_ID);
     assertThat(sent.getLogType()).isEqualTo(LogType.ERROR);
     assertThat(sent.getJobId()).isEqualTo(0L);
     assertThat(sent.getMessage()).isEqualTo("custom type log");

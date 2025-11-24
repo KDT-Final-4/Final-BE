@@ -51,7 +51,8 @@ public class LoggerService {
    * userId, logType 조건으로 최신 30개를 오래된 순으로 반환합니다.
    */
   public List<LogResponseDto> findRecentLogs(Long userId, LogType logType) {
-    List<Log> logs = loggerMapper.findRecentLogs(userId, logType.getId(), 30);
+    Long typeId = logType != null ? logType.getId() : null;
+    List<Log> logs = loggerMapper.findRecentLogs(userId, typeId, 30);
     return logs.stream()
         .map(LogResponseDto::from)
         .toList();

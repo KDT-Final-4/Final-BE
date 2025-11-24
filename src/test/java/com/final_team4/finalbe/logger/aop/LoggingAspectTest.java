@@ -26,7 +26,7 @@ class LoggingAspectTest {
 
   @BeforeEach
   void setUp() {
-    ApplicationLogger applicationLogger = new ApplicationLogger(loggerService);
+    ApplicationLogger applicationLogger = new ApplicationLogger(loggerService, ApplicationLogger.DEFAULT_SYSTEM_USER_ID);
     loggingAspect = new LoggingAspect(applicationLogger);
   }
 
