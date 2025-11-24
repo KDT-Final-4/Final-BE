@@ -12,6 +12,7 @@ mybatis:
 
   # alias 설정 추가하려면 ,로 구분
   type-aliases-package: com.final_team4.finalbe.*.domain
+  type-handlers-package: com.final_team4.finalbe._core.config.mybatis
 
   # camelCase ↔ snake_case 자동 변환
   configuration:
