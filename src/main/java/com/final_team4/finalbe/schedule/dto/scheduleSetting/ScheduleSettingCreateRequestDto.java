@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class ScheduleSettingCreateRequestDto {
-    @NotNull
     private boolean isRun;
 
     @NotNull

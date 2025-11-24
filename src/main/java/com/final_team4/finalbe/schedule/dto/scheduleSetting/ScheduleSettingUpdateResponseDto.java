@@ -12,12 +12,15 @@ import java.time.LocalDateTime;
 public class ScheduleSettingUpdateResponseDto {
     @NotNull
     private Long id;
-    @NotNull
+
     private boolean isRun;
+
     @NotNull
     private Long maxDailyRuns;
+
     @NotNull
     private Long retryOnFail;
+
     @NotNull
     private LocalDateTime updatedAt;
 

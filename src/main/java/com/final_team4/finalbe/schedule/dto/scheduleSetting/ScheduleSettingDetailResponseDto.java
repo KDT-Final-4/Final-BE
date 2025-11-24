@@ -18,7 +18,6 @@ public class ScheduleSettingDetailResponseDto {
     @NotNull
     private Long userId;
 
-    @NotNull
     private boolean isRun;
 
     @NotNull

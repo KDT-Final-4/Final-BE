@@ -3,7 +3,6 @@ package com.final_team4.finalbe.schedule.dto.scheduleSetting;
 import com.final_team4.finalbe.schedule.domain.ScheduleSetting;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +14,6 @@ public class ScheduleSettingCreateResponseDto {
     @NotNull
     private Long id;
 
-    @NotNull
     private boolean isRun;
 
     @NotNull
@@ -25,7 +23,6 @@ public class ScheduleSettingCreateResponseDto {
     private Long retryOnFail;
 
     @NotNull
-    @CreatedDate
     private LocalDateTime createdAt;
 
     public static ScheduleSettingCreateResponseDto from(ScheduleSetting entity) {
