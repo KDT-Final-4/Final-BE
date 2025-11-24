@@ -24,3 +24,7 @@ security:
     issuer: final-be
     temp-validity: PT2H
     secret: ${JWT_SECRET}
+
+#
+python-url: ${PYTHON_URL}
+front-url: ${FRONT_URL}
