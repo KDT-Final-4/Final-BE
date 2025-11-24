@@ -2,7 +2,7 @@ package com.final_team4.finalbe.schedule.service;
 
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe.schedule.domain.RepeatInterval;
-import com.final_team4.finalbe.schedule.dto.*;
+import com.final_team4.finalbe.schedule.dto.schedule.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ class ScheduleServiceTest {
     void insert() {
         // given
         ScheduleCreateRequestDto dto = ScheduleCreateRequestDto.builder()
-                .userId(1L)
+                .userId(3L)
                 .title("test")
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
@@ -47,20 +47,20 @@ class ScheduleServiceTest {
         String title = "test";
         String title2 = "test2";
         scheduleService.insert( ScheduleCreateRequestDto.builder()
-                .userId(1L)
+                .userId(3L)
                 .title(title)
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
                 .build());
         scheduleService.insert( ScheduleCreateRequestDto.builder()
-                .userId(1L)
+                .userId(3L)
                 .title(title2)
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
                 .build());
 
         // When
-        List<ScheduleDetailResponseDto> entities = scheduleService.findAll(1L);
+        List<ScheduleDetailResponseDto> entities = scheduleService.findAll(3L);
 
         // Then
         assertThat(entities).hasSize(entities.size());
@@ -71,7 +71,7 @@ class ScheduleServiceTest {
     void findById() {
         // given
         ScheduleCreateRequestDto dto = ScheduleCreateRequestDto.builder()
-                .userId(1L)
+                .userId(3L)
                 .title("test")
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
@@ -79,7 +79,7 @@ class ScheduleServiceTest {
         ScheduleCreateResponseDto saveDto = scheduleService.insert(dto);
 
         // when
-        ScheduleDetailResponseDto responseDto = scheduleService.findById(1L, saveDto.getId());
+        ScheduleDetailResponseDto responseDto = scheduleService.findById(3L, saveDto.getId());
 
         // then
         assertThat(saveDto.getId()).isEqualTo(responseDto.getId());
@@ -93,7 +93,7 @@ class ScheduleServiceTest {
         String updateTitle = "test2";
         RepeatInterval updateRepeatInterval = RepeatInterval.MONTHLY;
         ScheduleCreateRequestDto origin = ScheduleCreateRequestDto.builder()
-                .userId(1L)
+                .userId(3L)
                 .title("test")
                 .startTime(startTime)
                 .repeatInterval(RepeatInterval.DAILY)
@@ -106,7 +106,7 @@ class ScheduleServiceTest {
                 .build();
 
         // when
-        ScheduleUpdateResponseDto updateDto = scheduleService.update(1L, originDto.getId(), updateRequestDto);
+        ScheduleUpdateResponseDto updateDto = scheduleService.update(3L, originDto.getId(), updateRequestDto);
 
         // then
         assertThat(updateDto.getTitle()).isEqualTo(updateTitle);
@@ -119,7 +119,7 @@ class ScheduleServiceTest {
     void delete() {
         // given
         ScheduleCreateRequestDto dto = ScheduleCreateRequestDto.builder()
-                .userId(1L)
+                .userId(3L)
                 .title("test")
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
@@ -128,7 +128,7 @@ class ScheduleServiceTest {
         long id = saveDto.getId();
 
         // when
-        int result = scheduleService.deleteById(1L, id);
+        int result = scheduleService.deleteById(3L, id);
 
         // then
         assertThat(result).isEqualTo(1);
@@ -142,13 +142,13 @@ class ScheduleServiceTest {
         String title = "test";
         String title2 = "test2";
         scheduleService.insert( ScheduleCreateRequestDto.builder()
-                .userId(1L)
+                .userId(3L)
                 .title(title)
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
                 .build());
         scheduleService.insert( ScheduleCreateRequestDto.builder()
-                .userId(1L)
+                .userId(3L)
                 .title(title2)
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
