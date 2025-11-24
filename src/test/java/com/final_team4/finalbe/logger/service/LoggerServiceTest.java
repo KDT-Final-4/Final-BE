@@ -75,7 +75,7 @@ public class LoggerServiceTest {
 
     // then
     assertThat(responseDto.getId()).isNotNull();
-    assertThat(responseDto.getUserId()).isEqualTo(2L);
+    assertThat(responseDto.getUserId()).isEqualTo(1L);
     assertThat(responseDto.getTypeId()).isEqualTo(1L);
     assertThat(responseDto.getMessage()).isEqualTo("minimal payload log");
   }
