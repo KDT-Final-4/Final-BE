@@ -18,6 +18,10 @@ public class UploadChannelService {
     private final UploadChannelMapper uploadChannelMapper;
 
     public List<UploadChannelItemResponse> getChannelsByUserId(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("해당 유저 아이디를 찾을 수 없습니다.");
+        }
+
         List<UploadChannel> channels = uploadChannelMapper.findByUserId(userId);
 
         if (channels.isEmpty()) {
