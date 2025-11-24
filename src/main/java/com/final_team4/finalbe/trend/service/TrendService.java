@@ -1,5 +1,6 @@
 package com.final_team4.finalbe.trend.service;
 
+import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe.trend.domain.Trend;
 import com.final_team4.finalbe.trend.dto.TrendCreateRequest;
 import com.final_team4.finalbe.trend.dto.TrendCreateResponse;
@@ -36,6 +37,11 @@ public class TrendService {
     public List<TrendResponse> getTrends(int page, int size) {
         int offset = page * size;
         List<Trend> trends = trendMapper.findAll(size, offset);
+
+        if (trends.isEmpty()) {
+            throw new ContentNotFoundException("조회할 데이터가 없습니다.");
+        }
+
         return trends.stream()
                 .map(TrendResponse::from)
                 .toList();
