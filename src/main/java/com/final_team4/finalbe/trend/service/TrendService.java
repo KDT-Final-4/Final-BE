@@ -38,10 +38,6 @@ public class TrendService {
         int offset = page * size;
         List<Trend> trends = trendMapper.findAll(size, offset);
 
-        if (trends.isEmpty()) {
-            throw new ContentNotFoundException("조회할 데이터가 없습니다.");
-        }
-
         return trends.stream()
                 .map(TrendResponse::from)
                 .toList();
