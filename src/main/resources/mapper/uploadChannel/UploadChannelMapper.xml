@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper">
+
+    <select id="findByUserId" parameterType="long" resultType="UploadChannel">
+        SELECT
+            id,
+            user_id,
+            name,
+            api_key,
+            status,
+            created_at,
+            updated_at
+        FROM
+            UPLOAD_CHANNEL
+        WHERE
+            user_id = #{userId}
+    </select>
+
+</mapper>
