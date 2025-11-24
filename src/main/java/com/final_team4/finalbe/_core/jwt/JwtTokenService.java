@@ -1,7 +1,11 @@
 package com.final_team4.finalbe._core.jwt;
 
+import com.final_team4.finalbe._core.security.JwtPrincipal;
+import com.final_team4.finalbe.user.domain.Role;
+import com.final_team4.finalbe.user.domain.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -47,28 +51,64 @@ public class JwtTokenService {
 
   public JwtToken issueToken(String username, Collection<String> requestedRoles) {
     Assert.hasText(username, "username must not be blank");
-    Instant issuedAt = Instant.now();
     List<String> roles = normalizeRoles(requestedRoles);
-    Instant expiresAt = issuedAt.plus(tokenValidity);
-    String token = Jwts.builder()
-        .issuer(properties.getIssuer())
-        .subject(username)
-        .issuedAt(Date.from(issuedAt))
-        .expiration(Date.from(expiresAt))
-        .claim("roles", roles)
-        .signWith(secretKey, Jwts.SIG.HS256)
-        .compact();
-    return new JwtToken(token, issuedAt, roles);
+    return buildToken(username, null, null, null, roles);
+  }
+
+  public JwtToken issueToken(User user) {
+    Assert.notNull(user, "user must not be null");
+    Assert.notNull(user.getId(), "user id must not be null");
+    Assert.hasText(user.getEmail(), "user email must not be blank");
+    Role role = user.getRole();
+    if (role == null && user.getRoleId() != null) {
+      role = Role.fromId(user.getRoleId());
+      user.assignRole(role);
+    }
+    Assert.state(role != null, "user role must be set");
+    Assert.hasText(role.getName(), "user role must have name");
+    List<String> roles = normalizeRoles(List.of(role.getName()));
+    return buildToken(user.getEmail(), user.getId(), user.getName(), role.getName(), roles);
   }
 
   public Authentication authenticate(String token) {
     Claims claims = parser.parseSignedClaims(token).getPayload();
     List<String> roles = claims.get("roles", List.class);
     List<SimpleGrantedAuthority> authorities = toAuthorities(roles);
-    return new UsernamePasswordAuthenticationToken(
+    JwtPrincipal principal = new JwtPrincipal(
+        asLong(claims.get("uid")),
         claims.getSubject(),
-        token,
+        claims.get("name", String.class),
+        claims.get("role", String.class),
         authorities);
+    return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+  }
+
+  private JwtToken buildToken(
+      String subject,
+      Long userId,
+      String name,
+      String role,
+      List<String> roles) {
+    Instant issuedAt = Instant.now();
+    Instant expiresAt = issuedAt.plus(tokenValidity);
+    JwtBuilder builder = Jwts.builder()
+        .issuer(properties.getIssuer())
+        .subject(subject)
+        .issuedAt(Date.from(issuedAt))
+        .expiration(Date.from(expiresAt))
+        .claim("roles", roles)
+        .signWith(secretKey, Jwts.SIG.HS256);
+    if (userId != null) {
+      builder.claim("uid", userId);
+    }
+    if (StringUtils.hasText(name)) {
+      builder.claim("name", name);
+    }
+    if (StringUtils.hasText(role)) {
+      builder.claim("role", role);
+    }
+    String token = builder.compact();
+    return new JwtToken(token, issuedAt, expiresAt, userId, name, role, roles);
   }
 
   private List<String> normalizeRoles(Collection<String> requestedRoles) {
@@ -92,5 +132,12 @@ public class JwtTokenService {
         .filter(Objects::nonNull)
         .map(SimpleGrantedAuthority::new)
         .collect(Collectors.toList());
+  }
+
+  private Long asLong(Object value) {
+    if (value instanceof Number number) {
+      return number.longValue();
+    }
+    return null;
   }
 }

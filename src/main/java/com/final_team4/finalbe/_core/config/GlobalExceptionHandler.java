@@ -3,6 +3,7 @@ package com.final_team4.finalbe._core.config;
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.exception.DuplicateEmailException;
 import com.final_team4.finalbe._core.exception.PermissionDeniedException;
+import com.final_team4.finalbe._core.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,6 +53,20 @@ public class GlobalExceptionHandler {
 
         problemDetail.setTitle("Duplicate Email");
         problemDetail.setType(URI.create("/errors/duplicate-email"));
+
+        return problemDetail;
+    }
+
+    // 401: 인증이 실패했을 때 발생
+    @ExceptionHandler(UnauthorizedException.class)
+    public ProblemDetail handleUnauthorizedException(UnauthorizedException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                e.getMessage()
+        );
+
+        problemDetail.setTitle("Unauthorized");
+        problemDetail.setType(URI.create("/errors/unauthorized"));
 
         return problemDetail;
     }
