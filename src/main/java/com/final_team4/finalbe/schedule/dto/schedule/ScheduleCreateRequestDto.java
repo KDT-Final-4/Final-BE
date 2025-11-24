@@ -1,4 +1,4 @@
-package com.final_team4.finalbe.schedule.dto;
+package com.final_team4.finalbe.schedule.dto.schedule;
 
 import com.final_team4.finalbe.schedule.domain.RepeatInterval;
 import com.final_team4.finalbe.schedule.domain.Schedule;

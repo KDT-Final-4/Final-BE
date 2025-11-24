@@ -1,4 +1,4 @@
-package com.final_team4.finalbe.schedule.dto;
+package com.final_team4.finalbe.schedule.dto.schedule;
 
 import com.final_team4.finalbe.schedule.domain.RepeatInterval;
 import com.final_team4.finalbe.schedule.domain.Schedule;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class ScheduleDetailResponseDto {
+public class ScheduleUpdateResponseDto {
     private Long id;
     private Long userId;
     private String title;
@@ -19,8 +19,8 @@ public class ScheduleDetailResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static ScheduleDetailResponseDto from(Schedule schedule) {
-        return ScheduleDetailResponseDto.builder()
+    public static ScheduleUpdateResponseDto from(Schedule schedule) {
+        return ScheduleUpdateResponseDto.builder()
                 .id(schedule.getId())
                 .userId(schedule.getUserId())
                 .title(schedule.getTitle())
