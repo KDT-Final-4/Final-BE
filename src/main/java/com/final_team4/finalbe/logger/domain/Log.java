@@ -1,5 +1,6 @@
 package com.final_team4.finalbe.logger.domain;
 
+import com.final_team4.finalbe.logger.domain.type.LogType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 public class Log {
   private Long id;
   private Long userId;
-  private Long typeId;
+  private LogType logType;
   private Long jobId;
   private String message;
   private LocalDateTime createdAt;

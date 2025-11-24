@@ -1,6 +1,7 @@
 package com.final_team4.finalbe.logger.service;
 
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
+import com.final_team4.finalbe.logger.domain.type.LogType;
 import com.final_team4.finalbe.logger.dto.LogCreateRequestDto;
 import com.final_team4.finalbe.logger.dto.LogResponseDto;
 import org.junit.jupiter.api.DisplayName;
@@ -44,7 +45,7 @@ public class LoggerServiceTest {
     // given
     LogCreateRequestDto requestDto = LogCreateRequestDto.builder()
         .userId(1L)
-        .typeId(2L) // ERROR 타입 시드 값 사용
+        .logType(LogType.ERROR) // ERROR 타입 시드 값 사용
         .jobId(10L)
         .message("full payload log")
         .build();
@@ -55,7 +56,7 @@ public class LoggerServiceTest {
     // then
     assertThat(responseDto.getId()).isNotNull();
     assertThat(responseDto.getUserId()).isEqualTo(1L);
-    assertThat(responseDto.getTypeId()).isEqualTo(2L);
+    assertThat(responseDto.getLogType()).isEqualTo(LogType.ERROR);
     assertThat(responseDto.getJobId()).isEqualTo(10L);
     assertThat(responseDto.getMessage()).isEqualTo("full payload log");
     assertThat(responseDto.getCreatedAt()).isBeforeOrEqualTo(LocalDateTime.now());
@@ -76,7 +77,7 @@ public class LoggerServiceTest {
     // then
     assertThat(responseDto.getId()).isNotNull();
     assertThat(responseDto.getUserId()).isEqualTo(1L);
-    assertThat(responseDto.getTypeId()).isEqualTo(1L);
+    assertThat(responseDto.getLogType()).isEqualTo(LogType.INFO);
     assertThat(responseDto.getMessage()).isEqualTo("minimal payload log");
   }
 
@@ -89,7 +90,7 @@ public class LoggerServiceTest {
     // given
     LogResponseDto created = loggerService.createLog(LogCreateRequestDto.builder()
         .userId(1L)
-        .typeId(1L)
+        .logType(LogType.INFO)
         .jobId(20L)
         .message("single log message")
         .build());
@@ -100,7 +101,7 @@ public class LoggerServiceTest {
     // then
     assertThat(found.getId()).isEqualTo(created.getId());
     assertThat(found.getUserId()).isEqualTo(1L);
-    assertThat(found.getTypeId()).isEqualTo(1L);
+    assertThat(found.getLogType()).isEqualTo(LogType.INFO);
     assertThat(found.getMessage()).isEqualTo("single log message");
   }
 
@@ -114,31 +115,31 @@ public class LoggerServiceTest {
   void findRecentLogsFiltersByUserAndTypeAndOrdersOldestFirst() {
     // given
     Long userId = 1L;
-    Long typeId = 2L; // 시드에 존재하는 ERROR 타입
+    LogType logType = LogType.ERROR; // 시드에 존재하는 ERROR 타입
     for (int i = 0; i < 35; i++) {
       loggerService.createLog(LogCreateRequestDto.builder()
           .userId(userId)
-          .typeId(typeId)
+          .logType(logType)
           .jobId((long) i)
           .message("target log " + i)
           .build());
     }
     loggerService.createLog(LogCreateRequestDto.builder()
         .userId(userId)
-        .typeId(1L) // INFO 타입 다른 타입 데이터
+        .logType(LogType.INFO) // INFO 타입 다른 타입 데이터
         .jobId(99L)
         .message("other type log")
         .build());
 
     // when
-    List<LogResponseDto> logs = loggerService.findRecentLogs(userId, typeId);
+    List<LogResponseDto> logs = loggerService.findRecentLogs(userId, logType);
 
     // then
     assertThat(logs).hasSize(30);
     assertThat(logs.getFirst().getMessage()).isEqualTo("target log 5");
     assertThat(logs.getLast().getMessage()).isEqualTo("target log 34");
     assertThat(logs).extracting(LogResponseDto::getUserId).containsOnly(userId);
-    assertThat(logs).extracting(LogResponseDto::getTypeId).containsOnly(typeId);
+    assertThat(logs).extracting(LogResponseDto::getLogType).containsOnly(logType);
     assertThat(logs).isSortedAccordingTo(Comparator.comparing(LogResponseDto::getCreatedAt));
   }
 
@@ -153,19 +154,19 @@ public class LoggerServiceTest {
     Long jobId = 777L;
     loggerService.createLog(LogCreateRequestDto.builder()
         .userId(1L)
-        .typeId(1L)
+        .logType(LogType.INFO)
         .jobId(jobId)
         .message("first job log")
         .build());
     loggerService.createLog(LogCreateRequestDto.builder()
         .userId(1L)
-        .typeId(1L)
+        .logType(LogType.INFO)
         .jobId(jobId)
         .message("second job log")
         .build());
     loggerService.createLog(LogCreateRequestDto.builder()
         .userId(1L)
-        .typeId(1L)
+        .logType(LogType.INFO)
         .jobId(jobId)
         .message("third job log")
         .build());

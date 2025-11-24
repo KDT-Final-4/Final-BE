@@ -2,6 +2,7 @@ package com.final_team4.finalbe.logger.service;
 
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe.logger.domain.Log;
+import com.final_team4.finalbe.logger.domain.type.LogType;
 import com.final_team4.finalbe.logger.dto.LogCreateRequestDto;
 import com.final_team4.finalbe.logger.dto.LogResponseDto;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
@@ -16,14 +17,14 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class LoggerService {
 
-  private static final long DEFAULT_TYPE_ID = 1L;
+  private static final LogType DEFAULT_LOG_TYPE = LogType.INFO;
   private static final long DEFAULT_JOB_ID = 0L;
 
   private final LoggerMapper loggerMapper;
 
   @Transactional
   public LogResponseDto createLog(LogCreateRequestDto requestDto) {
-    Log log = requestDto.toEntity(DEFAULT_TYPE_ID, DEFAULT_JOB_ID);
+    Log log = requestDto.toEntity(DEFAULT_LOG_TYPE, DEFAULT_JOB_ID);
     loggerMapper.insert(log);
     printLog(log);
     return LogResponseDto.from(log);
@@ -37,8 +38,8 @@ public class LoggerService {
     return LogResponseDto.from(log);
   }
 
-  public List<LogResponseDto> findRecentLogs(Long userId, Long typeId) {
-    List<Log> logs = loggerMapper.findRecentLogs(userId, typeId, 30);
+  public List<LogResponseDto> findRecentLogs(Long userId, LogType logType) {
+    List<Log> logs = loggerMapper.findRecentLogs(userId, logType.getId(), 30);
     return logs.stream()
         .map(LogResponseDto::from)
         .toList();
@@ -55,23 +56,17 @@ public class LoggerService {
   }
 
   private void printLog(Log log) {
-    String typeName = resolveTypeName(log.getTypeId());
+    String typeName = resolveTypeName(log.getLogType());
     String caller = resolveCaller(log.getUserId());
     String message = log.getMessage();
     System.out.println("[" + typeName + "] \"" + caller + "\":  " + message);
   }
 
-  private String resolveTypeName(Long typeId) {
-    if (typeId == null) {
+  private String resolveTypeName(LogType logType) {
+    if (logType == null) {
       return "UNKNOWN";
     }
-    if (typeId == 1L) {
-      return "INFO";
-    }
-    if (typeId == 2L) {
-      return "ERROR";
-    }
-    return "UNKNOWN";
+    return logType.getLabel();
   }
 
   private String resolveCaller(Long userId) {

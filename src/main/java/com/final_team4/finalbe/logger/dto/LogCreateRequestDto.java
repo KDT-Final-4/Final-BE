@@ -1,6 +1,7 @@
 package com.final_team4.finalbe.logger.dto;
 
 import com.final_team4.finalbe.logger.domain.Log;
+import com.final_team4.finalbe.logger.domain.type.LogType;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,17 +18,17 @@ import java.time.LocalDateTime;
 public class LogCreateRequestDto {
   @NotNull
   private Long userId;
-  private Long typeId;
+  private LogType logType;
   private Long jobId;
   @NotNull
   private String message;
 
-  public Log toEntity(Long defaultTypeId, Long defaultJobId) {
-    Long resolvedTypeId = typeId != null ? typeId : defaultTypeId;
+  public Log toEntity(LogType defaultLogType, Long defaultJobId) {
+    LogType resolvedLogType = logType != null ? logType : defaultLogType;
     Long resolvedJobId = jobId != null ? jobId : defaultJobId;
     return Log.builder()
         .userId(userId)
-        .typeId(resolvedTypeId)
+        .logType(resolvedLogType)
         .jobId(resolvedJobId)
         .message(message)
         .createdAt(LocalDateTime.now())

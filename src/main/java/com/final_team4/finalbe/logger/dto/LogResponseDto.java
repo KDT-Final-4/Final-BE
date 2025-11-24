@@ -1,6 +1,7 @@
 package com.final_team4.finalbe.logger.dto;
 
 import com.final_team4.finalbe.logger.domain.Log;
+import com.final_team4.finalbe.logger.domain.type.LogType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 public class LogResponseDto {
   private Long id;
   private Long userId;
-  private Long typeId;
+  private LogType logType;
   private Long jobId;
   private String message;
   private LocalDateTime createdAt;
@@ -25,7 +26,7 @@ public class LogResponseDto {
     return LogResponseDto.builder()
         .id(log.getId())
         .userId(log.getUserId())
-        .typeId(log.getTypeId())
+        .logType(log.getLogType())
         .jobId(log.getJobId())
         .message(log.getMessage())
         .createdAt(log.getCreatedAt())

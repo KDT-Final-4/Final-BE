@@ -4,6 +4,15 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.final_team4.finalbe.logger.mapper.LoggerMapper">
 
+    <resultMap id="LogResultMap" type="Log">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="logType" column="type_id" typeHandler="com.final_team4.finalbe._core.config.mybatis.LogTypeHandler"/>
+        <result property="jobId" column="job_id"/>
+        <result property="message" column="message"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
     <insert id="insert" parameterType="Log" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO LOG (
             user_id,
@@ -13,14 +22,14 @@
             created_at
         ) VALUES (
             #{userId},
-            #{typeId},
+            #{logType, typeHandler=com.final_team4.finalbe._core.config.mybatis.LogTypeHandler},
             #{jobId},
             #{message},
             #{createdAt}
         )
     </insert>
 
-    <select id="findById" parameterType="long" resultType="Log">
+    <select id="findById" parameterType="long" resultMap="LogResultMap">
         SELECT
             id,
             user_id,
@@ -32,7 +41,7 @@
         WHERE id = #{id}
     </select>
 
-    <select id="findRecentLogs" resultType="Log">
+    <select id="findRecentLogs" resultMap="LogResultMap">
         SELECT
             *
         FROM (
@@ -52,7 +61,7 @@
         ORDER BY created_at ASC
     </select>
 
-    <select id="findByJobId" parameterType="long" resultType="Log">
+    <select id="findByJobId" parameterType="long" resultMap="LogResultMap">
         SELECT
             id,
             user_id,

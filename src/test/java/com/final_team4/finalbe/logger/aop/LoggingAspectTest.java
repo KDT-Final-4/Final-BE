@@ -53,6 +53,9 @@ class LoggingAspectTest {
   }
 
   private static class Sample {
+    public Sample() {
+    }
+
     @Loggable("sample task executed")
     public void runTask() {
       // no-op
