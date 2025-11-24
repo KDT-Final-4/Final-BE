@@ -9,12 +9,14 @@
         INSERT INTO SCHEDULE_SETTING
         (
             USER_ID,
+            IS_RUN,
             MAX_DAILY_RUNS,
             RETRY_ON_FAIL
         )
         VALUES
         (
             #{userId},
+            #{isRun},
             #{maxDailyRuns},
             #{retryOnFail}
         )
@@ -27,6 +29,8 @@
             SCHEDULE_SETTING
         WHERE
             USER_ID = #{userId}
+        and
+            ID = #{id}
     </select>
 
     <!-- Read(List)-->
@@ -42,8 +46,8 @@
     <!-- Update -->
     <update id="update" parameterType="ScheduleSetting">
         UPDATE SCHEDULE_SETTING set
-                                    USER_ID = #{userId},
                                     IS_RUN = #{isRun},
+                                    MAX_DAILY_RUNS = #{maxDailyRuns},
                                     RETRY_ON_FAIL = #{retryOnFail},
                                     UPDATED_AT = SYSDATE
         WHERE

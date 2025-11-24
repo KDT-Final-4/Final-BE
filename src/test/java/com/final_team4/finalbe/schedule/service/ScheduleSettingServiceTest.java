@@ -44,7 +44,7 @@ class ScheduleSettingServiceTest {
 
     @Test
     @DisplayName("성공_스케쥴 세팅 사용자 별 조회 테스트")
-    void findByUserId() {
+    void findById() {
         // given
         Long userId = 3L;
         ScheduleSettingCreateRequestDto createRequestDto = ScheduleSettingCreateRequestDto.builder()

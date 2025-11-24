@@ -17,6 +17,7 @@ public class ScheduleSettingService {
     private final ScheduleSettingMapper scheduleSettingMapper;
 
     // Create
+    @Transactional
     public ScheduleSettingCreateResponseDto create(Long userId, ScheduleSettingCreateRequestDto createRequestDto) {
         ScheduleSetting entity = createRequestDto.toEntity(userId);
         scheduleSettingMapper.insert(entity);
@@ -30,6 +31,7 @@ public class ScheduleSettingService {
     }
 
     // Update
+    @Transactional
     public ScheduleSettingUpdateResponseDto update(Long userId, Long id, ScheduleSettingUpdateRequestDto updateRequestDto) {
         ScheduleSetting verifiedScheduleEntity = findVerifiedSchedule(userId, id);
         verifiedScheduleEntity.update(
