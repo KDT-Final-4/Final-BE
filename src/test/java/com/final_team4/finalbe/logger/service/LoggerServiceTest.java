@@ -44,7 +44,7 @@ public class LoggerServiceTest {
     // given
     LogCreateRequestDto requestDto = LogCreateRequestDto.builder()
         .userId(1L)
-        .typeId(2L)
+        .typeId(2L) // ERROR 타입 시드 값 사용
         .jobId(10L)
         .message("full payload log")
         .build();
@@ -66,7 +66,7 @@ public class LoggerServiceTest {
   void createLogWithMinimalFieldsSetsDefaultTypeId() {
     // given
     LogCreateRequestDto requestDto = LogCreateRequestDto.builder()
-        .userId(2L)
+        .userId(1L)
         .message("minimal payload log")
         .build();
 
@@ -88,7 +88,7 @@ public class LoggerServiceTest {
   void findByIdSuccess() {
     // given
     LogResponseDto created = loggerService.createLog(LogCreateRequestDto.builder()
-        .userId(3L)
+        .userId(1L)
         .typeId(1L)
         .jobId(20L)
         .message("single log message")
@@ -99,7 +99,7 @@ public class LoggerServiceTest {
 
     // then
     assertThat(found.getId()).isEqualTo(created.getId());
-    assertThat(found.getUserId()).isEqualTo(3L);
+    assertThat(found.getUserId()).isEqualTo(1L);
     assertThat(found.getTypeId()).isEqualTo(1L);
     assertThat(found.getMessage()).isEqualTo("single log message");
   }
@@ -113,8 +113,8 @@ public class LoggerServiceTest {
   @Test
   void findRecentLogsFiltersByUserAndTypeAndOrdersOldestFirst() {
     // given
-    Long userId = 5L;
-    Long typeId = 3L;
+    Long userId = 1L;
+    Long typeId = 2L; // 시드에 존재하는 ERROR 타입
     for (int i = 0; i < 35; i++) {
       loggerService.createLog(LogCreateRequestDto.builder()
           .userId(userId)
@@ -125,15 +125,9 @@ public class LoggerServiceTest {
     }
     loggerService.createLog(LogCreateRequestDto.builder()
         .userId(userId)
-        .typeId(99L)
+        .typeId(1L) // INFO 타입 다른 타입 데이터
         .jobId(99L)
         .message("other type log")
-        .build());
-    loggerService.createLog(LogCreateRequestDto.builder()
-        .userId(99L)
-        .typeId(typeId)
-        .jobId(100L)
-        .message("other user log")
         .build());
 
     // when
@@ -158,19 +152,19 @@ public class LoggerServiceTest {
     // given
     Long jobId = 777L;
     loggerService.createLog(LogCreateRequestDto.builder()
-        .userId(6L)
+        .userId(1L)
         .typeId(1L)
         .jobId(jobId)
         .message("first job log")
         .build());
     loggerService.createLog(LogCreateRequestDto.builder()
-        .userId(6L)
+        .userId(1L)
         .typeId(1L)
         .jobId(jobId)
         .message("second job log")
         .build());
     loggerService.createLog(LogCreateRequestDto.builder()
-        .userId(6L)
+        .userId(1L)
         .typeId(1L)
         .jobId(jobId)
         .message("third job log")
