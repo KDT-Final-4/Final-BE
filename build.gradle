@@ -48,6 +48,9 @@ dependencies {
 
     // Apache Client for RestClient
     implementation 'org.apache.httpcomponents.client5:httpclient5'
+
+    // Flyway
+    implementation 'org.flywaydb:flyway-core'
 }
 
 tasks.named('test') {
