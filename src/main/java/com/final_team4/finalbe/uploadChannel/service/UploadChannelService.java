@@ -2,7 +2,7 @@ package com.final_team4.finalbe.uploadChannel.service;
 
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
-import com.final_team4.finalbe.uploadChannel.dto.UploadChannelItemResponse;
+import com.final_team4.finalbe.uploadChannel.dto.UploadChannelItemPayload;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class UploadChannelService {
 
     private final UploadChannelMapper uploadChannelMapper;
 
-    public List<UploadChannelItemResponse> getChannelsByUserId(Long userId) {
+    public List<UploadChannelItemPayload> getChannelsByUserId(Long userId) {
         if (userId == null) {
             throw new IllegalArgumentException("해당 유저 아이디를 찾을 수 없습니다.");
         }
@@ -29,7 +29,7 @@ public class UploadChannelService {
         }
 
         return channels.stream()
-                .map(UploadChannelItemResponse::from)
+                .map(UploadChannelItemPayload::from)
                 .toList();
     }
 }

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class UploadChannelItemResponse {
+public class UploadChannelItemPayload {
     private Long id;
     private Long userId;
     private String name;
@@ -17,8 +17,8 @@ public class UploadChannelItemResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static UploadChannelItemResponse from(UploadChannel channel) {
-        return UploadChannelItemResponse.builder()
+    public static UploadChannelItemPayload from(UploadChannel channel) {
+        return UploadChannelItemPayload.builder()
                 .id(channel.getId())
                 .userId(channel.getUserId())
                 .name(channel.getName())
