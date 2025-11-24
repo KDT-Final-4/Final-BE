@@ -1,6 +1,7 @@
 package com.final_team4.finalbe.trend.dto;
 
 import com.final_team4.finalbe.uploadChannel.dto.UploadChannelItemPayload;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 import java.util.List;
@@ -9,7 +10,10 @@ import java.util.List;
 @Builder
 public class TrendCreateContentPayload {
     private final Long userId;
+
     private final String keyword;
+
+    @NotEmpty
     private final List<UploadChannelItemPayload> uploadChannels;
 
     public static TrendCreateContentPayload of(Long userId,
