@@ -25,6 +25,7 @@ public class LoggerService {
   public LogResponseDto createLog(LogCreateRequestDto requestDto) {
     Log log = requestDto.toEntity(DEFAULT_TYPE_ID, DEFAULT_JOB_ID);
     loggerMapper.insert(log);
+    printLog(log);
     return LogResponseDto.from(log);
   }
 
@@ -51,5 +52,32 @@ public class LoggerService {
     return logs.stream()
         .map(LogResponseDto::from)
         .toList();
+  }
+
+  private void printLog(Log log) {
+    String typeName = resolveTypeName(log.getTypeId());
+    String caller = resolveCaller(log.getUserId());
+    String message = log.getMessage();
+    System.out.println("[" + typeName + "] \"" + caller + "\":  " + message);
+  }
+
+  private String resolveTypeName(Long typeId) {
+    if (typeId == null) {
+      return "UNKNOWN";
+    }
+    if (typeId == 1L) {
+      return "INFO";
+    }
+    if (typeId == 2L) {
+      return "ERROR";
+    }
+    return "UNKNOWN";
+  }
+
+  private String resolveCaller(Long userId) {
+    if (userId != null && userId == 1L) {
+      return "SYSTEM";
+    }
+    return "user_id: " + userId;
   }
 }
