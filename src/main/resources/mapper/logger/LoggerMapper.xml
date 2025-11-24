@@ -57,7 +57,7 @@
               AND type_id = #{typeId}
             ORDER BY created_at DESC
             FETCH NEXT #{limit} ROWS ONLY
-        )
+        ) logs_recent
         ORDER BY created_at ASC
     </select>
 
