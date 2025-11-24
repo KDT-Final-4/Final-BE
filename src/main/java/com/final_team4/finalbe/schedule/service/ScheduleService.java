@@ -3,7 +3,7 @@ package com.final_team4.finalbe.schedule.service;
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.exception.PermissionDeniedException;
 import com.final_team4.finalbe.schedule.domain.Schedule;
-import com.final_team4.finalbe.schedule.dto.*;
+import com.final_team4.finalbe.schedule.dto.schedule.*;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

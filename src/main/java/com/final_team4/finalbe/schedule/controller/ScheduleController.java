@@ -1,6 +1,6 @@
 package com.final_team4.finalbe.schedule.controller;
 
-import com.final_team4.finalbe.schedule.dto.*;
+import com.final_team4.finalbe.schedule.dto.schedule.*;
 import com.final_team4.finalbe.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
