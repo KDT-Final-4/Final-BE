@@ -1,10 +1,11 @@
 package com.final_team4.finalbe.trend.service;
 
+import com.final_team4.finalbe.restClient.service.RestClientCallerService;
 import com.final_team4.finalbe.trend.domain.Trend;
-import com.final_team4.finalbe.trend.dto.TrendCreateRequest;
-import com.final_team4.finalbe.trend.dto.TrendCreateResponse;
-import com.final_team4.finalbe.trend.dto.TrendResponse;
+import com.final_team4.finalbe.trend.dto.*;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
+import com.final_team4.finalbe.uploadChannel.dto.UploadChannelItemPayload;
+import com.final_team4.finalbe.uploadChannel.service.UploadChannelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,8 @@ import java.util.List;
 public class TrendService {
 
     private final TrendMapper trendMapper;
+    private final UploadChannelService uploadChannelService;
+    private final RestClientCallerService<TrendCreateContentPayload> restClientCallerService;
 
     @Transactional
     public TrendCreateResponse createTrend(TrendCreateRequest request) {
@@ -39,6 +42,15 @@ public class TrendService {
         return trends.stream()
                 .map(TrendResponse::from)
                 .toList();
+    }
+
+    public TrendCreateContentResponse requestCreateContent(TrendCreateContentRequest request) {
+        List<UploadChannelItemPayload> channels = uploadChannelService.getChannelsByUserId(request.getUserId());
+
+        TrendCreateContentPayload payload = TrendCreateContentPayload.of(request.getUserId(), request.getKeyword(), channels);
+
+        boolean requested = restClientCallerService.callGeneratePosts(payload);
+        return TrendCreateContentResponse.of(request.getKeyword(), requested);
     }
 
 }
