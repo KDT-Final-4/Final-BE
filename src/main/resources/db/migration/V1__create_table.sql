@@ -105,7 +105,6 @@ CREATE TABLE trend (
                        created_at      TIMESTAMP(6) WITH TIME ZONE     DEFAULT SYSTIMESTAMP NOT NULL,
                        CONSTRAINT fk_trend_category FOREIGN KEY (category_id) REFERENCES category (id)
 );
-인기 검색어 조회 exception 적용
 
 -- ============================================
 -- 3. 관계 및 로그 테이블 (Relation & Log)

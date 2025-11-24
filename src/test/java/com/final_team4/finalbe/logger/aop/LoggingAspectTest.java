@@ -22,11 +22,15 @@ class LoggingAspectTest {
   @Mock
   private LoggerService loggerService;
 
+  private ApplicationLogger applicationLogger;
   private LoggingAspect loggingAspect;
 
   @BeforeEach
   void setUp() {
-    ApplicationLogger applicationLogger = new ApplicationLogger(loggerService, ApplicationLogger.DEFAULT_SYSTEM_USER_ID);
+    applicationLogger = ApplicationLogger.builder()
+        .loggerService(loggerService)
+        .systemUserId(ApplicationLogger.DEFAULT_SYSTEM_USER_ID)
+        .build();
     loggingAspect = new LoggingAspect(applicationLogger);
   }
 
@@ -48,7 +52,7 @@ class LoggingAspectTest {
     verify(loggerService).createLog(captor.capture());
     LogCreateRequestDto sent = captor.getValue();
     assertThat(sent.getMessage()).isEqualTo("sample task executed");
-    assertThat(sent.getUserId()).isEqualTo(ApplicationLogger.SYSTEM_USER_ID);
+    assertThat(sent.getUserId()).isEqualTo(applicationLogger.getSystemUserId());
     assertThat(sent.getLogType()).isEqualTo(LogType.INFO);
   }
 

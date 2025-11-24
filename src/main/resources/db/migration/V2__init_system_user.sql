@@ -1,8 +1,8 @@
 INSERT INTO ROLE(name, description) VALUES ('ADMIN', '관리자');
 INSERT INTO ROLE(name, description) VALUES ('MARKETER', '마케터');
 
-INSERT INTO USERS (ID, NAME, ROLE_ID, CREATED_AT)
-VALUES (1, 'SYSTEM', 1, SYSDATE);
+INSERT INTO USERS (NAME, email, password, ROLE_ID)
+VALUES ('SYSTEM', 'asdfdsasdfdsfasdfas', '123lk4jh23i4uy132o48ysao7', 1);
 
 INSERT INTO USERS
 (role_id, name, email, password, is_delete)

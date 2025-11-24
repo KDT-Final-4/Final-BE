@@ -3,6 +3,8 @@ package com.final_team4.finalbe.logger;
 import com.final_team4.finalbe.logger.domain.type.LogType;
 import com.final_team4.finalbe.logger.dto.LogCreateRequestDto;
 import com.final_team4.finalbe.logger.service.LoggerService;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,16 +26,19 @@ public class ApplicationLogger {
   /**
    * 설정에서 주입되는 시스템 유저 ID. 없으면 기본값(1) 사용.
    */
-  private final long systemUserId;
+  @Value("${logging.system-user-id:" + DEFAULT_SYSTEM_USER_ID + "}")
+  @Getter
+  private long systemUserId = DEFAULT_SYSTEM_USER_ID;
 
-  public ApplicationLogger(LoggerService loggerService,
-                           @Value("${logging.system-user-id:" + DEFAULT_SYSTEM_USER_ID + "}") long systemUserId) {
-    this.loggerService = loggerService;
-    this.systemUserId = systemUserId;
-  }
-
-  public long getSystemUserId() {
-    return systemUserId;
+  /**
+   * 테스트 등에서 수동으로 시스템 유저 ID를 주입해 사용할 수 있는 빌더.
+   */
+  @Builder
+  public static ApplicationLogger create(LoggerService loggerService, Long systemUserId) {
+    ApplicationLogger applicationLogger = new ApplicationLogger(loggerService);
+    applicationLogger.systemUserId =
+        systemUserId != null ? systemUserId : DEFAULT_SYSTEM_USER_ID;
+    return applicationLogger;
   }
 
   /**

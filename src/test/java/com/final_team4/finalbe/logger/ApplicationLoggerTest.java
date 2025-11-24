@@ -27,7 +27,10 @@ class ApplicationLoggerTest {
 
   @BeforeEach
   void setUp() {
-    applicationLogger = new ApplicationLogger(loggerService, ApplicationLogger.DEFAULT_SYSTEM_USER_ID);
+    applicationLogger = ApplicationLogger.builder()
+        .loggerService(loggerService)
+        .systemUserId(ApplicationLogger.DEFAULT_SYSTEM_USER_ID)
+        .build();
   }
 
   // logger.log() 호출 시 시스템 유저, INFO 타입, 기본 jobId로 로그 생성이 위임되는지 검증
@@ -54,7 +57,7 @@ class ApplicationLoggerTest {
     // then
     verify(loggerService).createLog(captor.capture());
     LogCreateRequestDto sent = captor.getValue();
-    assertThat(sent.getUserId()).isEqualTo(ApplicationLogger.DEFAULT_SYSTEM_USER_ID);
+    assertThat(sent.getUserId()).isEqualTo(applicationLogger.getSystemUserId());
     assertThat(sent.getLogType()).isEqualTo(LogType.INFO);
     assertThat(sent.getJobId()).isEqualTo(0L);
     assertThat(sent.getMessage()).isEqualTo("hello logger");
@@ -84,7 +87,7 @@ class ApplicationLoggerTest {
     // then
     verify(loggerService).createLog(captor.capture());
     LogCreateRequestDto sent = captor.getValue();
-    assertThat(sent.getUserId()).isEqualTo(ApplicationLogger.DEFAULT_SYSTEM_USER_ID);
+    assertThat(sent.getUserId()).isEqualTo(applicationLogger.getSystemUserId());
     assertThat(sent.getLogType()).isEqualTo(LogType.ERROR);
     assertThat(sent.getJobId()).isEqualTo(0L);
     assertThat(sent.getMessage()).isEqualTo("custom type log");
