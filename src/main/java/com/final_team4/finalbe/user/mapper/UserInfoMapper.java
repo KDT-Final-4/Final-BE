@@ -30,11 +30,13 @@ public class UserInfoMapper {
       return null;
     }
 
-    return UserSummaryResponse.builder()
-        .userId(user.getId())
-        .email(user.getEmail())
-        .name(user.getName())
-        .build();
+      RoleType roleType = resolveRoleType(user);
+      return UserSummaryResponse.builder()
+              .userId(user.getId())
+              .email(user.getEmail())
+              .name(user.getName())
+              .role(roleType != null ? roleType.getName() : null)
+              .build();
   }
 
   private RoleType resolveRoleType(User user) {

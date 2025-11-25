@@ -3,6 +3,7 @@ package com.final_team4.finalbe.user.dto;
 import com.final_team4.finalbe.user.domain.Role;
 import com.final_team4.finalbe.user.domain.RoleType;
 import com.final_team4.finalbe.user.domain.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -21,14 +22,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRegisterRequestDto {
+    @Schema(example = "user@example.com")
     @Email
     @NotBlank
     private String email;
 
+    @Schema(example = "P@ssw0rd!")
     @NotBlank
     @Size(min = 3, max = 30)
     private String password;
 
+    @Schema(example = "Test User")
     @NotBlank
     private String name;
 

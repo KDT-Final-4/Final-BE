@@ -23,7 +23,7 @@ public class AuthService {
   private final JwtTokenService jwtTokenService;
 
   public LoginResponse login(LoginRequest request) {
-    User user = Optional.ofNullable(userMapper.findByEmail(request.email()))
+    User user = Optional.ofNullable(userMapper.findByAvailableEmail(request.email()))
         .orElseThrow(() -> new UnauthorizedException("가입되지 않은 이메일입니다."));
 
     if (!passwordEncoder.matches(request.password(), user.getPassword())) {

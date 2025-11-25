@@ -1,79 +1,53 @@
 package com.final_team4.finalbe.user.service;
 
+import com.final_team4.finalbe._core.exception.DuplicateEmailException;
 import com.final_team4.finalbe.user.domain.RoleType;
 import com.final_team4.finalbe.user.domain.User;
 import com.final_team4.finalbe.user.dto.UserRegisterRequestDto;
 import com.final_team4.finalbe.user.dto.response.UserSummaryResponse;
-import com.final_team4.finalbe.user.mapper.UserInfoMapper;
 import com.final_team4.finalbe.user.mapper.UserMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional
 class UserServiceTest {
 
-  @Mock
-  private UserMapper userMapper;
-
-  @Mock
-  private UserInfoMapper userInfoMapper;
-
-  @Mock
-  private PasswordEncoder passwordEncoder;
-
+  @Autowired
   private UserService userService;
 
-  @BeforeEach
-  void setUp() {
-    userService = new UserService(userMapper, userInfoMapper, passwordEncoder);
-  }
+  @Autowired
+  private UserMapper userMapper;
 
-  @DisplayName("회원가입 성공 - 비밀번호 암호화, 기본 역할(RoleType.USER) 설정, UserSummary 반환")
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+
+  @DisplayName("회원가입 성공 - DB에 저장되고 암호화된 비밀번호와 기본 역할이 설정된다")
   @Test
   void register_success() {
     // given
-    UserRegisterRequestDto request = UserRegisterRequestDto.builder()
-        .email("codex@example.com")
-        .password("plainPw123!")
-        .name("codex")
-        .build();
-
-    given(userMapper.findByEmail(eq("codex@example.com"))).willReturn(null);
-    given(passwordEncoder.encode("plainPw123!")).willReturn("encodedPw");
-
-    UserSummaryResponse summaryResponse = UserSummaryResponse.builder()
-        .userId(1L)
-        .email("codex@example.com")
-        .name("codex")
-        .build();
-    given(userInfoMapper.toUserSummary(any(User.class))).willReturn(summaryResponse);
+    UserRegisterRequestDto request = registerRequest("codex@example.com", "plainPw123!", "codex");
 
     // when
     UserSummaryResponse result = userService.register(request);
+    User saved = userMapper.findByEmail(request.getEmail());
 
     // then
-    assertThat(result).isSameAs(summaryResponse);
+    assertThat(result.getUserId()).isEqualTo(saved.getId());
+    assertThat(result.getEmail()).isEqualTo(saved.getEmail());
+    assertThat(result.getName()).isEqualTo(saved.getName());
 
-    ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-    verify(userMapper).insert(userCaptor.capture());
-    User saved = userCaptor.getValue();
-
-    assertThat(saved.getEmail()).isEqualTo("codex@example.com");
+    assertThat(saved.getId()).isNotNull();
     assertThat(saved.getName()).isEqualTo("codex");
-    assertThat(saved.getPassword()).isEqualTo("encodedPw");
+    assertThat(saved.getEmail()).isEqualTo("codex@example.com");
+    assertThat(passwordEncoder.matches(request.getPassword(), saved.getPassword())).isTrue();
     assertThat(saved.getRoleId()).isEqualTo(RoleType.USER.getId());
     assertThat(saved.getIsDelete()).isZero();
     assertThat(saved.getCreatedAt()).isNotNull();
@@ -84,17 +58,20 @@ class UserServiceTest {
   @Test
   void register_duplicateEmail_throwsException() {
     // given
-    UserRegisterRequestDto request = UserRegisterRequestDto.builder()
-        .email("dup@example.com")
-        .password("pw")
-        .name("dup")
-        .build();
-
-    given(userMapper.findByEmail("dup@example.com")).willReturn(new User());
+    UserRegisterRequestDto request = registerRequest("dup@example.com", "pw123!", "dup");
+    userService.register(request);
 
     // when & then
-    assertThatThrownBy(() -> userService.register(request))
-        .isInstanceOf(RuntimeException.class)
+    assertThatThrownBy(() -> userService.register(registerRequest("dup@example.com", "pw123!", "dup")))
+        .isInstanceOf(DuplicateEmailException.class)
         .hasMessageContaining("dup@example.com");
+  }
+
+  private UserRegisterRequestDto registerRequest(String email, String password, String name) {
+    return UserRegisterRequestDto.builder()
+        .email(email)
+        .password(password)
+        .name(name)
+        .build();
   }
 }

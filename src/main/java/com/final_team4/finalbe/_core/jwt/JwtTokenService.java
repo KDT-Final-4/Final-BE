@@ -3,10 +3,12 @@ package com.final_team4.finalbe._core.jwt;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.user.domain.Role;
 import com.final_team4.finalbe.user.domain.User;
+import com.final_team4.finalbe.user.mapper.UserMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -29,12 +31,14 @@ import org.springframework.util.StringUtils;
 public class JwtTokenService {
 
   private final JwtProperties properties;
+  private final UserMapper userMapper;
   private SecretKey secretKey;
   private JwtParser parser;
   private Duration tokenValidity;
 
-  public JwtTokenService(JwtProperties properties) {
+  public JwtTokenService(JwtProperties properties, UserMapper userMapper) {
     this.properties = properties;
+    this.userMapper = userMapper;
   }
 
   @PostConstruct
@@ -47,12 +51,6 @@ public class JwtTokenService {
     this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(properties.getSecret()));
     this.parser = Jwts.parser().verifyWith(secretKey).build();
     this.tokenValidity = properties.getTempValidity();
-  }
-
-  public JwtToken issueToken(String username, Collection<String> requestedRoles) {
-    Assert.hasText(username, "username must not be blank");
-    List<String> roles = normalizeRoles(requestedRoles);
-    return buildToken(username, null, null, null, roles);
   }
 
   public JwtToken issueToken(User user) {
@@ -72,13 +70,33 @@ public class JwtTokenService {
 
   public Authentication authenticate(String token) {
     Claims claims = parser.parseSignedClaims(token).getPayload();
-    List<String> roles = claims.get("roles", List.class);
+    Long userId = asLong(claims.get("uid"));
+    if (userId == null) {
+      throw new JwtException("토큰에 사용자 ID가 없습니다.");
+    }
+    User user = userMapper.findById(userId);
+    if (user == null) {
+      throw new JwtException("존재하지 않는 사용자입니다.");
+    }
+    Integer deleteFlag = user.getIsDelete();
+    if (deleteFlag != null && deleteFlag != 0) {
+      throw new JwtException("삭제된 사용자입니다.");
+    }
+    Role role = user.getRole();
+    if (role == null && user.getRoleId() != null) {
+      role = Role.fromId(user.getRoleId());
+      user.assignRole(role);
+    }
+    if (role == null || !StringUtils.hasText(role.getName())) {
+      throw new JwtException("권한 정보가 없습니다.");
+    }
+    List<String> roles = normalizeRoles(List.of(role.getName()));
     List<SimpleGrantedAuthority> authorities = toAuthorities(roles);
     JwtPrincipal principal = new JwtPrincipal(
-        asLong(claims.get("uid")),
-        claims.getSubject(),
-        claims.get("name", String.class),
-        claims.get("role", String.class),
+        user.getId(),
+        user.getEmail(),
+        user.getName(),
+        role.getName(),
         authorities);
     return new UsernamePasswordAuthenticationToken(principal, token, authorities);
   }
@@ -112,16 +130,16 @@ public class JwtTokenService {
   }
 
   private List<String> normalizeRoles(Collection<String> requestedRoles) {
-    if (requestedRoles == null || requestedRoles.isEmpty()) {
-      return List.of("ROLE_TESTER");
-    }
-    List<String> roles = requestedRoles.stream()
+    List<String> roles = requestedRoles == null ? List.of() : requestedRoles.stream()
         .filter(Objects::nonNull)
         .map(String::trim)
         .filter(StringUtils::hasText)
         .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
         .collect(Collectors.toList());
-    return roles.isEmpty() ? List.of("ROLE_TESTER") : List.copyOf(roles);
+    if (roles.isEmpty()) {
+      throw new IllegalArgumentException("roles must not be empty");
+    }
+    return List.copyOf(roles);
   }
 
   private List<SimpleGrantedAuthority> toAuthorities(List<String> roles) {

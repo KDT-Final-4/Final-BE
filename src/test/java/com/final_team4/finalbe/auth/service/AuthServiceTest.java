@@ -3,16 +3,14 @@ package com.final_team4.finalbe.auth.service;
 import com.final_team4.finalbe._core.exception.UnauthorizedException;
 import com.final_team4.finalbe.auth.dto.request.LoginRequest;
 import com.final_team4.finalbe.auth.dto.response.LoginResponse;
-import com.final_team4.finalbe.user.domain.Role;
-import com.final_team4.finalbe.user.domain.RoleType;
 import com.final_team4.finalbe.user.domain.User;
+import com.final_team4.finalbe.user.dto.UserRegisterRequestDto;
 import com.final_team4.finalbe.user.mapper.UserMapper;
-import java.time.LocalDateTime;
+import com.final_team4.finalbe.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,17 +24,17 @@ class AuthServiceTest {
     AuthService authService;
 
     @Autowired
-    UserMapper userMapper;
+    UserService userService;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    UserMapper userMapper;
 
     @DisplayName("DB에서 가입된 사용자 조회 후 로그인 성공")
     @Test
     void login_success() {
         // given
         String rawPassword = "password123!";
-        User savedUser = insertUser("login-test@example.com", "로그인 테스트", rawPassword);
+        User savedUser = registerUser("login-test@example.com", "로그인 테스트", rawPassword);
         LoginRequest request = new LoginRequest(savedUser.getEmail(), rawPassword);
 
         // when
@@ -68,7 +66,7 @@ class AuthServiceTest {
     void login_fail_whenPasswordDoesNotMatch() {
         // given
         String rawPassword = "password123!";
-        User savedUser = insertUser("wrong-password@example.com", "비밀번호 검증", rawPassword);
+        User savedUser = registerUser("wrong-password@example.com", "비밀번호 검증", rawPassword);
         LoginRequest request = new LoginRequest(savedUser.getEmail(), "invalidPassword!");
 
         // when && then
@@ -77,20 +75,13 @@ class AuthServiceTest {
                 .hasMessage("비밀번호가 일치하지 않습니다.");
     }
 
-    private User insertUser(String email, String name, String rawPassword) {
-        LocalDateTime now = LocalDateTime.now();
-        Role role = Role.from(RoleType.USER);
-        User user = User.builder()
+    private User registerUser(String email, String name, String rawPassword) {
+        UserRegisterRequestDto request = UserRegisterRequestDto.builder()
                 .email(email)
+                .password(rawPassword)
                 .name(name)
-                .password(passwordEncoder.encode(rawPassword))
-                .roleId(role.getId())
-                .role(role)
-                .isDelete(0)
-                .createdAt(now)
-                .updatedAt(now)
                 .build();
-        userMapper.insert(user);
-        return user;
+        userService.register(request);
+        return userMapper.findByEmail(email);
     }
 }
