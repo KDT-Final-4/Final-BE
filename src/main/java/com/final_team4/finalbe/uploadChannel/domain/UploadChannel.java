@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class UploadChannel {
     private Long id;
     private Long userId;
-    private String name;
+    private Channel name;
     private String apiKey;
     private Boolean status;
     private LocalDateTime createdAt;
