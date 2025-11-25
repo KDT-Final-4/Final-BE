@@ -23,7 +23,7 @@ public class AuthController {
 
   private final AuthService authService;
 
-    @Value("${cookie.secure:true}") // 기본값 true
+    @Value("${cookie.secure:false}") // 기본값 false
     private boolean cookieSecure;
 
   @ResponseStatus(HttpStatus.OK)

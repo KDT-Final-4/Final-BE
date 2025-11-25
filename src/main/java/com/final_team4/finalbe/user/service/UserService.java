@@ -2,6 +2,7 @@ package com.final_team4.finalbe.user.service;
 
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.exception.DuplicateEmailException;
+import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.user.domain.User;
 import com.final_team4.finalbe.user.dto.UserRegisterRequestDto;
 import com.final_team4.finalbe.user.dto.response.UserSummaryResponse;
