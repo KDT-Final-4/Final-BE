@@ -1,0 +1,36 @@
+INSERT INTO ROLE(name, description) VALUES ('ADMIN', '관리자');
+INSERT INTO ROLE(name, description) VALUES ('MARKETER', '마케터');
+
+INSERT INTO USERS (NAME, email, password, ROLE_ID)
+VALUES ('SYSTEM', 'asdfdsasdfdsfasdfas', '123lk4jh23i4uy132o48ysao7', 1);
+
+INSERT INTO USERS
+(role_id, name, email, password, is_delete)
+values
+    ((SELECT id FROM role where name='ADMIN'),
+     'tester',
+     'test@dev.com',
+     '1234',
+     0
+    );
+
+INSERT INTO LOG_TYPE (TYPE_NAME) VALUES
+                                     ('INFO'),
+                                     ('ERROR');
+
+INSERT INTO NOTIFICATION_CHANNEL(NAME, DESCRIPTION) VALUES
+                                                        ('EMAIL', '이메일'),
+                                                        ('SLACK', '슬랙');
+
+INSERT INTO NOTIFICATION_TYPE (NAME, DESCRIPTION) VALUES
+                                                      ('UPLOAD_SUCCESS', '업로드가 성공했음을 알리는 알림입니다.'),
+                                                      ('UPLOAD_FAILURE', '업로드가 실패했음을 알리는 알림입니다.'),
+                                                      ('API_KEY_EXPIRED', 'API 키가 만료되었음을 알리는 알림입니다.'),
+                                                      ('SCHEDULER_ERROR', '스케줄러 실행 중 오류가 발생했음을 알리는 알림입니다.'),
+                                                      ('TREND_DETECTED', '신규 트렌드가 감지되었음을 알리는 알림입니다.');
+
+INSERT INTO CATEGORY (NAME, DESCRIPTION) VALUES
+                                             ('DIGITAL', '전자기기 및 디지털 관련 상품 카테고리'),
+                                             ('FASHION', '의류 및 패션 관련 상품 카테고리');
+
+commit;
