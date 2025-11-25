@@ -50,6 +50,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/logout")
     public void logout(@AuthenticationPrincipal JwtPrincipal principal,HttpServletResponse response) {
+        //principal을 주입한 이유는 추후에 로그아웃시 토큰만료까지 가능하게 할 때 필요할 듯 함
 
         SecurityContextHolder.clearContext(); // 선택적: 현재 요청 컨텍스트 정리
         ACCESS_COOKIES.forEach(name->addExpiredCookie(response,name));
