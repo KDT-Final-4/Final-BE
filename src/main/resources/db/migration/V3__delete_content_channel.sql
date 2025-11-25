@@ -2,7 +2,7 @@
 drop table CONTENT_CHANNEL;
 
 -- content 테이블에 upload_channel_id fk 추가
-alter table CONTENT add(upload_channel_id number);
+alter table CONTENT add(upload_channel_id number not null);
 alter table CONTENT add
     constraint fk_channel_id foreign key(upload_channel_id)
         references UPLOAD_CHANNEL(ID);
