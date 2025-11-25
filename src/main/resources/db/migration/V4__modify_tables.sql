@@ -1,4 +1,4 @@
--- content 테이블에 job_id 컬럼 추가 --
+--content 테이블에 job_id 컬럼 추가 --
 ALTER TABLE CONTENT ADD (job_id varchar2(128) not null);
 
 -- LOG 테이블에 job_id 컬럼의 타입 수정 --
