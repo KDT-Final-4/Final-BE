@@ -4,8 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum ContentStatus {
-    AUTO("자동 생성"),
-    MANUAL("수동 생성");
+    PENDING("검수전"),
+    APPROVED("승인"),
+    REJECTED("반려");
 
     private final String description;
 
