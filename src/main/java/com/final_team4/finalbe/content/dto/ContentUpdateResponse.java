@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class ContentUpdateResponse {
 
     private Long id;
+    private String jobId;
     private Long userId;
     private Long uploadChannelId;
     private String title;
@@ -25,6 +26,7 @@ public class ContentUpdateResponse {
     public static ContentUpdateResponse from(Content content) {
         return ContentUpdateResponse.builder()
                 .id(content.getId())
+                .jobId(content.getJobId())
                 .userId(content.getUserId())
                 .uploadChannelId(content.getUploadChannelId())
                 .title(content.getTitle())
@@ -34,5 +36,6 @@ public class ContentUpdateResponse {
                 .createdAt(content.getCreatedAt())
                 .updatedAt(content.getUpdatedAt())
                 .build();
+
     }
 }

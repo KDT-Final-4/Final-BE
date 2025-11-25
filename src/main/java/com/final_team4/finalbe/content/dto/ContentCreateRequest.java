@@ -12,6 +12,9 @@ import lombok.*;
 public class ContentCreateRequest {
 
     @NotNull
+    private String jobId;
+
+    @NotNull
     private Long userId;
 
     @NotNull

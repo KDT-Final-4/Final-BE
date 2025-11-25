@@ -15,6 +15,9 @@ public class Content {
     private Long id;
 
     @NotNull
+    private String jobId;
+
+    @NotNull
     private Long userId;
 
     @NotNull
