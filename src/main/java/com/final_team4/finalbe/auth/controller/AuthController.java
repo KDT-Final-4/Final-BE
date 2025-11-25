@@ -1,11 +1,13 @@
 package com.final_team4.finalbe.auth.controller;
 
+
 import com.final_team4.finalbe.auth.dto.request.LoginRequest;
 import com.final_team4.finalbe.auth.dto.response.LoginResponse;
 import com.final_team4.finalbe.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -21,10 +23,14 @@ public class AuthController {
 
   private final AuthService authService;
 
+    @Value("${cookie.secure:true}") // 기본값 true
+    private boolean cookieSecure;
+
   @ResponseStatus(HttpStatus.OK)
   @Operation(summary = "이메일/비밀번호 로그인")
   @PostMapping("/login")
   public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+
       LoginResponse response = authService.login(request);
       Duration ttl = Duration.between(response.issuedAt(), response.expiresAt());
 
@@ -32,7 +38,7 @@ public class AuthController {
 
       ResponseCookie cookie = ResponseCookie.from("ACCESS_TOKEN", response.accessToken())
               .httpOnly(true)  //클라이언트 JS에서 이 쿠키를 못건드리게 막음
-              .secure(false) //HTTPS 환경이면 true, 로컬에서 필요하면 false
+              .secure(cookieSecure) //HTTPS 환경이면 true, 로컬에서 필요하면 false
               .path("/") //해당 도메인의 모든 URL에서 다 전송됨
               .sameSite("Lax") //다른 사이트에서 fetch 날리는 POST에는 쿠키 안붙음
               .maxAge(ttl)
@@ -40,7 +46,7 @@ public class AuthController {
 
       ResponseCookie issuedAtCookie = ResponseCookie.from("ACCESS_ISSUED_AT", response.issuedAt().toString())
               .httpOnly(true)
-              .secure(false)
+              .secure(cookieSecure)
               .path("/")
               .sameSite("Lax")
               .maxAge(ttl)
@@ -48,7 +54,7 @@ public class AuthController {
 
       ResponseCookie expiresAtCookie = ResponseCookie.from("ACCESS_EXPIRES_AT", response.expiresAt().toString())
               .httpOnly(true)
-              .secure(false)
+              .secure(cookieSecure)
               .path("/")
               .sameSite("Lax")
               .maxAge(ttl)
