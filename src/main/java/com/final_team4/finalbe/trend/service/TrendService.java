@@ -56,9 +56,9 @@ public class TrendService {
         }
 
         // UUID 생성
-        UUID jopId = UuidCreator.getTimeOrderedEpoch();
+        UUID jobId = UuidCreator.getTimeOrderedEpoch();
 
-        TrendCreateContentPayload payload = TrendCreateContentPayload.of(request.getUserId(), request.getKeyword(), channels, jopId);
+        TrendCreateContentPayload payload = TrendCreateContentPayload.of(request.getUserId(), request.getKeyword(), channels, jobId);
         boolean requested = restClientCallerService.callGeneratePosts(payload);
 
         return TrendCreateContentResponse.of(request.getKeyword(), requested);
