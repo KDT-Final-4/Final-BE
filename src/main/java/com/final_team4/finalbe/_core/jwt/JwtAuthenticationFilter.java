@@ -3,6 +3,7 @@ package com.final_team4.finalbe._core.jwt;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -45,10 +46,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private String extractToken(HttpServletRequest request) {
     String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-    if (!StringUtils.hasText(header) || !header.startsWith(BEARER_PREFIX)) {
-      return null;
+      if (StringUtils.hasText(header) && header.startsWith(BEARER_PREFIX)) {
+          String token = header.substring(BEARER_PREFIX.length());
+          if (StringUtils.hasText(token)) {
+              return token.trim();
+          }
     }
-    String token = header.substring(BEARER_PREFIX.length());
-    return StringUtils.hasText(token) ? token.trim() : null;
+
+      // 2) 헤더에 없으면 쿠키에서 ACCESS_TOKEN 찾기
+      Cookie[] cookies = request.getCookies();
+      if (cookies != null) {
+          for (Cookie cookie : cookies) {
+              if ("ACCESS_TOKEN".equals(cookie.getName())) {
+                  String token = cookie.getValue();
+                  if (StringUtils.hasText(token)) {
+                      return token.trim();
+                  }
+              }
+          }
+      }
+
+      // 3) 둘 다 없으면 null
+      return null;
   }
 }
