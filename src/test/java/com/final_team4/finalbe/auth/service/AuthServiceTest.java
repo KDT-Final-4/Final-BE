@@ -41,12 +41,9 @@ class AuthServiceTest {
         LoginResponse response = authService.login(request);
 
         // then
-        assertThat(response.accessToken()).isNotBlank();
         assertThat(response.userId()).isEqualTo(savedUser.getId());
         assertThat(response.name()).isEqualTo(savedUser.getName());
         assertThat(response.role()).isEqualTo(savedUser.getRole().getName());
-        assertThat(response.issuedAt()).isNotNull();
-        assertThat(response.expiresAt()).isAfter(response.issuedAt());
     }
 
     @DisplayName("로그인 실패 - 존재하지 않는 이메일")

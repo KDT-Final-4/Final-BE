@@ -44,7 +44,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserSummaryResponse findSummary(Long userId) {
-        User user = Optional.ofNullable(userMapper.findById(userId))
+        User user = Optional.ofNullable(userMapper.findAvailableById(userId))
                 .orElseThrow(() -> new ContentNotFoundException("사용자를 찾을 수 없습니다."));
         return userInfoMapper.toUserSummary(user);
     }

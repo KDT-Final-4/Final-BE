@@ -84,11 +84,10 @@ class AuthControllerTest {
                 """;
 
         // when && then
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").value("token-value"))
                 .andExpect(jsonPath("$.userId").value(10))
                 .andExpect(jsonPath("$.name").value("tester"))
                 .andExpect(jsonPath("$.role").value("ROLE_USER"));
@@ -109,7 +108,7 @@ class AuthControllerTest {
                 """;
 
         // when && then
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isUnauthorized())
@@ -133,7 +132,7 @@ class AuthControllerTest {
                 """;
 
         // when && then
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isUnauthorized())

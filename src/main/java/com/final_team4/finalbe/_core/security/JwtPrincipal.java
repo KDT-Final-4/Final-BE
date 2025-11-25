@@ -9,7 +9,11 @@ public record JwtPrincipal(
     String email,
     String name,
     String role,
-    Collection<? extends GrantedAuthority> authorities
+    Collection<? extends GrantedAuthority> authorities,
+    boolean accountNonExpired,
+    boolean accountNonLocked,
+    boolean credentialsNonExpired,
+    boolean enabled
 ) implements UserDetails {
 
   @Override
@@ -29,21 +33,21 @@ public record JwtPrincipal(
 
   @Override
   public boolean isAccountNonExpired() {
-    return true;
+    return accountNonExpired;
   }
 
   @Override
   public boolean isAccountNonLocked() {
-    return true;
+    return accountNonLocked;
   }
 
   @Override
   public boolean isCredentialsNonExpired() {
-    return true;
+    return credentialsNonExpired;
   }
 
   @Override
   public boolean isEnabled() {
-    return true;
+    return enabled;
   }
 }

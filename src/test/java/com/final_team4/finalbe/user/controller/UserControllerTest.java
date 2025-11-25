@@ -4,14 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
+import com.final_team4.finalbe.trend.mapper.TrendMapper;
+import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
 import com.final_team4.finalbe.user.dto.UserRegisterRequestDto;
 import com.final_team4.finalbe.user.dto.response.UserSummaryResponse;
 import com.final_team4.finalbe.user.mapper.UserInfoMapper;
 import com.final_team4.finalbe.user.mapper.UserMapper;
 import com.final_team4.finalbe.user.service.UserService;
-import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
 import java.util.List;
-import org.mockito.Answers;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -36,7 +38,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -44,7 +45,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(
         controllers = UserController.class,
-        excludeAutoConfiguration = SecurityAutoConfiguration.class
+        excludeAutoConfiguration = {
+                SecurityAutoConfiguration.class,
+                MybatisAutoConfiguration.class // 자동으로 MyBatis띄우지 않도록 함
+        }
 )
 class UserControllerTest {
 
@@ -53,9 +57,6 @@ class UserControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
-
-    @MockBean(answer = Answers.RETURNS_DEEP_STUBS)
-    SqlSessionFactory sqlSessionFactory;
 
     @MockitoBean
     UserService userService;
@@ -72,6 +73,13 @@ class UserControllerTest {
     @MockitoBean
     ScheduleSettingMapper scheduleSettingMapper;
 
+    @MockitoBean
+    TrendMapper trendMapper;
+
+    @MockitoBean
+    UploadChannelMapper uploadChannelMapper;
+
+
     @AfterEach
     void clearSecurityContext() {
         SecurityContextHolder.clearContext();
@@ -85,7 +93,7 @@ class UserControllerTest {
         }
     }
 
-    @DisplayName("회원가입 성공 시 ApiResponse 형태로 성공 메시지와 유저 요약 정보를 반환한다")
+    @DisplayName("회원가입 성공 시  유저 요약 정보를 반환한다")
     @Test
     void register_success() throws Exception {
         // given
@@ -107,14 +115,11 @@ class UserControllerTest {
         mockMvc.perform(post("/api/user/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("회원가입이 완료됐습니다."))
-                .andExpect(jsonPath("$.data.userId").value(1))
-                .andExpect(jsonPath("$.data.email").value("codex@example.com"))
-                .andExpect(jsonPath("$.data.name").value("codex"))
-                .andExpect(jsonPath("$.data.role").value("ROLE_USER"))
-                .andExpect(jsonPath("$.timestamp").exists());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.userId").value(1))
+                .andExpect(jsonPath("$.email").value("codex@example.com"))
+                .andExpect(jsonPath("$.name").value("codex"))
+                .andExpect(jsonPath("$.role").value("ROLE_USER"));
 
         ArgumentCaptor<UserRegisterRequestDto> captor = ArgumentCaptor.forClass(UserRegisterRequestDto.class);
         verify(userService).register(captor.capture());
@@ -162,7 +167,12 @@ class UserControllerTest {
                 "me@example.com",
                 "me",
                 "ROLE_USER",
-                List.of(new SimpleGrantedAuthority("ROLE_USER")));
+                List.of(new SimpleGrantedAuthority("ROLE_USER")),
+                true,  // accountNonExpired
+                true,  // accountNonLocked
+                true,  // credentialsNonExpired
+                true   // enabled
+        );
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(principal, "token", principal.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
@@ -171,13 +181,10 @@ class UserControllerTest {
         mockMvc.perform(get("/api/user/me")
                         .with(authentication(authenticationToken)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("내 정보"))
-                .andExpect(jsonPath("$.data.userId").value(1))
-                .andExpect(jsonPath("$.data.email").value("me@example.com"))
-                .andExpect(jsonPath("$.data.name").value("me"))
-                .andExpect(jsonPath("$.data.role").value("ROLE_USER"))
-                .andExpect(jsonPath("$.timestamp").exists());
+                .andExpect(jsonPath("$.userId").value(1))
+                .andExpect(jsonPath("$.email").value("me@example.com"))
+                .andExpect(jsonPath("$.name").value("me"))
+                .andExpect(jsonPath("$.role").value("ROLE_USER"));
 
         verify(userService).findSummary(1L);
     }

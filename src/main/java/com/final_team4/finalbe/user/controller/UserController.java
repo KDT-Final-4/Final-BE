@@ -20,18 +20,19 @@ public class UserController {
 
     private final UserService userService;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UserSummaryResponse>> register(
+    public UserSummaryResponse register(
             @Valid @RequestBody UserRegisterRequestDto request) {
-        UserSummaryResponse createdUser = userService.register(request);
-        return ResponseEntity.ok(ApiResponse.ok("회원가입이 완료됐습니다.", createdUser));
+        return userService.register(request);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserSummaryResponse>> me(
+    public UserSummaryResponse me(
             @AuthenticationPrincipal JwtPrincipal principal) {
-        UserSummaryResponse me = userService.findSummary(principal.userId());
-        return ResponseEntity.ok(ApiResponse.ok("내 정보", me));
+        return userService.findSummary(principal.userId());
+
     }
 
 }

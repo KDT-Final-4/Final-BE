@@ -10,50 +10,50 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserInfoMapper {
 
-  public UserInfoDto toUserInfo(User user) {
-    if (user == null) {
-      return null;
+    public UserInfoDto toUserInfo(User user) {
+        if (user == null) {
+            return null;
+        }
+
+        RoleType roleType = resolveRoleType(user);
+
+        return UserInfoDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .role(roleType != null ? roleType.getName() : null)
+                .build();
     }
 
-    RoleType roleType = resolveRoleType(user);
+    public UserSummaryResponse toUserSummary(User user) {
+        if (user == null) {
+            return null;
+        }
 
-    return UserInfoDto.builder()
-        .id(user.getId())
-        .email(user.getEmail())
-        .name(user.getName())
-        .role(roleType != null ? roleType.getName() : null)
-        .build();
-  }
-
-  public UserSummaryResponse toUserSummary(User user) {
-    if (user == null) {
-      return null;
+        RoleType roleType = resolveRoleType(user);
+        return UserSummaryResponse.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .role(roleType != null ? roleType.getName() : null)
+                .build();
     }
 
-      RoleType roleType = resolveRoleType(user);
-      return UserSummaryResponse.builder()
-              .userId(user.getId())
-              .email(user.getEmail())
-              .name(user.getName())
-              .role(roleType != null ? roleType.getName() : null)
-              .build();
-  }
+    private RoleType resolveRoleType(User user) {
+        if (user == null) {
+            return null;
+        }
 
-  private RoleType resolveRoleType(User user) {
-    if (user == null) {
-      return null;
+        Role role = user.getRole();
+        if (role != null && role.getId() != null) {
+            return RoleType.fromId(role.getId());
+        }
+
+        Long roleId = user.getRoleId();
+        if (roleId != null) {
+            return RoleType.fromId(roleId);
+        }
+
+        return null;
     }
-
-    Role role = user.getRole();
-    if (role != null && role.getId() != null) {
-      return RoleType.fromId(role.getId());
-    }
-
-    Long roleId = user.getRoleId();
-    if (roleId != null) {
-      return RoleType.fromId(roleId);
-    }
-
-    return null;
-  }
 }

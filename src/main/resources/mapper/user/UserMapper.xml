@@ -55,7 +55,7 @@
     </select>
 
 
-    <select id="findActiveById" parameterType="long" resultMap="UserResultMap">
+    <select id="findAvailable" parameterType="long" resultMap="UserResultMap">
         SELECT
         <include refid="BaseColumns"/>
         FROM USERS
