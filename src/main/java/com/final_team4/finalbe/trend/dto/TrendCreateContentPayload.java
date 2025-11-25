@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Builder
@@ -20,13 +21,18 @@ public class TrendCreateContentPayload {
     @NotEmpty
     private final List<UploadChannelItemPayload> uploadChannels;
 
+    @NotNull
+    private final UUID jobId;
+
     public static TrendCreateContentPayload of(Long userId,
                                                String keyword,
-                                               List<UploadChannelItemPayload> uploadChannels) {
+                                               List<UploadChannelItemPayload> uploadChannels,
+                                               UUID jobId) {
         return TrendCreateContentPayload.builder()
                 .userId(userId)
                 .keyword(keyword)
                 .uploadChannels(uploadChannels)
+                .jobId(jobId)
                 .build();
     }
 }

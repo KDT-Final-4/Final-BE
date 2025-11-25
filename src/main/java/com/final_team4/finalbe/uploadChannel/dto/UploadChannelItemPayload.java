@@ -1,5 +1,6 @@
 package com.final_team4.finalbe.uploadChannel.dto;
 
+import com.final_team4.finalbe.uploadChannel.domain.Channel;
 import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 public class UploadChannelItemPayload {
     private Long id;
     private Long userId;
-    private String name;
+    private Channel name;
     private String apiKey;
     private Boolean status;
     private LocalDateTime createdAt;

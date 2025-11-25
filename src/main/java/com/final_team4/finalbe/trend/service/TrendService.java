@@ -7,12 +7,14 @@ import com.final_team4.finalbe.trend.dto.*;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
 import com.final_team4.finalbe.uploadChannel.dto.UploadChannelItemPayload;
 import com.final_team4.finalbe.uploadChannel.service.UploadChannelService;
+import com.github.f4b6a3.uuid.UuidCreator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Transactional(readOnly = true)
 @Service
@@ -47,14 +49,16 @@ public class TrendService {
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public TrendCreateContentResponse requestCreateContent(TrendCreateContentRequest request) {
+        // 유저 업로드 채널 정보 조회
         List<UploadChannelItemPayload> channels = uploadChannelService.getChannelsByUserId(request.getUserId());
-
         if (channels == null || channels.isEmpty()) {
             throw new ContentNotFoundException("등록된 업로드 채널이 없습니다.");
         }
 
-        TrendCreateContentPayload payload = TrendCreateContentPayload.of(request.getUserId(), request.getKeyword(), channels);
+        // UUID 생성
+        UUID jobId = UuidCreator.getTimeOrderedEpoch();
 
+        TrendCreateContentPayload payload = TrendCreateContentPayload.of(request.getUserId(), request.getKeyword(), channels, jobId);
         boolean requested = restClientCallerService.callGeneratePosts(payload);
 
         return TrendCreateContentResponse.of(request.getKeyword(), requested);
