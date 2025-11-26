@@ -205,6 +205,7 @@ public class LoggerServiceTest {
   @DisplayName("파이프라인 로그 생성 - 전달 필드를 조합해 메시지를 저장한다")
   @Test
   void createPipelineLog_buildsFormattedMessage() throws Exception {
+    // given
     Class<?> payloadClass;
     try {
       payloadClass = Class.forName("com.final_team4.finalbe.logger.dto.PipelineLogCreateRequest");
@@ -224,10 +225,12 @@ public class LoggerServiceTest {
     builder = builder.getClass().getMethod("jobId", String.class).invoke(builder, "job-123");
     Object payload = builder.getClass().getMethod("build").invoke(builder);
 
+    // when
     Method createPipelineLog = loggerService.getClass().getMethod("createPipelineLog", payloadClass);
     Object raw = createPipelineLog.invoke(loggerService, payload);
     LogResponseDto response = (LogResponseDto) raw;
 
+    // then
     assertThat(response.getJobId()).isEqualTo("job-123");
     assertThat(response.getLogType()).isEqualTo(LogType.INFO);
     assertThat(response.getMessage())
@@ -237,6 +240,7 @@ public class LoggerServiceTest {
   @DisplayName("로그 검색 - 본인 로그만 검색어/페이지네이션으로 조회한다")
   @Test
   void findLogs_withSearchAndPaging_filtersByUserAndKeyword() throws Exception {
+    // given
     Long ownerId = 1L;
     Long otherUserId = 2L;
     loggerService.createLog(LogCreateRequestDto.builder()
@@ -258,10 +262,12 @@ public class LoggerServiceTest {
         .message("target keyword other user")
         .build());
 
+    // when
     Method findLogs = loggerService.getClass().getMethod("findLogs", Long.class, String.class, int.class, int.class);
     @SuppressWarnings("unchecked")
     List<LogResponseDto> logs = (List<LogResponseDto>) findLogs.invoke(loggerService, ownerId, "target", 0, 2);
 
+    // then
     assertThat(logs).hasSize(2);
     assertThat(logs).extracting(LogResponseDto::getUserId).containsOnly(ownerId);
     assertThat(logs).allMatch(log -> log.getMessage().contains("target"));
@@ -270,6 +276,7 @@ public class LoggerServiceTest {
   @DisplayName("로그 개수 집계 - LogType별 개수를 반환한다")
   @Test
   void countLogsByType_returnsTypeCountsForUser() throws Exception {
+    // given
     Long ownerId = 1L;
     Long otherUserId = 2L;
     loggerService.createLog(LogCreateRequestDto.builder()
@@ -297,10 +304,12 @@ public class LoggerServiceTest {
         .message("other user error")
         .build());
 
+    // when
     Method countLogsByType = loggerService.getClass().getMethod("countLogsByType", Long.class);
     @SuppressWarnings("unchecked")
     Map<LogType, Long> counts = (Map<LogType, Long>) countLogsByType.invoke(loggerService, ownerId);
 
+    // then
     assertThat(counts.getOrDefault(LogType.INFO, 0L)).isEqualTo(2L);
     assertThat(counts.getOrDefault(LogType.ERROR, 0L)).isEqualTo(1L);
     assertThat(counts.values().stream().mapToLong(Long::longValue).sum()).isEqualTo(3L);
@@ -309,6 +318,7 @@ public class LoggerServiceTest {
   @DisplayName("파이프라인 스트림 - jobId와 userId로 SSE를 시작한다")
   @Test
   void streamLogsByJobId_startsFromRequestedIdAndValidatesUser() throws Exception {
+    // given
     String jobId = "stream-job-1";
     loggerService.createLog(LogCreateRequestDto.builder()
         .userId(1L)
@@ -317,48 +327,15 @@ public class LoggerServiceTest {
         .message("first log")
         .build());
 
+    // when
     Method streamLogs = loggerService.getClass().getMethod("streamLogs", String.class, Long.class, Long.class);
     Object rawEmitter = streamLogs.invoke(loggerService, jobId, null, 1L);
+    
+    // then
     assertThat(rawEmitter).isInstanceOf(SseEmitter.class);
 
     assertThatThrownBy(() -> streamLogs.invoke(loggerService, jobId, null, 999L))
         .isInstanceOf(Exception.class);
   }
-
-  // ------------------------------------------------------
-  // 컨트롤러 요구사항 기반 추가 예정 서비스 테스트(주석으로만 작성)
-  // RED 단계 참고용이며, 실제 구현 시 각 메서드/DTO가 준비되면 활성화한다.
-
-  // @DisplayName("로그 생성 - 파이프라인 로그 포맷으로 메시지 조립 후 저장된다")
-  // @Test
-  // void createLog_withPipelinePayload_buildsFormattedMessage() {
-  //   // given: loggedProcess, loggedDate, message, submessage, jobId, userId를 포함한 요청 DTO 준비
-  //   // when: loggerService.createLog 호출
-  //   // then: 저장된 메시지가 "{loggedProcess} | {loggedDate} | {message} \n\t{submessage}" 포맷으로 구성되고 jobId가 문자열로 유지되는지 검증
-  // }
-
-  // @DisplayName("로그 검색 - 본인 로그만 검색어/페이지네이션으로 조회한다")
-  // @Test
-  // void findLogs_withSearchAndPaging_filtersByUserAndKeyword() {
-  //   // given: userId와 다양한 로그 메시지/서브메시지를 시드해두고 search 키워드와 page/size 제공
-  //   // when: loggerService.findLogs(userId, search, pageRequest) 등 호출
-  //   // then: userId가 일치하는 로그만, 검색어가 message 또는 submessage에 포함된 것만 반환하며 페이지 크기/순서가 맞는지 확인
-  // }
-
-  // @DisplayName("로그 개수 집계 - LogType별 개수를 반환한다")
-  // @Test
-  // void countLogsByType_returnsTypeCountsForUser() {
-  //   // given: INFO/ERROR 등 서로 다른 타입의 로그를 사용자별로 저장
-  //   // when: loggerService.countLogsByType(userId) 호출
-  //   // then: 각 타입별 개수가 Map 또는 DTO로 반환되고, 다른 사용자 로그는 집계에 포함되지 않음을 검증
-  // }
-
-  // @DisplayName("파이프라인 로그 스트림 - jobId와 id 기준으로 SSE를 시작한다")
-  // @Test
-  // void streamLogsByJobId_startsFromRequestedIdAndValidatesUser() {
-  //   // given: 특정 jobId와 userId로 여러 로그를 저장하고, 기존 마지막 id보다 큰 로그만 조회하는 요청 준비
-  //   // when: loggerService.streamLogs(jobId, fromId, userId) 호출 (SseEmitter 반환 예상)
-  //   // then: 초기 응답에 기존 로그가 전달되고, userId가 다르면 예외를 던지며, message가 'END'로 시작하면 스트림이 완료되는지 검증
-  // }
   
 }
