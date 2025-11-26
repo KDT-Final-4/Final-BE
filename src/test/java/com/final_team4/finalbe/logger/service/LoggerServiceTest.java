@@ -273,6 +273,19 @@ public class LoggerServiceTest {
     assertThat(logs).allMatch(log -> log.getMessage().contains("target"));
   }
 
+  @DisplayName("로그 검색 - 음수 페이지나 0 이하 size면 예외를 던진다")
+  @Test
+  void findLogs_withInvalidPageOrSize_throwsException() throws Exception {
+    // given
+    Method findLogs = loggerService.getClass().getMethod("findLogs", Long.class, String.class, int.class, int.class);
+
+    // when & then
+    assertThatThrownBy(() -> findLogs.invoke(loggerService, 1L, null, -1, 10))
+        .isInstanceOf(Exception.class);
+    assertThatThrownBy(() -> findLogs.invoke(loggerService, 1L, null, 0, 0))
+        .isInstanceOf(Exception.class);
+  }
+
   @DisplayName("로그 개수 집계 - LogType별 개수를 반환한다")
   @Test
   void countLogsByType_returnsTypeCountsForUser() throws Exception {
