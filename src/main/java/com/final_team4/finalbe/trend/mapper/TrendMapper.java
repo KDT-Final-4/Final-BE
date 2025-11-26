@@ -1,9 +1,7 @@
 package com.final_team4.finalbe.trend.mapper;
 
 import com.final_team4.finalbe.trend.domain.Trend;
-import org.apache.ibatis.annotations.Mapper;
-
-import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
