@@ -10,9 +10,6 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TrendCreateContentRequest {
 
-    @NotNull
-    private Long userId;
-
     @NotBlank
     private String keyword;
 }

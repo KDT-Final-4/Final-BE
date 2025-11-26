@@ -48,9 +48,9 @@ public class TrendService {
     }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public TrendCreateContentResponse requestCreateContent(TrendCreateContentRequest request) {
+    public TrendCreateContentResponse requestCreateContent(TrendCreateContentRequest request, Long userId) {
         // 유저 업로드 채널 정보 조회
-        List<UploadChannelItemPayload> channels = uploadChannelService.getChannelsByUserId(request.getUserId());
+        List<UploadChannelItemPayload> channels = uploadChannelService.getChannelsByUserId(userId);
         if (channels == null || channels.isEmpty()) {
             throw new ContentNotFoundException("등록된 업로드 채널이 없습니다.");
         }
@@ -58,7 +58,8 @@ public class TrendService {
         // UUID 생성
         UUID jobId = UuidCreator.getTimeOrderedEpoch();
 
-        TrendCreateContentPayload payload = TrendCreateContentPayload.of(request.getUserId(), request.getKeyword(), channels, jobId);
+        // 파이썬 서비스 호출
+        TrendCreateContentPayload payload = TrendCreateContentPayload.of(userId, request.getKeyword(), channels, jobId);
         boolean requested = restClientCallerService.callGeneratePosts(payload);
 
         return TrendCreateContentResponse.of(request.getKeyword(), requested);
