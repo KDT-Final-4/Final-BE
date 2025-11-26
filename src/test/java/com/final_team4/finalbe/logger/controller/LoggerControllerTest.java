@@ -1,9 +1,61 @@
 package com.final_team4.finalbe.logger.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.final_team4.finalbe._core.security.JwtPrincipal;
+import com.final_team4.finalbe.logger.domain.type.LogType;
+import com.final_team4.finalbe.logger.dto.LogResponseDto;
+import com.final_team4.finalbe.logger.dto.PipelineLogCreateRequest;
+import com.final_team4.finalbe.logger.service.LoggerService;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@WebMvcTest(controllers = LoggerController.class,
+    excludeAutoConfiguration = {SecurityAutoConfiguration.class, MybatisAutoConfiguration.class})
 public class LoggerControllerTest {
+  @Autowired
+  MockMvc mockMvc;
+
+  @Autowired
+  ObjectMapper objectMapper;
+
+  @MockitoBean
+  LoggerService loggerService;
+
+  @AfterEach
+  void clearSecurityContext() {
+    SecurityContextHolder.clearContext();
+  }
+
   /*
     엔드포인트: /api/log [POST]
     입력 Body 예시:
@@ -21,7 +73,30 @@ public class LoggerControllerTest {
           이때, LogCreateRequestDto.message는 "{loggedProcess} | {loggedDate} | {message} \n\t{submessage}" 형태로 만들어져야 함
     출력: 없음 (200 OK만)
    */
+  @DisplayName("/api/log POST - 파이프라인 로그 생성")
+  @Test
+  void createLog_success() throws Exception {
+    // given
+    PipelineLogCreateRequest payload = PipelineLogCreateRequest.builder()
+        .userId(1L)
+        .logType(LogType.INFO)
+        .loggedProcess("END")
+        .loggedDate(LocalDateTime.of(2025, 11, 19, 14, 32, 25))
+        .message("로그 메세지")
+        .submessage("50개 상품 수집, 1개 선택 됨")
+        .jobId("job-123")
+        .build();
+    given(loggerService.createPipelineLog(any(PipelineLogCreateRequest.class)))
+        .willReturn(LogResponseDto.builder().id(1L).build());
 
+    // when & then
+    mockMvc.perform(post("/api/log")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(payload)))
+        .andExpect(status().isOk());
+
+    verify(loggerService).createPipelineLog(any(PipelineLogCreateRequest.class));
+  }
 
   /*
     엔드포인트: /api/log [GET]
@@ -53,7 +128,33 @@ public class LoggerControllerTest {
        ...
       ]
    */
+  @DisplayName("/api/log GET - 검색어/페이지로 본인 로그 조회")
+  @Test
+  void findLogs_success() throws Exception {
+    // given
+    JwtPrincipal principal = principalOf(1L);
+    List<LogResponseDto> responses = List.of(
+        LogResponseDto.builder().id(1L).logType(LogType.INFO).message("로그 메세지").jobId("job-111").build(),
+        LogResponseDto.builder().id(2L).logType(LogType.ERROR).message("에러 메세지").jobId("job-222").build()
+    );
+    given(loggerService.findLogs(eq(1L), eq("search"), eq(0), eq(2))).willReturn(responses);
 
+    // when & then
+    mockMvc.perform(get("/api/log")
+            .param("search", "search")
+            .param("page", "0")
+            .param("size", "2")
+            .with(authentication(authToken(principal))))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id").value(1))
+        .andExpect(jsonPath("$[0].logType").value("INFO"))
+        .andExpect(jsonPath("$[0].jobId").value("job-111"))
+        .andExpect(jsonPath("$[1].id").value(2))
+        .andExpect(jsonPath("$[1].logType").value("ERROR"))
+        .andExpect(jsonPath("$[1].jobId").value("job-222"));
+
+    verify(loggerService).findLogs(1L, "search", 0, 2);
+  }
 
   /*
     엔드포인트: /api/log/count [GET]
@@ -70,6 +171,20 @@ public class LoggerControllerTest {
       }
       현재는 info와 error 밖에 없음
    */
+  @DisplayName("/api/log/count GET - LogType별 개수 반환")
+  @Test
+  void countLogs_success() throws Exception {
+    // given
+    JwtPrincipal principal = principalOf(1L);
+    given(loggerService.countLogsByType(1L)).willReturn(Map.of(LogType.INFO, 5L, LogType.ERROR, 1L));
+
+    // when & then
+    mockMvc.perform(get("/api/log/count")
+            .with(authentication(authToken(principal))))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.info").value(5))
+        .andExpect(jsonPath("$.error").value(1));
+  }
 
   /*
     엔드포인트: /api/pipeline/{job_id} [GET]
@@ -113,4 +228,39 @@ public class LoggerControllerTest {
         },
       ]
    */
+  @DisplayName("/api/pipeline/{jobId} GET - SSE 스트림 시작")
+  @Test
+  void streamLogs_success() throws Exception {
+    // given
+    JwtPrincipal principal = principalOf(1L);
+    given(loggerService.streamLogs("job-abc", null, 1L)).willReturn(new SseEmitter());
+
+    // when
+    MvcResult result = mockMvc.perform(get("/api/pipeline/{jobId}", "job-abc")
+            .with(authentication(authToken(principal))))
+        .andExpect(status().isOk())
+        .andReturn();
+
+    // then
+    assertThat(result.getResponse().getContentType()).contains("text/event-stream");
+    verify(loggerService).streamLogs("job-abc", null, 1L);
+  }
+
+  private JwtPrincipal principalOf(Long userId) {
+    return new JwtPrincipal(
+        userId,
+        "user" + userId + "@example.com",
+        "user" + userId,
+        "ROLE_USER",
+        List.of(new SimpleGrantedAuthority("ROLE_USER")),
+        true,
+        true,
+        true,
+        true
+    );
+  }
+
+  private UsernamePasswordAuthenticationToken authToken(JwtPrincipal principal) {
+    return new UsernamePasswordAuthenticationToken(principal, "token", principal.getAuthorities());
+  }
 }
