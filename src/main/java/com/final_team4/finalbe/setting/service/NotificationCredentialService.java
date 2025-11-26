@@ -41,7 +41,7 @@ public class NotificationCredentialService {
         entity.update(
                 requestDto.getWebhookUrl(),
                 requestDto.getApiToken(),
-                requestDto.isActive()
+                requestDto.getIsActive()
         );
 
         notificationMapper.update(entity);

@@ -14,11 +14,11 @@ public class NotificationCredential {
     private Long channelId;
     private String webhookUrl;
     private String apiToken;
-    private boolean isActive;
+    private Boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public void update(String webhookUrl, String apiToken, boolean isActive) {
+    public void update(String webhookUrl, String apiToken, Boolean isActive) {
         this.webhookUrl = webhookUrl;
         this.apiToken = apiToken;
         this.isActive = isActive;
