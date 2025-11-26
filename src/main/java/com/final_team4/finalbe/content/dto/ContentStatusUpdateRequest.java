@@ -1,5 +1,6 @@
 package com.final_team4.finalbe.content.dto;
 
+import com.final_team4.finalbe.content.domain.ContentStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -7,12 +8,9 @@ import lombok.*;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ContentUpdateRequest {
+public class ContentStatusUpdateRequest {
 
     @NotNull
-    private String title;
-
-    @NotNull
-    private String body;
+    private ContentStatus status;
 
 }

@@ -5,6 +5,7 @@ import com.final_team4.finalbe.content.dto.*;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
 import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,10 +32,7 @@ public class ContentService {
 
     // 컨텐츠 상세 조회
     public ContentDetailResponse getContentDetail(Long userId, Long id) {
-        Content content = contentMapper.findById(userId, id);
-        if (content == null) {
-            throw new IllegalArgumentException("존재하지 않는 컨텐츠입니다: " + id);
-        }
+        Content content = getVerifiedContent(userId, id);
         return ContentDetailResponse.from(content);
     }
 
@@ -69,4 +67,33 @@ public class ContentService {
         return ContentCreateResponse.from(content);
     }
 
+    // 컨텐츠 수정
+    @Transactional
+    public ContentUpdateResponse updateContent(Long userId, Long id, @Valid ContentUpdateRequest request) {
+        Content content = getVerifiedContent(userId, id);
+
+        content.updateContent(request.getTitle(), request.getBody());
+        contentMapper.update(content);
+
+        return ContentUpdateResponse.from(content);
+    }
+
+    // 컨텐츠 상태 변경
+    @Transactional
+    public ContentUpdateResponse updateContentStatus(Long userId, Long id, @Valid ContentStatusUpdateRequest request) {
+        Content content = getVerifiedContent(userId, id);
+
+        content.updateStatus(request.getStatus());
+        contentMapper.updateStatus(content);
+
+        return ContentUpdateResponse.from(content);
+    }
+
+    private Content getVerifiedContent(Long userId, Long id) {
+        Content content = contentMapper.findById(userId, id);
+        if (content == null) {
+            throw new IllegalArgumentException("존재하지 않는 컨텐츠입니다: " + id);
+        }
+        return content;
+    }
 }

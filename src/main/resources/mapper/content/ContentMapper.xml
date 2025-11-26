@@ -69,4 +69,27 @@
         )
     </insert>
 
+    <update id="update" parameterType="Content">
+        UPDATE CONTENT
+        SET
+            TITLE = #{title},
+            BODY = #{body},
+            UPDATED_AT = #{updatedAt}
+        WHERE
+            ID = #{id}
+        AND
+            USER_ID = #{userId}
+    </update>
+
+    <update id="updateStatus" parameterType="Content">
+        UPDATE CONTENT
+        SET
+            STATUS = #{status},
+            UPDATED_AT = #{updatedAt}
+        WHERE
+            ID = #{id}
+        AND
+            USER_ID = #{userId}
+    </update>
+
 </mapper>

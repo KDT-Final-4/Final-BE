@@ -14,4 +14,8 @@ public interface ContentMapper {
 
     void insert(Content content);
 
+    void update(Content content);
+
+    void updateStatus(Content content);
+
 }

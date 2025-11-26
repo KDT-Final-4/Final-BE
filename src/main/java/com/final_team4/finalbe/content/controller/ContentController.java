@@ -47,6 +47,23 @@ public class ContentController {
     }
 
     // 컨텐츠 수정
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ContentUpdateResponse updateContent(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @PathVariable Long id,
+            @Valid @RequestBody ContentUpdateRequest request) {
+        return contentService.updateContent(principal.userId(), id, request);
+    }
 
     // 컨텐츠 상태 변경
+    @PatchMapping("/status/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ContentUpdateResponse updateContentStatus(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @PathVariable Long id,
+            @Valid @RequestBody ContentStatusUpdateRequest request) {
+        return contentService.updateContentStatus(principal.userId(), id, request);
+    }
+
 }
