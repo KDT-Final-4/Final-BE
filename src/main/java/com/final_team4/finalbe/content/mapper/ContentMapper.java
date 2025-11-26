@@ -10,6 +10,8 @@ import java.util.List;
 public interface ContentMapper {
     List<Content> findAll(Long userId, @Param("limit") int limit, @Param("offset") int offset);
 
+    Content findById(Long userId, Long id);
+
     void insert(Content content);
 
 }

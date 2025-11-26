@@ -25,6 +25,26 @@
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
     </select>
 
+    <select id="findById" parameterType="long" resultType="Content">
+        SELECT
+            ID,
+            JOB_ID,
+            USER_ID,
+            UPLOAD_CHANNEL_ID,
+            TITLE,
+            BODY,
+            STATUS,
+            GENERATION_TYPE,
+            CREATED_AT,
+            UPDATED_AT
+        FROM
+            CONTENT
+        WHERE
+            ID = #{id}
+        AND
+            USER_ID = #{userId}
+    </select>
+
     <insert id="insert" parameterType="Content" useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
         INSERT INTO CONTENT (
                  JOB_ID,

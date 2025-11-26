@@ -31,6 +31,13 @@ public class ContentController {
     }
 
     // 컨텐츠 상세 조회
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ContentDetailResponse getContentDetail(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @PathVariable Long id) {
+        return contentService.getContentDetail(principal.userId(), id);
+    }
 
     // 컨텐츠 등록(파이썬에서 호출)
     @PostMapping

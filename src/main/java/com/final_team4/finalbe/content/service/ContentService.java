@@ -29,6 +29,12 @@ public class ContentService {
                 .toList();
     }
 
+    // 컨텐츠 상세 조회
+    public ContentDetailResponse getContentDetail(Long userId, Long id) {
+        Content content = contentMapper.findById(userId, id);
+        return ContentDetailResponse.from(content);
+    }
+
     // 컨텐츠 등록(파이썬에서 호출)
     @Transactional
     public ContentCreateResponse createContent(ContentCreateRequest request) {
