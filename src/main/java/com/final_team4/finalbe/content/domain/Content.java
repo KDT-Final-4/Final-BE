@@ -39,4 +39,15 @@ public class Content {
 
     private LocalDateTime updatedAt;
 
+    public void updateContent(String title, String body) {
+        this.title = title;
+        this.body = body;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateStatus(ContentStatus status) {
+        this.status = status;
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }
