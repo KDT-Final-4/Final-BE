@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Transactional(readOnly = true)
 @Service
@@ -18,6 +19,15 @@ public class ContentService {
 
     private final ContentMapper contentMapper;
     private final UploadChannelMapper uploadChannelMapper;
+
+    // 검수할 컨텐츠 목록 조회
+    public List<ContentListResponse> getContents(Long userId, int page, int size) {
+        int offset = page * size;
+        List<Content> contents = contentMapper.findAll(userId, size, offset);
+        return contents.stream()
+                .map(ContentListResponse::from)
+                .toList();
+    }
 
     // 컨텐츠 등록(파이썬에서 호출)
     @Transactional

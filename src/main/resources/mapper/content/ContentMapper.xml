@@ -4,6 +4,27 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.final_team4.finalbe.content.mapper.ContentMapper">
 
+    <select id="findAll" resultType="Content">
+        SELECT
+            ID,
+            JOB_ID,
+            USER_ID,
+            UPLOAD_CHANNEL_ID,
+            TITLE,
+            BODY,
+            STATUS,
+            GENERATION_TYPE,
+            CREATED_AT,
+            UPDATED_AT
+        FROM
+            CONTENT
+        WHERE
+            USER_ID = #{userId}
+        ORDER BY
+            UPDATED_AT DESC, CREATED_AT DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
     <insert id="insert" parameterType="Content" useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
         INSERT INTO CONTENT (
                  JOB_ID,

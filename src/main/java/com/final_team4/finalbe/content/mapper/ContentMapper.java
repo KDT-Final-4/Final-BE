@@ -2,8 +2,14 @@ package com.final_team4.finalbe.content.mapper;
 
 import com.final_team4.finalbe.content.domain.Content;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface ContentMapper {
-        void insert(Content content);
+    List<Content> findAll(Long userId, @Param("limit") int limit, @Param("offset") int offset);
+
+    void insert(Content content);
+
 }
