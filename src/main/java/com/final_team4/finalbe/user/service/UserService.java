@@ -58,9 +58,13 @@ public class UserService {
         User user = Optional.ofNullable(userMapper.findAvailableById(userId))
                 .orElseThrow(()->new ContentNotFoundException("사용자를 찾을 수 없습니다."));
 
-        userMapper.updateProfile(userId,request.getName());
-        return user.toBuilder() // toBuilder 사용 이유 : 바꾸고 싶은 필드만 설정해서 새 객체 생성가능
-                .name(request.getName())
-                .build();
+
+        int updated = userMapper.updateProfile(userId,request.getName());
+        if(updated == 0){
+            throw new ContentNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+
+        return Optional.ofNullable(userMapper.findAvailableById(userId))
+                .orElseThrow(()->new ContentNotFoundException("사용자를 찾을 수 없습니다."));
     }
 }

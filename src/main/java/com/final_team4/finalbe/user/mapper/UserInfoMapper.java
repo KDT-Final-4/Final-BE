@@ -76,7 +76,7 @@ public class UserInfoMapper {
     }
 
 
-    public static UserUpdateResponse of(User updated) {
+    public static UserUpdateResponse toUserUpdateResponse(User updated) {
         return UserUpdateResponse.builder()
                 .name(updated.getName())
                 .build();

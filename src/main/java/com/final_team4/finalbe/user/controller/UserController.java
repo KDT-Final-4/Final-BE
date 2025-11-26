@@ -76,12 +76,7 @@ public class UserController {
         Authentication auth = jwtTokenService.authenticate(token.value()); // 토큰에 권한 부여(이 때 principal 업데이트)
         SecurityContextHolder.getContext().setAuthentication(auth); // 시큐리티 컨텍스트에 인증 정보를 설정
 
-        return UserInfoMapper.of(updatedUser);
-
-
-
+        return UserInfoMapper.toUserUpdateResponse(updatedUser);
         //
     }
-
-
 }
