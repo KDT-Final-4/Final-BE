@@ -17,4 +17,17 @@
           AND STATUS = '1'
     </select>
 
+    <select id="findById" parameterType="long" resultType="UploadChannel">
+        SELECT id,
+               user_id,
+               name,
+               api_key,
+               status,
+               created_at,
+               updated_at
+        FROM UPLOAD_CHANNEL
+        WHERE id = #{id}
+          AND STATUS = '1'
+    </select>
+
 </mapper>
