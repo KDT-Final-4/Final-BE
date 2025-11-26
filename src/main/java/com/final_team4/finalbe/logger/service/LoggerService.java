@@ -9,6 +9,8 @@ import com.final_team4.finalbe.logger.dto.LogResponseDto;
 import com.final_team4.finalbe.logger.dto.PipelineLogCreateRequest;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -30,8 +32,12 @@ public class LoggerService {
    */
   private static final LogType DEFAULT_LOG_TYPE = LogType.INFO;
   private static final String DEFAULT_JOB_ID = "0";
+  private static final long SSE_TIMEOUT_MS = 60_000L;
 
   private final LoggerMapper loggerMapper;
+
+  @Qualifier("virtualThreadTaskExecutor")
+  private final TaskExecutor taskExecutor;
 
   /**
    * 로그를 생성하고 콘솔에 출력합니다. 외부에서 직접 호출됩니다.
@@ -132,7 +138,7 @@ public class LoggerService {
 
     SseEmitter emitter = new SseEmitter();
     // 초반 응답은 비동기로 밀어줘 클라이언트 연결 성능 확보
-    CompletableFuture.runAsync(() -> {
+    taskExecutor.execute(() -> {
       try {
         for (Log log : logs) {
           emitter.send(LogResponseDto.from(log));
@@ -142,6 +148,7 @@ public class LoggerService {
         emitter.completeWithError(e);
       }
     });
+
     return emitter;
   }
 

@@ -9,6 +9,9 @@ spring:
     enabled: true
     baseline-on-migrate: true
     baseline-version: 0
+  threads:
+    virtual:
+      enabled: true
 
 mybatis:
   # 매퍼 XML 위치
