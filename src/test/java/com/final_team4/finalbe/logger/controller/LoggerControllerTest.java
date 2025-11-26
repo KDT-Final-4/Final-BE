@@ -13,7 +13,7 @@ public class LoggerControllerTest {
         logType: "INFO",
         loggedProcess: "Pipeline",
         loggedDate 2025-11-19T14:32:25.00,
-        jobId: 1923847123,
+        jobId: "1923847123",
         submessage: "50개 상품 수집, 1개 선택 됨",
       }
     동작: LoggerService.createLog 호출하여 로그 생성
@@ -36,7 +36,7 @@ public class LoggerControllerTest {
           logType: "INFO",
           message: "로그 메세지",
           submessage: "50개 상품 수집, 1개 선택 됨",
-          jobId: 1923847123,
+          jobId: "1923847123",
           loggedDate 2025-11-19T14:32:25.00,
         },
         {
@@ -44,10 +44,10 @@ public class LoggerControllerTest {
           logType: "INFO",
           message: "로그 메세지",
           submessage: "50개 상품 수집, 1개 선택 됨"
-          jobId: 1923847123,
-          loggedDate "2025-11-19T14:32:25.00",
-        },
-        ...
+          jobId: "1923847123",
+   loggedDate "2025-11-19T14:32:25.00",
+       },
+       ...
       ]
    */
 

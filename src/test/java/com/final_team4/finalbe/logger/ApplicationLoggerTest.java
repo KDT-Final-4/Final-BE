@@ -59,7 +59,7 @@ class ApplicationLoggerTest {
     LogCreateRequestDto sent = captor.getValue();
     assertThat(sent.getUserId()).isEqualTo(applicationLogger.getSystemUserId());
     assertThat(sent.getLogType()).isEqualTo(LogType.INFO);
-    assertThat(sent.getJobId()).isEqualTo(0L);
+    assertThat(sent.getJobId()).isEqualTo("0");
     assertThat(sent.getMessage()).isEqualTo("hello logger");
   }
 
@@ -89,7 +89,7 @@ class ApplicationLoggerTest {
     LogCreateRequestDto sent = captor.getValue();
     assertThat(sent.getUserId()).isEqualTo(applicationLogger.getSystemUserId());
     assertThat(sent.getLogType()).isEqualTo(LogType.ERROR);
-    assertThat(sent.getJobId()).isEqualTo(0L);
+    assertThat(sent.getJobId()).isEqualTo("0");
     assertThat(sent.getMessage()).isEqualTo("custom type log");
   }
 }

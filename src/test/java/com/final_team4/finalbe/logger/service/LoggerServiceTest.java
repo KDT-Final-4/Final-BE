@@ -49,7 +49,7 @@ public class LoggerServiceTest {
     LogCreateRequestDto requestDto = LogCreateRequestDto.builder()
         .userId(1L)
         .logType(LogType.ERROR) // ERROR 타입 시드 값 사용
-        .jobId(10L)
+        .jobId("10")
         .message("full payload log")
         .build();
 
@@ -60,7 +60,7 @@ public class LoggerServiceTest {
     assertThat(responseDto.getId()).isNotNull();
     assertThat(responseDto.getUserId()).isEqualTo(1L);
     assertThat(responseDto.getLogType()).isEqualTo(LogType.ERROR);
-    assertThat(responseDto.getJobId()).isEqualTo(10L);
+    assertThat(responseDto.getJobId()).isEqualTo("10");
     assertThat(responseDto.getMessage()).isEqualTo("full payload log");
     assertThat(responseDto.getCreatedAt()).isBeforeOrEqualTo(LocalDateTime.now());
   }
@@ -94,7 +94,7 @@ public class LoggerServiceTest {
     LogResponseDto created = loggerService.createLog(LogCreateRequestDto.builder()
         .userId(1L)
         .logType(LogType.INFO)
-        .jobId(20L)
+        .jobId("20")
         .message("single log message")
         .build());
 
@@ -123,14 +123,14 @@ public class LoggerServiceTest {
       loggerService.createLog(LogCreateRequestDto.builder()
           .userId(userId)
           .logType(logType)
-          .jobId((long) i)
+          .jobId(String.valueOf(i))
           .message("target log " + i)
           .build());
     }
     loggerService.createLog(LogCreateRequestDto.builder()
         .userId(userId)
         .logType(LogType.INFO) // INFO 타입 다른 타입 데이터
-        .jobId(99L)
+        .jobId("99")
         .message("other type log")
         .build());
 
@@ -154,7 +154,7 @@ public class LoggerServiceTest {
   @Test
   void findByJobIdSuccess() {
     // given
-    Long jobId = 777L;
+    String jobId = "777";
     loggerService.createLog(LogCreateRequestDto.builder()
         .userId(1L)
         .logType(LogType.INFO)
