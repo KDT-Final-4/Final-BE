@@ -1,9 +1,12 @@
 package com.final_team4.finalbe._core.security;
 
 import java.util.Collection;
+
+import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+@Builder
 public record JwtPrincipal(
     Long userId,
     String email,
