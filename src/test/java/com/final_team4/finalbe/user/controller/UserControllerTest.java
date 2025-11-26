@@ -1,6 +1,7 @@
 package com.final_team4.finalbe.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.final_team4.finalbe._core.security.AccessCookieManager;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
@@ -88,6 +89,9 @@ class UserControllerTest {
 
     @MockitoBean
     LoggerMapper loggerMapper;
+
+    @MockitoBean
+    AccessCookieManager accessCookieManager;
 
 
     @AfterEach
@@ -218,18 +222,17 @@ class UserControllerTest {
                 new UsernamePasswordAuthenticationToken(principal, "token", principal.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-        MvcResult result = mockMvc.perform(post("/api/user/logout")
+        //when
+         mockMvc.perform(post("/api/user/logout")
                 .with(authentication(authenticationToken)))
-                .andExpect(status().isNoContent())
-                .andReturn();
+                .andExpect(status().isNoContent());
 
-        List<String> setCookies = result.getResponse().getHeaders(HttpHeaders.SET_COOKIE);
-        assertThat(setCookies).hasSize(3);
-        assertThat(setCookies).anyMatch(c -> c.startsWith("ACCESS_TOKEN=") && c.contains("Max-Age=0"));
-        assertThat(setCookies).anyMatch(c -> c.startsWith("ACCESS_ISSUED_AT=") && c.contains("Max-Age=0"));
-        assertThat(setCookies).anyMatch(c -> c.startsWith("ACCESS_EXPIRES_AT=") && c.contains("Max-Age=0"));
+        // then
+        // AccessCookieManager의 clear 메서드(or addExpiredCookie 등)가 호출됐는지 검증
+        // 메서드 이름에 맞게 수정해서 써
+        verify(accessCookieManager).clearAccessCookies(any()); // or addExpiredCookie(...)
+
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-
 
     }
 }
