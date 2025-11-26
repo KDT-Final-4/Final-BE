@@ -6,6 +6,14 @@ import com.final_team4.finalbe.logger.domain.type.LogType;
 import com.final_team4.finalbe.logger.dto.LogResponseDto;
 import com.final_team4.finalbe.logger.dto.PipelineLogCreateRequest;
 import com.final_team4.finalbe.logger.service.LoggerService;
+import com.final_team4.finalbe.content.mapper.ContentMapper;
+import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
+import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
+import com.final_team4.finalbe.trend.mapper.TrendMapper;
+import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
+import com.final_team4.finalbe.user.mapper.UserInfoMapper;
+import com.final_team4.finalbe.user.mapper.UserMapper;
+import com.final_team4.finalbe._core.security.AccessCookieManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +30,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,7 +50,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Transactional
 @WebMvcTest(controllers = LoggerController.class,
     excludeAutoConfiguration = {SecurityAutoConfiguration.class, MybatisAutoConfiguration.class})
 public class LoggerControllerTest {
@@ -50,6 +61,44 @@ public class LoggerControllerTest {
 
   @MockitoBean
   LoggerService loggerService;
+
+  @MockitoBean
+  ContentMapper contentMapper;
+
+  @MockitoBean
+  com.final_team4.finalbe.logger.aop.Loggable loggable;
+
+  @MockitoBean
+  com.final_team4.finalbe.logger.mapper.LoggerMapper loggerMapper;
+
+  @MockitoBean
+  ScheduleMapper scheduleMapper;
+
+  @MockitoBean
+  ScheduleSettingMapper scheduleSettingMapper;
+
+  @MockitoBean
+  TrendMapper trendMapper;
+
+  @MockitoBean
+  UploadChannelMapper uploadChannelMapper;
+
+  @MockitoBean
+  UserMapper userMapper;
+
+  @MockitoBean
+  UserInfoMapper userInfoMapper;
+
+  @MockitoBean
+  AccessCookieManager accessCookieManager;
+
+  @TestConfiguration
+  static class AuthenticationPrincipalResolverConfig implements WebMvcConfigurer {
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+      resolvers.add(new AuthenticationPrincipalArgumentResolver());
+    }
+  }
 
   @AfterEach
   void clearSecurityContext() {
@@ -138,6 +187,7 @@ public class LoggerControllerTest {
         LogResponseDto.builder().id(2L).logType(LogType.ERROR).message("에러 메세지").jobId("job-222").build()
     );
     given(loggerService.findLogs(eq(1L), eq("search"), eq(0), eq(2))).willReturn(responses);
+    SecurityContextHolder.getContext().setAuthentication(authToken(principal));
 
     // when & then
     mockMvc.perform(get("/api/log")
@@ -177,6 +227,7 @@ public class LoggerControllerTest {
     // given
     JwtPrincipal principal = principalOf(1L);
     given(loggerService.countLogsByType(1L)).willReturn(Map.of(LogType.INFO, 5L, LogType.ERROR, 1L));
+    SecurityContextHolder.getContext().setAuthentication(authToken(principal));
 
     // when & then
     mockMvc.perform(get("/api/log/count")
@@ -234,6 +285,7 @@ public class LoggerControllerTest {
     // given
     JwtPrincipal principal = principalOf(1L);
     given(loggerService.streamLogs("job-abc", null, 1L)).willReturn(new SseEmitter());
+    SecurityContextHolder.getContext().setAuthentication(authToken(principal));
 
     // when
     MvcResult result = mockMvc.perform(get("/api/pipeline/{jobId}", "job-abc")
@@ -247,17 +299,17 @@ public class LoggerControllerTest {
   }
 
   private JwtPrincipal principalOf(Long userId) {
-    return new JwtPrincipal(
-        userId,
-        "user" + userId + "@example.com",
-        "user" + userId,
-        "ROLE_USER",
-        List.of(new SimpleGrantedAuthority("ROLE_USER")),
-        true,
-        true,
-        true,
-        true
-    );
+    return JwtPrincipal.builder()
+        .userId(userId)
+        .email("user" + userId + "@example.com")
+        .name("user" + userId)
+        .role("ROLE_USER")
+        .authorities(List.of(new SimpleGrantedAuthority("ROLE_USER")))
+        .accountNonExpired(true)
+        .accountNonLocked(true)
+        .credentialsNonExpired(true)
+        .enabled(true)
+        .build();
   }
 
   private UsernamePasswordAuthenticationToken authToken(JwtPrincipal principal) {
