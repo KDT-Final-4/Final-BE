@@ -83,4 +83,13 @@
                      SYSTIMESTAMP
                  )
     </insert>
+
+    <update id="updateProfile">
+        UPDATE USERS
+        SET
+            NAME = #{name},
+            UPDATED_AT = SYSTIMESTAMP
+        WHERE ID = #{id}
+          AND IS_DELETE = 0
+    </update>
 </mapper>

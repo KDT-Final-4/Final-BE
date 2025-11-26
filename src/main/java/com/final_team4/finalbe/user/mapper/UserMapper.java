@@ -14,6 +14,10 @@ public interface UserMapper {
     User findByAvailableEmail(@Param("email") String email);
 
     User findAvailableById(@Param("id") Long id);
+    
     int insert(User user);
     // insert 실행 후 user 객체를 반환하지 않고 DB를 건드린 행 개수를 반환하기 때문에 int로 함
+
+    int updateProfile(@Param("id") Long userId, @Param("name")String name);
+
 }

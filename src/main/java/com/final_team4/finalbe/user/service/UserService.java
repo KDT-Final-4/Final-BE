@@ -2,10 +2,12 @@ package com.final_team4.finalbe.user.service;
 
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.exception.DuplicateEmailException;
-import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.user.domain.User;
 import com.final_team4.finalbe.user.dto.UserRegisterRequestDto;
+import com.final_team4.finalbe.user.dto.UserUpdateRequest;
+import com.final_team4.finalbe.user.dto.response.UserFullResponse;
 import com.final_team4.finalbe.user.dto.response.UserSummaryResponse;
+import com.final_team4.finalbe.user.dto.response.UserUpdateResponse;
 import com.final_team4.finalbe.user.mapper.UserMapper;
 import com.final_team4.finalbe.user.mapper.UserInfoMapper;
 import jakarta.validation.Valid;
@@ -44,10 +46,21 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserSummaryResponse findSummary(Long userId) {
+    public UserFullResponse findProfile(Long userId) {
         User user = Optional.ofNullable(userMapper.findAvailableById(userId))
-                .orElseThrow(() -> new ContentNotFoundException("사용자를 찾을 수 없습니다."));
-        return userInfoMapper.toUserSummary(user);
+                .orElseThrow(()->new ContentNotFoundException("사용자를 찾을 수 없습니다."));
+                return userInfoMapper.toUserFull(user);
     }
 
+
+    @Transactional
+    public User updateProfile(Long userId, UserUpdateRequest request ) {
+        User user = Optional.ofNullable(userMapper.findAvailableById(userId))
+                .orElseThrow(()->new ContentNotFoundException("사용자를 찾을 수 없습니다."));
+
+        userMapper.updateProfile(userId,request.getName());
+        return user.toBuilder() // toBuilder 사용 이유 : 바꾸고 싶은 필드만 설정해서 새 객체 생성가능
+                .name(request.getName())
+                .build();
+    }
 }

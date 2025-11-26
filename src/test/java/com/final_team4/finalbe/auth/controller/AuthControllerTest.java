@@ -2,6 +2,7 @@ package com.final_team4.finalbe.auth.controller;
 
 import com.final_team4.finalbe._core.config.GlobalExceptionHandler;
 import com.final_team4.finalbe._core.exception.UnauthorizedException;
+import com.final_team4.finalbe._core.jwt.JwtToken;
 import com.final_team4.finalbe._core.security.AccessCookieManager;
 import com.final_team4.finalbe.auth.dto.request.LoginRequest;
 import com.final_team4.finalbe.auth.dto.response.LoginResponse;
@@ -79,8 +80,17 @@ class AuthControllerTest {
     @Test
     void login_success() throws Exception {
         // given
+        JwtToken token = new JwtToken(
+                "token",
+                Instant.parse("2025-11-21T00:00:00Z"),             // issuedAt
+                Instant.parse("2025-11-22T00:00:00Z"),             // expiresAt
+                10L,                                               // userId
+                "tester",                                          // name
+                "ROLE_USER"
+        );
+
         LoginResponse loginResponse = new LoginResponse(
-                "token-value",
+                token,
                 Instant.parse("2025-11-21T00:00:00Z"),
                 Instant.parse("2025-11-22T00:00:00Z"),
                 10L,

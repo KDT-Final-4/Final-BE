@@ -32,7 +32,7 @@ public class AuthService {
 
     JwtToken token = jwtTokenService.issueToken(user);
     return new LoginResponse(
-        token.value(),
+        token,
         token.issuedAt(),
         token.expiresAt(),
         token.userId(),
