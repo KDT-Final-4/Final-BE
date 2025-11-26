@@ -14,7 +14,7 @@ public class NotificationCredentialDetailResponseDto {
     private Long channelId;
     private String webhookUrl;
     private String apiToken;
-    private boolean isActive;
+    private Boolean isActive;
     private LocalDateTime createdAt;
 
     public static NotificationCredentialDetailResponseDto from(NotificationCredential entity) {
@@ -24,7 +24,7 @@ public class NotificationCredentialDetailResponseDto {
                 .channelId(entity.getChannelId())
                 .webhookUrl(entity.getWebhookUrl())
                 .apiToken(entity.getApiToken())
-                .isActive(entity.isActive())
+                .isActive(entity.getIsActive())
                 .createdAt(entity.getCreatedAt())
                 .build();
     }

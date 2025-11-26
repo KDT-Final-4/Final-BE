@@ -12,7 +12,7 @@ public class NotificationCredentialUpdateResponseDto {
     private Long channelId;
     private String webhookUrl;
     private String apiToken;
-    private boolean isActive;
+    private Boolean isActive;
 
 
     public static NotificationCredentialUpdateResponseDto from(NotificationCredential entity) {
@@ -21,7 +21,7 @@ public class NotificationCredentialUpdateResponseDto {
                 .channelId(entity.getChannelId())
                 .webhookUrl(entity.getWebhookUrl())
                 .apiToken(entity.getApiToken())
-                .isActive(entity.isActive())
+                .isActive(entity.getIsActive())
                 .build();
     }
 }

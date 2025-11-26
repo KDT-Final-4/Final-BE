@@ -11,7 +11,7 @@ public class NotificationCredentialCreateResponseDto {
     private Long channelId;
     private String webhookUrl;
     private String apiToken;
-    private boolean isActive;
+    private Boolean isActive;
 
     public static NotificationCredentialCreateResponseDto from(NotificationCredential notificationCredential) {
         return NotificationCredentialCreateResponseDto.builder()
@@ -19,7 +19,7 @@ public class NotificationCredentialCreateResponseDto {
                 .channelId(notificationCredential.getChannelId())
                 .webhookUrl(notificationCredential.getWebhookUrl())
                 .apiToken(notificationCredential.getApiToken())
-                .isActive(notificationCredential.isActive())
+                .isActive(notificationCredential.getIsActive())
                 .build();
     }
 }
