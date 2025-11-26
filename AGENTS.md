@@ -1,23 +1,32 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-This Gradle-based Spring Boot 3.5 service keeps core code in `src/main/java/com/final_team4/finalbe`. Application bootstrap lives in `FinalBeApplication`, and shared config such as `SwaggerConfig` sits under `_core/config`. HTTP assets or Thymeleaf views belong in `src/main/resources/static` and `templates`, while environment values should go in `application.properties`. Tests mirror production packages in `src/test/java` to keep package visibility aligned.
+- Gradle-based Spring Boot 3.5 service; core code in `src/main/java/com/final_team4/finalbe` with `FinalBeApplication` as the entry point.
+- Shared configuration (e.g., `SwaggerConfig`) resides in `_core/config`; feature packages stay lowercase with existing underscores only where present.
+- Web assets live in `src/main/resources/static` and `templates`; environment values belong in `src/main/resources/application*.properties` (do not commit secrets).
+- Tests mirror production packages under `src/test/java` with matching package names; build outputs land in `build/libs`.
 
 ## Build, Test, and Development Commands
-- `./gradlew bootRun` – launches the API locally on port 8080 with Swagger UI at `/swagger-ui/index.html`.
-- `./gradlew build` – compiles with the Java 21 toolchain and produces `build/libs/*.jar`; runs unit tests.
-- `./gradlew test` – executes the JUnit 5 suite without assembling artifacts; prefer before pushing.
-- `./gradlew clean` – removes build outputs when switching branches or toolchains.
-Run all commands from the repo root; `gradlew` bundles the required Gradle version.
+- `./gradlew bootRun` — run the API locally on port 8080; Swagger UI available at `/swagger-ui/index.html`.
+- `./gradlew test` — execute the JUnit 5 suite without assembling artifacts; use before pushing.
+- `./gradlew build` — compile with the Java 21 toolchain, run tests, and produce `build/libs/*.jar`.
+- `./gradlew clean` — remove build outputs when switching branches or toolchains.
 
 ## Coding Style & Naming Conventions
-Follow standard Spring idioms: 2-space indentation, braces on new lines, and descriptive class names ending with `Controller`, `Service`, or `Config` (e.g., `SwaggerConfig`). Keep packages lowercase with underscores only where already established (`_core`). REST endpoints should use kebab-case paths (`/bookings/{id}`) and DTOs should be immutable where possible.
+- Use 2-space indentation and place braces on new lines; follow standard Spring idioms with constructor injection where possible.
+- Class names end with their role (`*Controller`, `*Service`, `*Config`); REST endpoints use kebab-case paths like `/bookings/{id}`.
+- Keep DTOs immutable when practical; avoid new package names unless they follow the existing lowercase pattern.
 
 ## Testing Guidelines
-Use JUnit 5 (`spring-boot-starter-test`) and place test classes next to their targets with a `*Tests` suffix, as shown by `FinalFeApplicationTests`. Cover controller mappings, service logic, and configuration beans; include Swagger bean availability checks when touching `SwaggerConfig`. Aim for meaningful assertions instead of context-only tests. Run `./gradlew test` locally before creating pull requests to keep CI green.
+- Use JUnit 5 via `spring-boot-starter-test`; name test classes with a `*Tests` suffix alongside their targets.
+- Cover controller mappings, service logic, and configuration beans (including Swagger bean availability); prefer meaningful assertions over context-only tests.
+- Run `./gradlew test` locally before PRs; add focused tests when touching controllers or configs.
 
 ## Commit & Pull Request Guidelines
-Recent history uses lowercase type prefixes (`chore:`, `fix:`). Keep messages under 72 characters in the subject, followed by details in the body if needed. Each PR should link the tracking issue, describe endpoints or configs touched, and attach screenshots or Swagger snippets when changing API contracts. Include reproduction steps for bugs and highlight testing evidence (`./gradlew test` output or Postman collection).
+- Commit messages follow lowercase type prefixes (e.g., `chore:`, `fix:`) with subjects under 72 characters.
+- PRs should link the tracking issue, describe endpoints/configs touched, and include Swagger snippets or screenshots when API contracts change.
+- Provide reproduction steps for bug fixes and note testing evidence (e.g., `./gradlew test` output or Postman collection).
 
-## Swagger & Configuration Notes
-Public API docs are generated via `SwaggerConfig`; expose new endpoints by annotating controllers and documenting request/response models. Sensitive credentials should be injected through environment-specific `application-*.properties` files rather than committing secrets.
+## Security & Configuration Tips
+- Keep secrets out of version control; inject via `application-*.properties` or environment variables.
+- Document new public endpoints and models so they appear in Swagger; ensure sensitive configs stay environment-specific.
