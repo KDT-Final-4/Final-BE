@@ -96,6 +96,7 @@ public class LoggerService {
    * 사용자 로그를 검색어와 페이지네이션으로 조회합니다.
    */
   public List<LogResponseDto> findLogs(Long userId, String search, int page, int size) {
+    // TODO: Pageable 도입 및 page/size 검증을 중앙화해 컨트롤러/서비스에서 중복 로직 제거
     int offset = Math.max(page, 0) * size;
     List<Log> logs = loggerMapper.findLogs(userId, search, size, offset);
     return logs.stream()
@@ -122,6 +123,7 @@ public class LoggerService {
    * 특정 jobId 스트림을 시작합니다. 사용자 불일치 시 예외를 던집니다.
    */
   public SseEmitter streamLogs(String jobId, Long fromId, Long userId) {
+    // TODO: 비동기 emitter로 전환하고 DB 변경 감지를 구독하도록 확장 필요
     List<Log> logs = loggerMapper.findByJobIdAfterId(jobId, fromId);
     validateStreamAccess(logs, userId);
 
@@ -149,6 +151,7 @@ public class LoggerService {
   }
 
   private String formatPipelineMessage(PipelineLogCreateRequest request) {
+    // TODO: LocalDateTime 포맷터 적용해 타임존/포맷을 일관되게 보장
     String base = request.getLoggedProcess() + " | " + request.getLoggedDate() + " | " + request.getMessage();
     if (request.getSubmessage() == null || request.getSubmessage().isBlank()) {
       return base;
