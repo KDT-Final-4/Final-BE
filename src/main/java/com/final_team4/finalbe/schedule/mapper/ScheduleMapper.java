@@ -8,9 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface ScheduleMapper {
-    List<Schedule> findAll(@Param("userId") Long userId);
+    List<Schedule> findAll( @Param("userId") Long userId );
     Schedule findById(Long id);
     void insert(Schedule schedule);
-    int deleteById(@Param("userId")Long userId,@Param("id") Long id);
-    void update(Schedule schedule);
+    void deleteById(@Param("userId")Long userId, @Param("id") Long id);
+    void update (Schedule schedule);
 }

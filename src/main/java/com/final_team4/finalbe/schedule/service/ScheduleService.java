@@ -20,8 +20,8 @@ public class ScheduleService {
 
     // Create
     @Transactional
-    public ScheduleCreateResponseDto insert(ScheduleCreateRequestDto createRequestDto) {
-        Schedule entity = createRequestDto.toEntity();
+    public ScheduleCreateResponseDto insert(Long userId, ScheduleCreateRequestDto createRequestDto) {
+        Schedule entity = createRequestDto.toEntity(userId);
         scheduleMapper.insert(entity);
         return ScheduleCreateResponseDto.from(entity);
     }
@@ -29,11 +29,6 @@ public class ScheduleService {
     // Read - List
     public List<ScheduleDetailResponseDto> findAll(Long userId) {
         List<Schedule> entities = scheduleMapper.findAll(userId);
-
-        if (entities.isEmpty()) {
-            throw new ContentNotFoundException("해당 유저의 컨텐츠를 찾을 수 없습니다.");
-        }
-
         return entities.stream().map(ScheduleDetailResponseDto::from).toList();
     }
 
@@ -60,9 +55,9 @@ public class ScheduleService {
 
     // Delete
     @Transactional
-    public int deleteById(Long userId, Long id) {
-        findVerifiedSchedule(userId, id);
-        return scheduleMapper.deleteById(userId, id);
+    public void deleteById(Long userId, Long id) {
+        Schedule verifiedSchedule = findVerifiedSchedule(userId, id);
+        scheduleMapper.deleteById(userId, verifiedSchedule.getId());
     }
 
     // 권한 및 에러를 검증하고 이상이 없다면 Schedule을 반환합니다.

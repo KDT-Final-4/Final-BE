@@ -1,9 +1,12 @@
 package com.final_team4.finalbe.schedule.controller;
 
+import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.schedule.dto.schedule.*;
 import com.final_team4.finalbe.schedule.service.ScheduleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,34 +17,33 @@ import java.util.List;
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
-    @GetMapping("")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ScheduleDetailResponseDto> findAll(@RequestParam Long userId) {
-        return scheduleService.findAll(userId);
+    public List<ScheduleDetailResponseDto> findAll(@AuthenticationPrincipal JwtPrincipal principal) {
+        return scheduleService.findAll(principal.userId());
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ScheduleDetailResponseDto findById(@RequestParam Long userId, @PathVariable Long id) {
-        return scheduleService.findById(userId, id);
+    public ScheduleDetailResponseDto findById(@AuthenticationPrincipal JwtPrincipal principal, @PathVariable Long id) {
+        return scheduleService.findById(principal.userId(), id);
     }
 
-    // 추후 JWT 도입 후 사용자의 정보를 가져와 사용할 예정
-    @PostMapping("")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ScheduleCreateResponseDto create(@RequestBody ScheduleCreateRequestDto scheduleCreateRequestDto) {
-        return scheduleService.insert(scheduleCreateRequestDto);
+    public ScheduleCreateResponseDto create(@AuthenticationPrincipal JwtPrincipal principal, @RequestBody @Valid ScheduleCreateRequestDto scheduleCreateRequestDto) {
+        return scheduleService.insert(principal.userId(), scheduleCreateRequestDto);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ScheduleUpdateResponseDto update(@RequestParam Long userId, @PathVariable Long id, @RequestBody ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
-        return scheduleService.update(userId, id, scheduleUpdateRequestDto);
+    public ScheduleUpdateResponseDto update(@AuthenticationPrincipal JwtPrincipal principal, @PathVariable Long id, @RequestBody @Valid ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
+        return scheduleService.update(principal.userId(), id, scheduleUpdateRequestDto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@RequestParam Long userId, @PathVariable Long id) {
-        scheduleService.deleteById(userId, id);
+    public void delete(@AuthenticationPrincipal JwtPrincipal principal, @PathVariable Long id) {
+        scheduleService.deleteById(principal.userId(), id);
     }
 }
