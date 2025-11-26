@@ -32,6 +32,9 @@ public class ContentService {
     // 컨텐츠 상세 조회
     public ContentDetailResponse getContentDetail(Long userId, Long id) {
         Content content = contentMapper.findById(userId, id);
+        if (content == null) {
+            throw new IllegalArgumentException("존재하지 않는 컨텐츠입니다: " + id);
+        }
         return ContentDetailResponse.from(content);
     }
 
