@@ -1,7 +1,8 @@
 package com.final_team4.finalbe.notification.service;
 
-import com.final_team4.finalbe.notification.domain.Notification;
 import com.final_team4.finalbe.notification.dto.NotificationCreateRequestDto;
+import com.final_team4.finalbe.notification.dto.NotificationCreateResponseDto;
+import com.final_team4.finalbe.notification.dto.NotificationDetailResponseDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class NotificationServiceTest {
     // 3. 알림 조회
 
     @Autowired
-    private NotifiactionService notifiactionService;
+    private NotificationService notificationService;
 
     @Test
     @DisplayName("성공_알림 생성 및 저장")
@@ -27,7 +28,7 @@ public class NotificationServiceTest {
         Long userId = 1L;
         NotificationCreateRequestDto dto = NotificationCreateRequestDto.builder()
                 .title("test")
-                .ChannelId(2L)
+                .channelId(2L)
                 .contentId(3L)
                 .message("test")
                 .notificationLevel(1L)
@@ -36,18 +37,17 @@ public class NotificationServiceTest {
 
 
         // when
-        Notification entity = notifiactionService.insert(userId, dto);
+        NotificationCreateResponseDto responseDto = notificationService.insert(userId, dto);
 
         // then
-        assertThat(entity.getId()).isNotNull();
-        assertThat(entity.getUserId()).isEqualTo(userId);
-        assertThat(entity.getChannelId()).isEqualTo(dto.getChannelId());
-        assertThat(entity.getTypeId()).isEqualTo(dto.getTypeId());
-        assertThat(entity.getContentId()).isEqualTo(dto.getContentId());
-        assertThat(entity.getTitle()).isEqualTo(dto.getTitle());
-        assertThat(entity.getMessage()).isEqualTo(dto.getMessage());
-        assertThat(entity.getNotificationLevel()).isEqualTo(dto.getNotificationLevel());
-        assertThat(entity.getCreatedAt()).isNotNull();
+        assertThat(responseDto.getId()).isNotNull();
+        assertThat(responseDto.getChannelId()).isEqualTo(dto.getChannelId());
+        assertThat(responseDto.getTypeId()).isEqualTo(dto.getTypeId());
+        assertThat(responseDto.getContentId()).isEqualTo(dto.getContentId());
+        assertThat(responseDto.getTitle()).isEqualTo(dto.getTitle());
+        assertThat(responseDto.getMessage()).isEqualTo(dto.getMessage());
+        assertThat(responseDto.getNotificationLevel()).isEqualTo(dto.getNotificationLevel());
+        assertThat(responseDto.getCreatedAt()).isNotNull();
     }
 
     @Test
@@ -67,21 +67,20 @@ public class NotificationServiceTest {
         Long userId = 1L;
         NotificationCreateRequestDto dto = NotificationCreateRequestDto.builder()
                 .title("test")
-                .ChannelId(2L)
+                .channelId(2L)
                 .contentId(3L)
                 .message("test")
                 .notificationLevel(1L)
                 .typeId(1L)
                 .build();
-        Notification saved = notifiactionService.insert(userId, dto);
+        NotificationCreateResponseDto saved = notificationService.insert(userId, dto);
 
         // when
-        Notification found = notifiactionService.findById(userId, saved.getId());
+        NotificationDetailResponseDto found = notificationService.findById(userId, saved.getId());
 
         // then
         assertThat(found).isNotNull();
         assertThat(found.getId()).isEqualTo(saved.getId());
-        assertThat(found.getUserId()).isEqualTo(userId);
         assertThat(found.getChannelId()).isEqualTo(dto.getChannelId());
         assertThat(found.getTypeId()).isEqualTo(dto.getTypeId());
         assertThat(found.getContentId()).isEqualTo(dto.getContentId());
