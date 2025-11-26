@@ -29,9 +29,12 @@ public class LoggerServiceTest {
         - id: number, pk
         - user_id: number, fk with user table
         - type_id: number, fk with log_type table
-        - job_id: number
+        - job_id: varchar2(128)
         - message: clob
         - created_at: timestamp(6) with time zone
+
+    변경 사항:
+      job_id: number -> varchar2(128)로 변경됨! 수정 필요
    */
 
   // 로그 생성 테스트
