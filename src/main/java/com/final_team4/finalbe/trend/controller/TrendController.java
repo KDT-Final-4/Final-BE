@@ -1,11 +1,13 @@
 package com.final_team4.finalbe.trend.controller;
 
+import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.trend.dto.*;
 import com.final_team4.finalbe.trend.service.TrendService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,8 +40,9 @@ public class TrendController {
     @PostMapping("/content")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public TrendCreateContentResponse requestCreateContent(
-            @RequestBody @Valid TrendCreateContentRequest request) {
-        return trendService.requestCreateContent(request);
+            @RequestBody @Valid TrendCreateContentRequest request,
+            @AuthenticationPrincipal JwtPrincipal principal) {
+        return trendService.requestCreateContent(request, principal.userId());
     }
 
 }
