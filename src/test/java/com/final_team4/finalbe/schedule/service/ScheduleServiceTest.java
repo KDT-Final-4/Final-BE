@@ -27,13 +27,12 @@ class ScheduleServiceTest {
     void insert() {
         // given
         ScheduleCreateRequestDto dto = ScheduleCreateRequestDto.builder()
-                .userId(3L)
                 .title("test")
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
                 .build();
         // when
-        ScheduleCreateResponseDto resultDto = scheduleService.insert(dto);
+        ScheduleCreateResponseDto resultDto = scheduleService.insert(1L, dto);
         // then
         assertThat(resultDto.getTitle()).isEqualTo(dto.getTitle());
         assertThat(resultDto.getRepeatInterval()).isEqualTo(RepeatInterval.DAILY);
@@ -46,21 +45,20 @@ class ScheduleServiceTest {
         // Given
         String title = "test";
         String title2 = "test2";
-        scheduleService.insert( ScheduleCreateRequestDto.builder()
-                .userId(3L)
+        Long userId = 1L;
+        scheduleService.insert( userId, ScheduleCreateRequestDto.builder()
                 .title(title)
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
                 .build());
-        scheduleService.insert( ScheduleCreateRequestDto.builder()
-                .userId(3L)
+        scheduleService.insert(userId, ScheduleCreateRequestDto.builder()
                 .title(title2)
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
                 .build());
 
         // When
-        List<ScheduleDetailResponseDto> entities = scheduleService.findAll(3L);
+        List<ScheduleDetailResponseDto> entities = scheduleService.findAll(userId);
 
         // Then
         assertThat(entities).hasSize(entities.size());
@@ -70,16 +68,16 @@ class ScheduleServiceTest {
     @Test
     void findById() {
         // given
+        Long userId = 1L;
         ScheduleCreateRequestDto dto = ScheduleCreateRequestDto.builder()
-                .userId(3L)
                 .title("test")
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
                 .build();
-        ScheduleCreateResponseDto saveDto = scheduleService.insert(dto);
+        ScheduleCreateResponseDto saveDto = scheduleService.insert(userId, dto);
 
         // when
-        ScheduleDetailResponseDto responseDto = scheduleService.findById(3L, saveDto.getId());
+        ScheduleDetailResponseDto responseDto = scheduleService.findById(userId, saveDto.getId());
 
         // then
         assertThat(saveDto.getId()).isEqualTo(responseDto.getId());
@@ -92,13 +90,14 @@ class ScheduleServiceTest {
         LocalDateTime startTime = LocalDateTime.now();
         String updateTitle = "test2";
         RepeatInterval updateRepeatInterval = RepeatInterval.MONTHLY;
+        Long userId = 1L;
+
         ScheduleCreateRequestDto origin = ScheduleCreateRequestDto.builder()
-                .userId(3L)
                 .title("test")
                 .startTime(startTime)
                 .repeatInterval(RepeatInterval.DAILY)
                 .build();
-        ScheduleCreateResponseDto originDto = scheduleService.insert(origin);
+        ScheduleCreateResponseDto originDto = scheduleService.insert(userId, origin);
 
         ScheduleUpdateRequestDto updateRequestDto = ScheduleUpdateRequestDto.builder()
                 .title(updateTitle)
@@ -106,7 +105,7 @@ class ScheduleServiceTest {
                 .build();
 
         // when
-        ScheduleUpdateResponseDto updateDto = scheduleService.update(3L, originDto.getId(), updateRequestDto);
+        ScheduleUpdateResponseDto updateDto = scheduleService.update(userId, originDto.getId(), updateRequestDto);
 
         // then
         assertThat(updateDto.getTitle()).isEqualTo(updateTitle);
@@ -118,20 +117,18 @@ class ScheduleServiceTest {
     @Test
     void delete() {
         // given
+        Long userId = 1L;
         ScheduleCreateRequestDto dto = ScheduleCreateRequestDto.builder()
-                .userId(3L)
                 .title("test")
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
                 .build();
-        ScheduleCreateResponseDto saveDto = scheduleService.insert(dto);
+        ScheduleCreateResponseDto saveDto = scheduleService.insert(userId, dto);
         long id = saveDto.getId();
 
         // when
-        int result = scheduleService.deleteById(3L, id);
+        scheduleService.deleteById(userId, id);
 
-        // then
-        assertThat(result).isEqualTo(1);
     }
 
     // 실패 테스트
@@ -141,21 +138,20 @@ class ScheduleServiceTest {
         // Given
         String title = "test";
         String title2 = "test2";
-        scheduleService.insert( ScheduleCreateRequestDto.builder()
-                .userId(3L)
+        Long userId = 1L;
+        scheduleService.insert(userId,  ScheduleCreateRequestDto.builder()
                 .title(title)
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
                 .build());
-        scheduleService.insert( ScheduleCreateRequestDto.builder()
-                .userId(3L)
+        scheduleService.insert(userId,  ScheduleCreateRequestDto.builder()
                 .title(title2)
                 .startTime(LocalDateTime.now())
                 .repeatInterval(RepeatInterval.DAILY)
                 .build());
 
         // when && Then
-        assertThatThrownBy(() -> scheduleService.findAll(2L))
+        assertThatThrownBy(() -> scheduleService.findAll(5L))
                     .isInstanceOf(ContentNotFoundException.class);
     }
 }
