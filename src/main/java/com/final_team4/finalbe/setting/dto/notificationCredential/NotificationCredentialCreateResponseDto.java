@@ -9,16 +9,12 @@ import lombok.Getter;
 public class NotificationCredentialCreateResponseDto {
     private Long id;
     private Long channelId;
-    private String webhookUrl;
-    private String apiToken;
     private Boolean isActive;
 
     public static NotificationCredentialCreateResponseDto from(NotificationCredential notificationCredential) {
         return NotificationCredentialCreateResponseDto.builder()
                 .id(notificationCredential.getId())
                 .channelId(notificationCredential.getChannelId())
-                .webhookUrl(notificationCredential.getWebhookUrl())
-                .apiToken(notificationCredential.getApiToken())
                 .isActive(notificationCredential.getIsActive())
                 .build();
     }

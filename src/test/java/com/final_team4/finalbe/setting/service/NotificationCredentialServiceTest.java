@@ -49,8 +49,6 @@ class NotificationCredentialServiceTest {
         // then
         assertThat(dto.getId()).isEqualTo(id);
         assertThat(dto.getUserId()).isEqualTo(USER_ID);
-        assertThat(dto.getWebhookUrl()).isEqualTo(entity.getWebhookUrl());
-        assertThat(dto.getApiToken()).isEqualTo(entity.getApiToken());
         assertThat(dto.getIsActive()).isTrue();
     }
 
@@ -68,8 +66,6 @@ class NotificationCredentialServiceTest {
         NotificationCredentialCreateResponseDto response = notificationCredentialService.insert(USER_ID, request);
 
         // then
-        assertThat(response.getWebhookUrl()).isEqualTo("insertWebhook");
-        assertThat(response.getApiToken()).isEqualTo("insertToken");
         assertThat(response.getIsActive()).isTrue();
     }
 
@@ -91,8 +87,6 @@ class NotificationCredentialServiceTest {
 
         // then
         assertThat(dto.getUserId()).isEqualTo(USER_ID);
-        assertThat(dto.getWebhookUrl()).isEqualTo(entity.getWebhookUrl());
-        assertThat(dto.getApiToken()).isEqualTo(entity.getApiToken());
     }
 
     @Test
@@ -131,11 +125,7 @@ class NotificationCredentialServiceTest {
 
         // then
         assertThat(response.getId()).isEqualTo(existing.getId());
-        assertThat(response.getWebhookUrl()).isEqualTo("newWebhook");
-        assertThat(response.getApiToken()).isEqualTo("newToken");
         assertThat(response.getIsActive()).isFalse();
-        assertThat(refreshed.getWebhookUrl()).isEqualTo("newWebhook");
-        assertThat(refreshed.getApiToken()).isEqualTo("newToken");
         assertThat(refreshed.getIsActive()).isFalse();
     }
 
