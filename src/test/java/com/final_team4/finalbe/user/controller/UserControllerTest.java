@@ -1,7 +1,10 @@
 package com.final_team4.finalbe.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.final_team4.finalbe._core.security.AccessCookieManager;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
+import com.final_team4.finalbe.logger.aop.Loggable;
+import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
@@ -42,6 +45,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.http.HttpHeaders;
 
 @WebMvcTest(
         controllers = UserController.class,
@@ -78,6 +83,15 @@ class UserControllerTest {
 
     @MockitoBean
     UploadChannelMapper uploadChannelMapper;
+
+    @MockitoBean
+    Loggable loggable;
+
+    @MockitoBean
+    LoggerMapper loggerMapper;
+
+    @MockitoBean
+    AccessCookieManager accessCookieManager;
 
 
     @AfterEach
@@ -187,5 +201,38 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.role").value("ROLE_USER"));
 
         verify(userService).findSummary(1L);
+    }
+
+
+    @DisplayName("/api/user/logout - 쿠키를 삭제하고 보안 컨텍스트를 비운다")
+    @Test
+    void logout_clearsCookiesAndContext() throws Exception {
+        JwtPrincipal principal = new JwtPrincipal(
+                1L,
+                "logout@example.com",
+                "logout",
+                "ROLE_USER",
+                List.of(new SimpleGrantedAuthority("ROLE_USER")),
+                true,
+                true,
+                true,
+                true
+        );
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(principal, "token", principal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        //when
+         mockMvc.perform(post("/api/user/logout")
+                .with(authentication(authenticationToken)))
+                .andExpect(status().isNoContent());
+
+        // then
+        // AccessCookieManager의 clear 메서드(or addExpiredCookie 등)가 호출됐는지 검증
+        // 메서드 이름에 맞게 수정해서 써
+        verify(accessCookieManager).clearAccessCookies(any()); // or addExpiredCookie(...)
+
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+
     }
 }

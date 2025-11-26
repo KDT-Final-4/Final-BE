@@ -26,6 +26,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
+          //HTTP 요청이 들어올 때마다 JWT 토큰을 꺼꺼내서 유효성 검증,
+          // 인증 정보(Authentication)를 SecurityContextHolder에 넣어주는 필터 역할임
       HttpServletRequest request,
       HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {

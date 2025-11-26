@@ -2,10 +2,13 @@ package com.final_team4.finalbe.auth.controller;
 
 import com.final_team4.finalbe._core.config.GlobalExceptionHandler;
 import com.final_team4.finalbe._core.exception.UnauthorizedException;
+import com.final_team4.finalbe._core.security.AccessCookieManager;
 import com.final_team4.finalbe.auth.dto.request.LoginRequest;
 import com.final_team4.finalbe.auth.dto.response.LoginResponse;
 import com.final_team4.finalbe.auth.service.AuthService;
 import com.final_team4.finalbe._core.jwt.JwtTokenService;
+import com.final_team4.finalbe.logger.aop.Loggable;
+import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
@@ -62,6 +65,15 @@ class AuthControllerTest {
 
     @MockitoBean
     UploadChannelMapper uploadChannelMapper;
+
+    @MockitoBean
+    Loggable loggable;
+
+    @MockitoBean
+    LoggerMapper loggerMapper;
+
+    @MockitoBean
+    AccessCookieManager accessCookieManager;
 
     @DisplayName("로그인 성공 - AuthService 응답 반환")
     @Test

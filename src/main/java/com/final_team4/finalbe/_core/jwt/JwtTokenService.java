@@ -96,17 +96,18 @@ public class JwtTokenService {
 
         boolean enabled = user.getIsDelete() == null || user.getIsDelete() == 0;
 
-        JwtPrincipal principal = new JwtPrincipal(
+        JwtPrincipal principal = JwtPrincipal.builder()
 
-                user.getId(),
-                user.getEmail(),
-                user.getName(),
-                role.getName(),
-                authorities,
-                true,
-                true,
-                true,
-                enabled);
+                .userId(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .role(role.getName())
+                .authorities(authorities)
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .credentialsNonExpired(true)
+                .enabled(enabled)
+                .build();
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
