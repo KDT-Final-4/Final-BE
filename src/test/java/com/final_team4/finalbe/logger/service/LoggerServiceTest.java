@@ -191,7 +191,7 @@ public class LoggerServiceTest {
   @Test
   void findByJobIdWhenNotExistsThrowsException() {
     // given
-    Long missingJobId = 9999L;
+    String missingJobId = "9999";
 
     // when && then
     assertThatThrownBy(() -> loggerService.findByJobId(missingJobId))

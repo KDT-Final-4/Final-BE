@@ -22,16 +22,16 @@ public class LogCreateRequestDto {
   @NotNull
   private Long userId;
   private LogType logType;
-  private Long jobId;
+  private String jobId;
   @NotNull
   private String message;
 
   /**
    * 기본값을 채워 엔티티로 변환합니다. 외부에 노출되지 않고 서비스 내부에서만 사용됩니다.
    */
-  public Log toEntity(LogType defaultLogType, Long defaultJobId) {
+  public Log toEntity(LogType defaultLogType, String defaultJobId) {
     LogType resolvedLogType = logType != null ? logType : defaultLogType;
-    Long resolvedJobId = jobId != null ? jobId : defaultJobId;
+    String resolvedJobId = jobId != null ? jobId : defaultJobId;
     return Log.builder()
         .userId(userId)
         .logType(resolvedLogType)

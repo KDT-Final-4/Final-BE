@@ -21,7 +21,7 @@ public class LoggerService {
    * 기본 로그 타입과 jobId는 별도 지정이 없을 때 사용됩니다.
    */
   private static final LogType DEFAULT_LOG_TYPE = LogType.INFO;
-  private static final long DEFAULT_JOB_ID = 0L;
+  private static final String DEFAULT_JOB_ID = "0";
 
   private final LoggerMapper loggerMapper;
 
@@ -61,7 +61,7 @@ public class LoggerService {
   /**
    * jobId로 모든 로그를 조회합니다. 결과가 없으면 예외를 던집니다.
    */
-  public List<LogResponseDto> findByJobId(Long jobId) {
+  public List<LogResponseDto> findByJobId(String jobId) {
     List<Log> logs = loggerMapper.findByJobId(jobId);
     if (logs.isEmpty()) {
       throw new ContentNotFoundException("해당 JOB ID의 로그를 찾을 수 없습니다.");

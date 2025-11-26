@@ -61,7 +61,7 @@
         ORDER BY created_at ASC
     </select>
 
-    <select id="findByJobId" parameterType="long" resultMap="LogResultMap">
+    <select id="findByJobId" parameterType="string" resultMap="LogResultMap">
         SELECT
             id,
             user_id,

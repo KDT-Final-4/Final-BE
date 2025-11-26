@@ -23,5 +23,5 @@ public interface LoggerMapper {
   /**
    * jobId로 모든 로그를 조회합니다.
    */
-  List<Log> findByJobId(Long jobId);
+  List<Log> findByJobId(String jobId);
 }

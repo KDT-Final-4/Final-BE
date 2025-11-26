@@ -20,7 +20,7 @@ public class ApplicationLogger {
   /**
    * 별도 지정이 없을 때 사용할 기본 jobId.
    */
-  private static final long DEFAULT_JOB_ID = 0L;
+  private static final String DEFAULT_JOB_ID = "0";
 
   private final LoggerService loggerService;
   /**
