@@ -4,7 +4,9 @@ import com.final_team4.finalbe.user.domain.User;
 import com.final_team4.finalbe.user.domain.Role;
 import com.final_team4.finalbe.user.domain.RoleType;
 import com.final_team4.finalbe.user.dto.UserInfoDto;
+import com.final_team4.finalbe.user.dto.response.UserFullResponse;
 import com.final_team4.finalbe.user.dto.response.UserSummaryResponse;
+import com.final_team4.finalbe.user.dto.response.UserUpdateResponse;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -55,5 +57,28 @@ public class UserInfoMapper {
         }
 
         return null;
+    }
+
+    public UserFullResponse toUserFull(User user) {
+        if(user == null) {
+            return null;
+        }
+        RoleType roleType = resolveRoleType(user);
+        return UserFullResponse.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .role(roleType != null ? roleType.getName() : null)
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .isDelete(user.getIsDelete())
+                .build();
+    }
+
+
+    public static UserUpdateResponse toUserUpdateResponse(User updated) {
+        return UserUpdateResponse.builder()
+                .name(updated.getName())
+                .build();
     }
 }

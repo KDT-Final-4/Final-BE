@@ -1,6 +1,7 @@
 package com.final_team4.finalbe.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.final_team4.finalbe._core.jwt.JwtTokenService;
 import com.final_team4.finalbe._core.security.AccessCookieManager;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.logger.aop.Loggable;
@@ -10,11 +11,14 @@ import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
 import com.final_team4.finalbe.user.dto.UserRegisterRequestDto;
+import com.final_team4.finalbe.user.dto.response.UserFullResponse;
 import com.final_team4.finalbe.user.dto.response.UserSummaryResponse;
 import com.final_team4.finalbe.user.mapper.UserInfoMapper;
 import com.final_team4.finalbe.user.mapper.UserMapper;
 import com.final_team4.finalbe.user.service.UserService;
 import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
+
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,8 +49,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.http.HttpHeaders;
+import java.time.LocalDateTime;
 
 @WebMvcTest(
         controllers = UserController.class,
@@ -92,6 +95,9 @@ class UserControllerTest {
 
     @MockitoBean
     AccessCookieManager accessCookieManager;
+
+    @MockitoBean
+    JwtTokenService jwtTokenService;
 
 
     @AfterEach
@@ -164,17 +170,24 @@ class UserControllerTest {
         verifyNoInteractions(userService);
     }
 
-    @DisplayName("/api/user/me - 로그인된 사용자의 요약 정보를 반환한다")
+    @DisplayName("/api/user/me - 로그인된 사용자의 모든 정보를 반환한다")
     @Test
     void me_success() throws Exception {
+        LocalDateTime createdAt = LocalDateTime.of(2024,1,1,0,0);
+        LocalDateTime updatedAt = createdAt.plusDays(1);
+        DateTimeFormatter fmt = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
         // given
-        UserSummaryResponse summary = UserSummaryResponse.builder()
+        UserFullResponse profile = UserFullResponse.builder()
                 .userId(1L)
                 .email("me@example.com")
                 .name("me")
                 .role("ROLE_USER")
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .isDelete(0)
                 .build();
-        given(userService.findSummary(1L)).willReturn(summary);
+        given(userService.findProfile(1L)).willReturn(profile);
 
         JwtPrincipal principal = new JwtPrincipal(
                 1L,
@@ -198,9 +211,11 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.userId").value(1))
                 .andExpect(jsonPath("$.email").value("me@example.com"))
                 .andExpect(jsonPath("$.name").value("me"))
-                .andExpect(jsonPath("$.role").value("ROLE_USER"));
-
-        verify(userService).findSummary(1L);
+                .andExpect(jsonPath("$.role").value("ROLE_USER"))
+                .andExpect(jsonPath("$.createdAt").value(createdAt.format(fmt)))
+                .andExpect(jsonPath("$.updatedAt").value(updatedAt.format(fmt)))
+                .andExpect(jsonPath("$.isDelete").value(0));
+        verify(userService).findProfile(1L);
     }
 
 
