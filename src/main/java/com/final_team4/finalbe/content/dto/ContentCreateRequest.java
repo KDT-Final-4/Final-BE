@@ -15,6 +15,9 @@ public class ContentCreateRequest {
     private String jobId;
 
     @NotNull
+    private Long uploadChannelId;
+
+    @NotNull
     private Long userId;
 
     @NotNull

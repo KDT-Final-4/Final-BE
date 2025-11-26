@@ -16,6 +16,9 @@ import lombok.NoArgsConstructor;
 public class ContentUpdateRequest {
 
     @NotNull
+    private Long uploadChannelId;
+
+    @NotNull
     private String title;
 
     @NotNull
@@ -26,8 +29,5 @@ public class ContentUpdateRequest {
 
     @NotNull
     private ContentGenType generationType;
-
-    @NotNull
-    private Long uploadChannelId;
 
 }
