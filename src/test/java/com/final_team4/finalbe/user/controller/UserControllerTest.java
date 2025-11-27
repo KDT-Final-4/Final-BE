@@ -51,6 +51,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
@@ -142,7 +143,7 @@ class UserControllerTest {
 
         UserRegisterRequestDto request = UserRegisterRequestDto.builder()
                 .email("codex@example.com")
-                .password("pw1234!")
+                .password("pw1234!@")
                 .name("codex")
                 .build();
 
@@ -160,7 +161,7 @@ class UserControllerTest {
         verify(userService).register(captor.capture());
         UserRegisterRequestDto captured = captor.getValue();
         assertThat(captured.getEmail()).isEqualTo("codex@example.com");
-        assertThat(captured.getPassword()).isEqualTo("pw1234!");
+        assertThat(captured.getPassword()).isEqualTo("pw1234!@");
         assertThat(captured.getName()).isEqualTo("codex");
     }
 
@@ -279,6 +280,7 @@ class UserControllerTest {
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(principal, "oldToken", principal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         User updated = User.builder()
                 .id(1L)
@@ -337,6 +339,7 @@ class UserControllerTest {
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(principal, "token", principal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         mockMvc.perform(patch("/api/user/password")
                         .with(authentication(authenticationToken))
