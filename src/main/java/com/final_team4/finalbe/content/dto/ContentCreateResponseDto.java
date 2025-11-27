@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class ContentCreateResponse {
+public class ContentCreateResponseDto {
 
     private Long id;
     private String jobId;
@@ -20,8 +20,8 @@ public class ContentCreateResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static ContentCreateResponse from(Content content) {
-        return ContentCreateResponse.builder()
+    public static ContentCreateResponseDto from(Content content) {
+        return ContentCreateResponseDto.builder()
                 .id(content.getId())
                 .jobId(content.getJobId())
                 .userId(content.getUserId())

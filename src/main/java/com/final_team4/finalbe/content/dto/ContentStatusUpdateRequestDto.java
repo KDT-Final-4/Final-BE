@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ContentStatusUpdateRequest {
+public class ContentStatusUpdateRequestDto {
 
     @NotNull
     private ContentStatus status;
