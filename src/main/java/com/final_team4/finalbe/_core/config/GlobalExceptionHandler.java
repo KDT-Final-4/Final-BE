@@ -4,6 +4,7 @@ import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.exception.DuplicateEmailException;
 import com.final_team4.finalbe._core.exception.PermissionDeniedException;
 import com.final_team4.finalbe._core.exception.UnauthorizedException;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -67,6 +68,20 @@ public class GlobalExceptionHandler {
 
         problemDetail.setTitle("Unauthorized");
         problemDetail.setType(URI.create("/errors/unauthorized"));
+
+        return problemDetail;
+    }
+
+    // 400 :클라이언트의 잘못된 요청 ( 비밀번호 검증 실패 등 )
+    @ExceptionHandler(BadRequestException.class)
+    public ProblemDetail handleBadRequestException(BadRequestException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,       // 422 쓰고 싶으면 HttpStatus.UNPROCESSABLE_ENTITY
+                e.getMessage()
+        );
+
+        problemDetail.setTitle("Bad Request");
+        problemDetail.setType(URI.create("/errors/bad-request"));
 
         return problemDetail;
     }

@@ -13,6 +13,7 @@ import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
+import com.final_team4.finalbe.setting.mapper.notification.NotificationCredentialMapper;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
 import com.final_team4.finalbe.user.mapper.UserMapper;
@@ -79,6 +80,10 @@ class AuthControllerTest {
 
     @MockitoBean
     ContentMapper contentMapper;
+
+    @MockitoBean
+    NotificationCredentialMapper notificationCredentialMapper;
+
 
     @DisplayName("로그인 성공 - AuthService 응답 반환")
     @Test

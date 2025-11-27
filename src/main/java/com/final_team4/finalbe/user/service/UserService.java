@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.final_team4.finalbe._core.exception.BadRequestException;
 
 import java.util.Optional;
 
@@ -72,16 +73,22 @@ public class UserService {
 
     @Transactional
     public void updatePassword(PasswordUpdateRequest request, JwtPrincipal principal) {
-        User user = userMapper.findAvailableById(principal.userId());
+        User user = Optional.ofNullable(userMapper.findAvailableById(principal.userId()))
+                .orElseThrow(()-> new ContentNotFoundException("사용자를 찾을 수 없습니다."));
 
+        //비밀번호 인증 순서 -> 기존 비밀번호가 일치하는지부터 확인해야 보안에 더 좋음
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new UnauthorizedException("비밀번호가 일치하지 않습니다.");
         }
-        boolean confirmed = request.getNewPassword().equals(request.getConfirmNewPassword());
 
-        if (!confirmed) {
-            throw new UnauthorizedException("새로운 비밀번호가 일치하지 않습니다.");
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new BadRequestException("기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.");
         }
+
+        if (!request.getNewPassword().equals(request.getConfirmNewPassword())) {
+            throw new BadRequestException("새 비밀번호와 비밀번호 확인이 일치하지 않습니다");
+        }
+
         String encoded = passwordEncoder.encode(request.getNewPassword());
 
         int updated = userMapper.updatePassword(user.getId(),encoded);
