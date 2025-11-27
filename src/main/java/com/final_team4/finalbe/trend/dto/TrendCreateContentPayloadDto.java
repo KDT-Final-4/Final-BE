@@ -11,7 +11,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class TrendCreateContentPayload {
+public class TrendCreateContentPayloadDto {
     @NotNull
     private final Long userId;
 
@@ -24,11 +24,11 @@ public class TrendCreateContentPayload {
     @NotNull
     private final UUID jobId;
 
-    public static TrendCreateContentPayload of(Long userId,
-                                               String keyword,
-                                               List<UploadChannelItemPayload> uploadChannels,
-                                               UUID jobId) {
-        return TrendCreateContentPayload.builder()
+    public static TrendCreateContentPayloadDto of(Long userId,
+                                                  String keyword,
+                                                  List<UploadChannelItemPayload> uploadChannels,
+                                                  UUID jobId) {
+        return TrendCreateContentPayloadDto.builder()
                 .userId(userId)
                 .keyword(keyword)
                 .uploadChannels(uploadChannels)

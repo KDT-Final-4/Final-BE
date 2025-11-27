@@ -1,8 +1,6 @@
 package com.final_team4.finalbe.trend.service;
 
-import com.final_team4.finalbe.trend.dto.TrendCreateRequest;
-import com.final_team4.finalbe.trend.dto.TrendCreateResponse;
-import com.final_team4.finalbe.trend.dto.TrendResponse;
+import com.final_team4.finalbe.trend.dto.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +18,11 @@ class TrendServiceTest {
     @Autowired
     private TrendService trendService;
 
-    private TrendCreateRequest createRequest(Long categoryId,
+    private TrendCreateRequestDto createRequestDto(Long categoryId,
                                              String keyword,
                                              Long searchVolume,
                                              String snsType) {
-        return TrendCreateRequest.builder()
+        return TrendCreateRequestDto.builder()
                 .categoryId(categoryId)
                 .keyword(keyword)
                 .searchVolume(searchVolume)
@@ -32,40 +30,51 @@ class TrendServiceTest {
                 .build();
     }
 
-    @DisplayName("트렌드 생성 성공")
+    @DisplayName("인기검색어 저장_성공")
     @Test
     void createTrend() {
         // given
-        TrendCreateRequest request = createRequest(1L, "keyword", 1000L, "INSTAGRAM");
+        TrendCreateRequestDto requestDto = createRequestDto(1L, "test", 500L, "X");
+
 
         // when
-        TrendCreateResponse response = trendService.createTrend(request);
+        TrendCreateResponseDto response = trendService.createTrend(requestDto);
 
         // then
         assertThat(response.getId()).isNotNull();
         assertThat(response.getCategoryId()).isEqualTo(1L);
-        assertThat(response.getKeyword()).isEqualTo("keyword");
-        assertThat(response.getSearchVolume()).isEqualTo(1000L);
-        assertThat(response.getSnsType()).isEqualTo("INSTAGRAM");
+        assertThat(response.getKeyword()).isEqualTo("test");
+        assertThat(response.getSearchVolume()).isEqualTo(500L);
+        assertThat(response.getSnsType()).isEqualTo("X");
     }
 
-    @DisplayName("트렌드 페이징 조회 성공")
+    @DisplayName("인기검색어 목록 조회_성공")
     @Test
-    void getTrendsWithPagination() {
+    void getTrends() {
         // given
-        TrendCreateRequest first = createRequest(1L, "keyword-1", 500L, "YOUTUBE");
-        TrendCreateRequest second = createRequest(1L, "keyword-2", 700L, "INSTAGRAM");
-        TrendCreateRequest third = createRequest(1L, "keyword-3", 900L, "TIKTOK");
+        TrendCreateRequestDto first = createRequestDto(1L, "keyword-1", 500L, "YOUTUBE");
+        TrendCreateRequestDto second = createRequestDto(2L, "keyword-2", 700L, "INSTAGRAM");
+        TrendCreateRequestDto third = createRequestDto(1L, "keyword-3", 900L, "TIKTOK");
         trendService.createTrend(first);
         trendService.createTrend(second);
         trendService.createTrend(third);
 
         // when
-        List<TrendResponse> firstPage = trendService.getTrends(0, 2);
-        List<TrendResponse> secondPage = trendService.getTrends(1, 2);
+        List<TrendResponseDto> firstPage = trendService.getTrends(0, 2);
+        List<TrendResponseDto> secondPage = trendService.getTrends(1, 2);
 
         // then
-        assertThat(firstPage).hasSize(2);
-        assertThat(secondPage).hasSize(1);
+        assertThat(firstPage)
+                .hasSize(2)
+                .extracting(TrendResponseDto::getKeyword)
+                .containsExactly(third.getKeyword(), second.getKeyword());
+
+        assertThat(secondPage)
+                .hasSize(1)
+                .first()
+                .satisfies(trend -> {
+                    assertThat(trend.getKeyword()).isEqualTo(first.getKeyword());
+                    assertThat(trend.getCategoryId()).isEqualTo(first.getCategoryId());
+                });
     }
 }

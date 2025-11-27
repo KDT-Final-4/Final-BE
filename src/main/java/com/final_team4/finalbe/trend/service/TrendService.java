@@ -23,10 +23,11 @@ public class TrendService {
 
     private final TrendMapper trendMapper;
     private final UploadChannelService uploadChannelService;
-    private final RestClientCallerService<TrendCreateContentPayload> restClientCallerService;
+    private final RestClientCallerService<TrendCreateContentPayloadDto> restClientCallerService;
 
+    // 인기검색어 저장(python 호출용)
     @Transactional
-    public TrendCreateResponse createTrend(TrendCreateRequest request) {
+    public TrendCreateResponseDto createTrend(TrendCreateRequestDto request) {
         Trend trend = Trend.builder()
                 .categoryId(request.getCategoryId())
                 .keyword(request.getKeyword())
@@ -36,19 +37,21 @@ public class TrendService {
                 .build();
         trendMapper.insert(trend);
 
-        return TrendCreateResponse.from(trend);
+        return TrendCreateResponseDto.from(trend);
     }
 
-    public List<TrendResponse> getTrends(int page, int size) {
+    // 인기검색어 목록 조회
+    public List<TrendResponseDto> getTrends(int page, int size) {
         int offset = page * size;
         List<Trend> trends = trendMapper.findAll(size, offset);
         return trends.stream()
-                .map(TrendResponse::from)
+                .map(TrendResponseDto::from)
                 .toList();
     }
 
+    // 인기검색어 컨텐츠 생성 요청(python에 요청)
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public TrendCreateContentResponse requestCreateContent(TrendCreateContentRequest request, Long userId) {
+    public TrendCreateContentResponseDto requestCreateContent(TrendCreateContentRequestDto request, Long userId) {
         // 유저 업로드 채널 정보 조회
         List<UploadChannelItemPayload> channels = uploadChannelService.getChannelsByUserId(userId);
         if (channels == null || channels.isEmpty()) {
@@ -59,10 +62,10 @@ public class TrendService {
         UUID jobId = UuidCreator.getTimeOrderedEpoch();
 
         // 파이썬 서비스 호출
-        TrendCreateContentPayload payload = TrendCreateContentPayload.of(userId, request.getKeyword(), channels, jobId);
+        TrendCreateContentPayloadDto payload = TrendCreateContentPayloadDto.of(userId, request.getKeyword(), channels, jobId);
         boolean requested = restClientCallerService.callGeneratePosts(payload);
 
-        return TrendCreateContentResponse.of(request.getKeyword(), requested);
+        return TrendCreateContentResponseDto.of(request.getKeyword(), requested);
     }
 
 }
