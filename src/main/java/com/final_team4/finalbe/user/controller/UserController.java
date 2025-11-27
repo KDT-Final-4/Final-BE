@@ -6,6 +6,7 @@ import com.final_team4.finalbe._core.security.AccessCookieManager;
 import com.final_team4.finalbe._core.security.AccessTokenPayload;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.user.domain.User;
+import com.final_team4.finalbe.user.dto.PasswordUpdateRequest;
 import com.final_team4.finalbe.user.dto.UserRegisterRequestDto;
 import com.final_team4.finalbe.user.dto.UserUpdateRequest;
 import com.final_team4.finalbe.user.dto.response.UserFullResponse;
@@ -79,4 +80,16 @@ public class UserController {
         return UserInfoMapper.toUserUpdateResponse(updatedUser);
         //
     }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PatchMapping("/password")
+    public void updatePassword(@Valid @RequestBody PasswordUpdateRequest request,
+                               HttpServletResponse response, @AuthenticationPrincipal JwtPrincipal principal) {
+
+        userService.updatePassword(request,principal);
+
+        SecurityContextHolder.clearContext(); // 선택적: 현재 요청 컨텍스트 정리
+        accessCookieManager.clearAccessCookies(response);  // 기존 쿠키 삭제
+
+    };
 }

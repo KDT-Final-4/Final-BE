@@ -20,4 +20,5 @@ public interface UserMapper {
 
     int updateProfile(@Param("id") Long userId, @Param("name")String name);
 
+    int updatePassword(@Param("id") Long id, @Param("password") String encoded);
 }
