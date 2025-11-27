@@ -48,9 +48,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -250,9 +248,9 @@ class UserControllerTest {
                 true,
                 true
         );
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(principal, "token", principal.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         //when
          mockMvc.perform(post("/api/user/logout")
@@ -286,7 +284,7 @@ class UserControllerTest {
                 .id(1L)
                 .roleId(RoleType.USER.getId())
                 .email("me@example.com")
-                .name("newName")
+                .name("new-Name")
                 .build();
 
         JwtToken newToken = new JwtToken(
@@ -294,7 +292,7 @@ class UserControllerTest {
                 Instant.parse("2024-01-01T00:00:00Z"),
                 Instant.parse("2024-01-01T01:00:00Z"),
                 1L,
-                "newName",
+                "new-Name",
                 "ROLE_USER"
         );
 
@@ -310,13 +308,13 @@ class UserControllerTest {
         mockMvc.perform(patch("/api/user/update")
                         .with(authentication(authenticationToken))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"new-name\"}"))
+                        .content("{\"name\":\"new-Name\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("new-name"));
+                .andExpect(jsonPath("$.name").value("new-Name"));
 
         ArgumentCaptor<UserUpdateRequest> captor = ArgumentCaptor.forClass(UserUpdateRequest.class);
         verify(userService).updateProfile(eq(1L), captor.capture());
-        assertThat(captor.getValue().getName()).isEqualTo("new-name");
+        assertThat(captor.getValue().getName()).isEqualTo("new-Name");
         verify(jwtTokenService).issueToken(updated);
         verify(jwtTokenService).authenticate(newToken.value());
         verify(accessCookieManager).clearAccessCookies(any());
@@ -350,7 +348,7 @@ class UserControllerTest {
 
 
         ArgumentCaptor<PasswordUpdateRequest> captor = ArgumentCaptor.forClass(PasswordUpdateRequest.class);
-        verify(userService).updatePassword(captor.capture(), eq(principal));
+        verify(userService).updatePassword(captor.capture(), eq(principal.userId()));
         PasswordUpdateRequest captured = captor.getValue();
         assertThat(captured.getOldPassword()).isEqualTo("oldPass!23");
         assertThat(captured.getNewPassword()).isEqualTo("newPass!23");

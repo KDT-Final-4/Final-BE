@@ -1,5 +1,6 @@
 package com.final_team4.finalbe.user.controller;
 
+import com.final_team4.finalbe._core.exception.UnauthorizedException;
 import com.final_team4.finalbe._core.jwt.JwtToken;
 import com.final_team4.finalbe._core.jwt.JwtTokenService;
 import com.final_team4.finalbe._core.security.AccessCookieManager;
@@ -35,18 +36,29 @@ public class UserController {
     private final AccessCookieManager accessCookieManager;
 
 
+    private Long requireUserId(JwtPrincipal principal) {
+        if (principal == null) {
+            throw new UnauthorizedException("인증 정보가 없습니다.");
+        }
+        return principal.userId();
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
     public UserSummaryResponse register(
             @Valid @RequestBody UserRegisterRequestDto request) {
+
         return userService.register(request);
+
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/me")
     public UserFullResponse me(
             @AuthenticationPrincipal JwtPrincipal principal) {
-        return userService.findProfile(principal.userId());
+
+        Long userId = requireUserId(principal);
+        return userService.findProfile(userId);
 
     }
 
@@ -67,7 +79,8 @@ public class UserController {
             @Valid @RequestBody UserUpdateRequest request,
             HttpServletResponse response) {
 
-        User updatedUser = userService.updateProfile(principal.userId(),request); // userId로 변경요청사항 업데이트
+        Long userId = requireUserId(principal);
+        User updatedUser = userService.updateProfile(userId,request); // userId로 변경요청사항 업데이트
 
         JwtToken token = jwtTokenService.issueToken(updatedUser);  // 업데이트된 유저로 새 토큰 발급
 
@@ -86,7 +99,8 @@ public class UserController {
     public void updatePassword(@Valid @RequestBody PasswordUpdateRequest request,
                                HttpServletResponse response, @AuthenticationPrincipal JwtPrincipal principal) {
 
-        userService.updatePassword(request,principal);
+        Long userId = requireUserId(principal);
+        userService.updatePassword(request,userId);
 
         SecurityContextHolder.clearContext(); // 선택적: 현재 요청 컨텍스트 정리
         accessCookieManager.clearAccessCookies(response);  // 기존 쿠키 삭제

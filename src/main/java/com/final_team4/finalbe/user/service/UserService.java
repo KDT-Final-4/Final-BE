@@ -72,8 +72,8 @@ public class UserService {
     }
 
     @Transactional
-    public void updatePassword(PasswordUpdateRequest request, JwtPrincipal principal) {
-        User user = Optional.ofNullable(userMapper.findAvailableById(principal.userId()))
+    public void updatePassword(PasswordUpdateRequest request, Long  userId) {
+        User user = Optional.ofNullable(userMapper.findAvailableById(userId))
                 .orElseThrow(()-> new ContentNotFoundException("사용자를 찾을 수 없습니다."));
 
         //비밀번호 인증 순서 -> 기존 비밀번호가 일치하는지부터 확인해야 보안에 더 좋음

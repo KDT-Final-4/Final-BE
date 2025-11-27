@@ -133,7 +133,7 @@ class UserServiceTest {
                 .confirmNewPassword("newPass!23")
                 .build();
 
-        userService.updatePassword(request, principal);
+        userService.updatePassword(request, principal.userId());
 
         User updated = userMapper.findById(saved.getUserId());
         assertThat(passwordEncoder.matches("newPass!23", updated.getPassword())).isTrue();
@@ -163,7 +163,7 @@ class UserServiceTest {
                 .confirmNewPassword("newPass!23")
                 .build();
 
-        assertThatThrownBy(() -> userService.updatePassword(request, principal))
+        assertThatThrownBy(() -> userService.updatePassword(request, principal.userId()))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessageContaining("비밀번호가 일치하지 않습니다.");
     }
@@ -193,7 +193,7 @@ class UserServiceTest {
                 .confirmNewPassword("different!23")
                 .build();
 
-        assertThatThrownBy(() -> userService.updatePassword(request, principal))
+        assertThatThrownBy(() -> userService.updatePassword(request, principal.userId()))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("비밀번호 확인");
     }
