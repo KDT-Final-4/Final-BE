@@ -21,7 +21,7 @@ public class LogResponseDto {
   private Long id;
   private Long userId;
   private LogType logType;
-  private Long jobId;
+  private String jobId;
   private String message;
   private LocalDateTime createdAt;
 

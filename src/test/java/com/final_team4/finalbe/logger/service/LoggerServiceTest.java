@@ -9,13 +9,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 
 @SpringBootTest
 @Transactional
@@ -29,9 +33,12 @@ public class LoggerServiceTest {
         - id: number, pk
         - user_id: number, fk with user table
         - type_id: number, fk with log_type table
-        - job_id: number
+        - job_id: varchar2(128)
         - message: clob
         - created_at: timestamp(6) with time zone
+
+    변경 사항:
+      job_id: number -> varchar2(128)로 변경됨! 수정 필요
    */
 
   // 로그 생성 테스트
@@ -46,7 +53,7 @@ public class LoggerServiceTest {
     LogCreateRequestDto requestDto = LogCreateRequestDto.builder()
         .userId(1L)
         .logType(LogType.ERROR) // ERROR 타입 시드 값 사용
-        .jobId(10L)
+        .jobId("10")
         .message("full payload log")
         .build();
 
@@ -57,7 +64,7 @@ public class LoggerServiceTest {
     assertThat(responseDto.getId()).isNotNull();
     assertThat(responseDto.getUserId()).isEqualTo(1L);
     assertThat(responseDto.getLogType()).isEqualTo(LogType.ERROR);
-    assertThat(responseDto.getJobId()).isEqualTo(10L);
+    assertThat(responseDto.getJobId()).isEqualTo("10");
     assertThat(responseDto.getMessage()).isEqualTo("full payload log");
     assertThat(responseDto.getCreatedAt()).isBeforeOrEqualTo(LocalDateTime.now());
   }
@@ -91,7 +98,7 @@ public class LoggerServiceTest {
     LogResponseDto created = loggerService.createLog(LogCreateRequestDto.builder()
         .userId(1L)
         .logType(LogType.INFO)
-        .jobId(20L)
+        .jobId("20")
         .message("single log message")
         .build());
 
@@ -120,14 +127,14 @@ public class LoggerServiceTest {
       loggerService.createLog(LogCreateRequestDto.builder()
           .userId(userId)
           .logType(logType)
-          .jobId((long) i)
+          .jobId(String.valueOf(i))
           .message("target log " + i)
           .build());
     }
     loggerService.createLog(LogCreateRequestDto.builder()
         .userId(userId)
         .logType(LogType.INFO) // INFO 타입 다른 타입 데이터
-        .jobId(99L)
+        .jobId("99")
         .message("other type log")
         .build());
 
@@ -151,7 +158,7 @@ public class LoggerServiceTest {
   @Test
   void findByJobIdSuccess() {
     // given
-    Long jobId = 777L;
+    String jobId = "777";
     loggerService.createLog(LogCreateRequestDto.builder()
         .userId(1L)
         .logType(LogType.INFO)
@@ -188,11 +195,160 @@ public class LoggerServiceTest {
   @Test
   void findByJobIdWhenNotExistsThrowsException() {
     // given
-    Long missingJobId = 9999L;
+    String missingJobId = "9999";
 
     // when && then
     assertThatThrownBy(() -> loggerService.findByJobId(missingJobId))
         .isInstanceOf(ContentNotFoundException.class);
+  }
+
+  @DisplayName("파이프라인 로그 생성 - 전달 필드를 조합해 메시지를 저장한다")
+  @Test
+  void createPipelineLog_buildsFormattedMessage() throws Exception {
+    // given
+    Class<?> payloadClass;
+    try {
+      payloadClass = Class.forName("com.final_team4.finalbe.logger.dto.PipelineLogCreateRequest");
+    } catch (ClassNotFoundException e) {
+      fail("PipelineLogCreateRequest DTO가 필요합니다.", e);
+      return;
+    }
+
+    Object builder = payloadClass.getMethod("builder").invoke(null);
+    LocalDateTime loggedDate = LocalDateTime.of(2025, 11, 19, 14, 32, 25);
+    builder = builder.getClass().getMethod("userId", Long.class).invoke(builder, 1L);
+    builder = builder.getClass().getMethod("logType", LogType.class).invoke(builder, LogType.INFO);
+    builder = builder.getClass().getMethod("loggedProcess", String.class).invoke(builder, "END");
+    builder = builder.getClass().getMethod("loggedDate", LocalDateTime.class).invoke(builder, loggedDate);
+    builder = builder.getClass().getMethod("message", String.class).invoke(builder, "로그 메세지");
+    builder = builder.getClass().getMethod("submessage", String.class).invoke(builder, "서브메세지");
+    builder = builder.getClass().getMethod("jobId", String.class).invoke(builder, "job-123");
+    Object payload = builder.getClass().getMethod("build").invoke(builder);
+
+    // when
+    Method createPipelineLog = loggerService.getClass().getMethod("createPipelineLog", payloadClass);
+    Object raw = createPipelineLog.invoke(loggerService, payload);
+    LogResponseDto response = (LogResponseDto) raw;
+
+    // then
+    assertThat(response.getJobId()).isEqualTo("job-123");
+    assertThat(response.getLogType()).isEqualTo(LogType.INFO);
+    assertThat(response.getMessage())
+        .isEqualTo("END | " + loggedDate + " | 로그 메세지 \n\t서브메세지");
+  }
+
+  @DisplayName("로그 검색 - 본인 로그만 검색어/페이지네이션으로 조회한다")
+  @Test
+  void findLogs_withSearchAndPaging_filtersByUserAndKeyword() throws Exception {
+    // given
+    Long ownerId = 1L;
+    Long otherUserId = 2L;
+    loggerService.createLog(LogCreateRequestDto.builder()
+        .userId(ownerId)
+        .logType(LogType.INFO)
+        .jobId("job-A")
+        .message("target keyword first")
+        .build());
+    loggerService.createLog(LogCreateRequestDto.builder()
+        .userId(ownerId)
+        .logType(LogType.INFO)
+        .jobId("job-B")
+        .message("another target keyword")
+        .build());
+    loggerService.createLog(LogCreateRequestDto.builder()
+        .userId(otherUserId)
+        .logType(LogType.ERROR)
+        .jobId("job-C")
+        .message("target keyword other user")
+        .build());
+
+    // when
+    Method findLogs = loggerService.getClass().getMethod("findLogs", Long.class, String.class, int.class, int.class);
+    @SuppressWarnings("unchecked")
+    List<LogResponseDto> logs = (List<LogResponseDto>) findLogs.invoke(loggerService, ownerId, "target", 0, 2);
+
+    // then
+    assertThat(logs).hasSize(2);
+    assertThat(logs).extracting(LogResponseDto::getUserId).containsOnly(ownerId);
+    assertThat(logs).allMatch(log -> log.getMessage().contains("target"));
+  }
+
+  @DisplayName("로그 검색 - 음수 페이지나 0 이하 size면 예외를 던진다")
+  @Test
+  void findLogs_withInvalidPageOrSize_throwsException() throws Exception {
+    // given
+    Method findLogs = loggerService.getClass().getMethod("findLogs", Long.class, String.class, int.class, int.class);
+
+    // when & then
+    assertThatThrownBy(() -> findLogs.invoke(loggerService, 1L, null, -1, 10))
+        .isInstanceOf(Exception.class);
+    assertThatThrownBy(() -> findLogs.invoke(loggerService, 1L, null, 0, 0))
+        .isInstanceOf(Exception.class);
+  }
+
+  @DisplayName("로그 개수 집계 - LogType별 개수를 반환한다")
+  @Test
+  void countLogsByType_returnsTypeCountsForUser() throws Exception {
+    // given
+    Long ownerId = 1L;
+    Long otherUserId = 2L;
+    loggerService.createLog(LogCreateRequestDto.builder()
+        .userId(ownerId)
+        .logType(LogType.INFO)
+        .jobId("count-job-1")
+        .message("info 1")
+        .build());
+    loggerService.createLog(LogCreateRequestDto.builder()
+        .userId(ownerId)
+        .logType(LogType.INFO)
+        .jobId("count-job-2")
+        .message("info 2")
+        .build());
+    loggerService.createLog(LogCreateRequestDto.builder()
+        .userId(ownerId)
+        .logType(LogType.ERROR)
+        .jobId("count-job-3")
+        .message("error 1")
+        .build());
+    loggerService.createLog(LogCreateRequestDto.builder()
+        .userId(otherUserId)
+        .logType(LogType.ERROR)
+        .jobId("count-job-4")
+        .message("other user error")
+        .build());
+
+    // when
+    Method countLogsByType = loggerService.getClass().getMethod("countLogsByType", Long.class);
+    @SuppressWarnings("unchecked")
+    Map<LogType, Long> counts = (Map<LogType, Long>) countLogsByType.invoke(loggerService, ownerId);
+
+    // then
+    assertThat(counts.getOrDefault(LogType.INFO, 0L)).isEqualTo(2L);
+    assertThat(counts.getOrDefault(LogType.ERROR, 0L)).isEqualTo(1L);
+    assertThat(counts.values().stream().mapToLong(Long::longValue).sum()).isEqualTo(3L);
+  }
+
+  @DisplayName("파이프라인 스트림 - jobId와 userId로 SSE를 시작한다")
+  @Test
+  void streamLogsByJobId_startsFromRequestedIdAndValidatesUser() throws Exception {
+    // given
+    String jobId = "stream-job-1";
+    loggerService.createLog(LogCreateRequestDto.builder()
+        .userId(1L)
+        .logType(LogType.INFO)
+        .jobId(jobId)
+        .message("first log")
+        .build());
+
+    // when
+    Method streamLogs = loggerService.getClass().getMethod("streamLogs", String.class, Long.class, Long.class);
+    Object rawEmitter = streamLogs.invoke(loggerService, jobId, null, 1L);
+    
+    // then
+    assertThat(rawEmitter).isInstanceOf(SseEmitter.class);
+
+    assertThatThrownBy(() -> streamLogs.invoke(loggerService, jobId, null, 999L))
+        .isInstanceOf(Exception.class);
   }
   
 }

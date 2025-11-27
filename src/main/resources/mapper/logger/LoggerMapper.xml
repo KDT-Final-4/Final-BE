@@ -61,7 +61,7 @@
         ORDER BY created_at ASC
     </select>
 
-    <select id="findByJobId" parameterType="long" resultMap="LogResultMap">
+    <select id="findByJobId" parameterType="string" resultMap="LogResultMap">
         SELECT
             id,
             user_id,
@@ -71,6 +71,48 @@
             created_at
         FROM LOG
         WHERE job_id = #{jobId}
+        ORDER BY created_at ASC
+    </select>
+
+    <select id="findLogs" resultMap="LogResultMap">
+        SELECT
+            id,
+            user_id,
+            type_id,
+            job_id,
+            message,
+            created_at
+        FROM LOG
+        WHERE user_id = #{userId}
+        <if test="search != null and search != ''">
+          AND (LOWER(message) LIKE '%' || LOWER(#{search}) || '%')
+        </if>
+        ORDER BY created_at DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="countLogsByType" parameterType="long" resultType="com.final_team4.finalbe.logger.dto.LogTypeCountRow">
+        SELECT
+            type_id AS typeId,
+            COUNT(*) AS count
+        FROM LOG
+        WHERE user_id = #{userId}
+        GROUP BY type_id
+    </select>
+
+    <select id="findByJobIdAfterId" resultMap="LogResultMap">
+        SELECT
+            id,
+            user_id,
+            type_id,
+            job_id,
+            message,
+            created_at
+        FROM LOG
+        WHERE job_id = #{jobId}
+        <if test="fromId != null">
+            AND id &gt; #{fromId}
+        </if>
         ORDER BY created_at ASC
     </select>
 
