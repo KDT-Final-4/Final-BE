@@ -1,6 +1,6 @@
 package com.final_team4.finalbe.trend.dto;
 
-import com.final_team4.finalbe.uploadChannel.dto.UploadChannelItemPayload;
+import com.final_team4.finalbe.uploadChannel.dto.UploadChannelItemPayloadDto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -19,14 +19,14 @@ public class TrendCreateContentPayloadDto {
     private final String keyword;
 
     @NotEmpty
-    private final List<UploadChannelItemPayload> uploadChannels;
+    private final List<UploadChannelItemPayloadDto> uploadChannels;
 
     @NotNull
     private final UUID jobId;
 
     public static TrendCreateContentPayloadDto of(Long userId,
                                                   String keyword,
-                                                  List<UploadChannelItemPayload> uploadChannels,
+                                                  List<UploadChannelItemPayloadDto> uploadChannels,
                                                   UUID jobId) {
         return TrendCreateContentPayloadDto.builder()
                 .userId(userId)

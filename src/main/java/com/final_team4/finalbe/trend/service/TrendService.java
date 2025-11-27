@@ -5,7 +5,7 @@ import com.final_team4.finalbe.restClient.service.RestClientCallerService;
 import com.final_team4.finalbe.trend.domain.Trend;
 import com.final_team4.finalbe.trend.dto.*;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
-import com.final_team4.finalbe.uploadChannel.dto.UploadChannelItemPayload;
+import com.final_team4.finalbe.uploadChannel.dto.UploadChannelItemPayloadDto;
 import com.final_team4.finalbe.uploadChannel.service.UploadChannelService;
 import com.github.f4b6a3.uuid.UuidCreator;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +53,7 @@ public class TrendService {
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public TrendCreateContentResponseDto requestCreateContent(TrendCreateContentRequestDto request, Long userId) {
         // 유저 업로드 채널 정보 조회
-        List<UploadChannelItemPayload> channels = uploadChannelService.getChannelsByUserId(userId);
+        List<UploadChannelItemPayloadDto> channels = uploadChannelService.getChannelsByUserId(userId);
         if (channels == null || channels.isEmpty()) {
             throw new ContentNotFoundException("등록된 업로드 채널이 없습니다.");
         }
