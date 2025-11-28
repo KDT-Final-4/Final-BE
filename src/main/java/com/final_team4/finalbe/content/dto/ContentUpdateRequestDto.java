@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ContentUpdateRequest {
+public class ContentUpdateRequestDto {
 
     @NotNull
     private String title;

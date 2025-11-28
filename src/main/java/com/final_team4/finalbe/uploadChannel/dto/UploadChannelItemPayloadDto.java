@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class UploadChannelItemPayload {
+public class UploadChannelItemPayloadDto {
     private Long id;
     private Long userId;
     private Channel name;
@@ -18,8 +18,8 @@ public class UploadChannelItemPayload {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static UploadChannelItemPayload from(UploadChannel channel) {
-        return UploadChannelItemPayload.builder()
+    public static UploadChannelItemPayloadDto from(UploadChannel channel) {
+        return UploadChannelItemPayloadDto.builder()
                 .id(channel.getId())
                 .userId(channel.getUserId())
                 .name(channel.getName())

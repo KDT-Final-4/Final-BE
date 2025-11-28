@@ -9,7 +9,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ContentCreateRequest {
+public class ContentCreateRequestDto {
 
     @NotNull
     private String jobId;

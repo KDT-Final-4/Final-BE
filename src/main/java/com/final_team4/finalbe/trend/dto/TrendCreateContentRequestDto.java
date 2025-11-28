@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class TrendCreateContentRequest {
+public class TrendCreateContentRequestDto {
 
     @NotBlank
     private String keyword;
