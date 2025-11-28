@@ -50,7 +50,7 @@ public class UserRegisterRequestDto {
                 .role(role)
                 .createdAt(now)
                 .updatedAt(now)
-                .isDelete(0)
+                .isDelete(false)
                 .build();
     }
 

@@ -16,7 +16,7 @@ public class LlmChannel {
     private String modelName;
     private String apiKey;
     private String baseUrl;
-    private Integer status; // 0: 비활성, 1: 활성
+    private Boolean status; // true: 활성, false: 비활성
     private Integer maxTokens;
     private BigDecimal temperature;
     private BigDecimal topP;
@@ -24,7 +24,7 @@ public class LlmChannel {
     private LocalDateTime updatedAt;
 
     public void update(String name, String modelName, String apiKey, String baseUrl, 
-                      Integer status, Integer maxTokens, BigDecimal temperature, BigDecimal topP) {
+                      Boolean status, Integer maxTokens, BigDecimal temperature, BigDecimal topP) {
         if (name != null) this.name = name;
         if (modelName != null) this.modelName = modelName;
         if (apiKey != null) this.apiKey = apiKey;
@@ -36,7 +36,7 @@ public class LlmChannel {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateStatus(Integer status) {
+    public void updateStatus(Boolean status) {
         if (status != null) {
             this.status = status;
             this.updatedAt = LocalDateTime.now();

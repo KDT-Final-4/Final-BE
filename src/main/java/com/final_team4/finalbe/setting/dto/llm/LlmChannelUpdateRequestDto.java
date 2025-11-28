@@ -2,7 +2,6 @@ package com.final_team4.finalbe.setting.dto.llm;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,9 +26,7 @@ public class LlmChannelUpdateRequestDto {
     @Size(max = 200)
     private String baseUrl;
 
-    @Min(0)
-    @Max(1)
-    private Integer status; // 0: 비활성, 1: 활성
+    private Boolean status; // true: 활성, false: 비활성
 
     @Min(1)
     private Integer maxTokens;

@@ -15,7 +15,7 @@ public class LlmChannelDetailResponseDto {
     private String name;
     private String modelName;
     private String baseUrl;
-    private Integer status;
+    private Boolean status;
     private Integer maxTokens;
     private BigDecimal temperature;
     private BigDecimal topP;
