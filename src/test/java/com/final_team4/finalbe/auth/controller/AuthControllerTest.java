@@ -87,6 +87,11 @@ class AuthControllerTest {
 
     @MockitoBean
     ClicksMapper clicksMapper;
+    ContentMapper contentMapper;
+
+    @MockitoBean
+    NotificationCredentialMapper notificationCredentialMapper;
+
 
     @DisplayName("로그인 성공 - AuthService 응답 반환")
     @Test

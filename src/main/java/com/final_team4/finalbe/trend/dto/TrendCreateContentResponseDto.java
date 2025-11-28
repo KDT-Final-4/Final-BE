@@ -4,12 +4,12 @@ import lombok.*;
 
 @Getter
 @Builder
-public class TrendCreateContentResponse {
+public class TrendCreateContentResponseDto {
     private final String keyword;
     private final boolean requested;
 
-    public static TrendCreateContentResponse of(String keyword, boolean requested) {
-        return TrendCreateContentResponse.builder()
+    public static TrendCreateContentResponseDto of(String keyword, boolean requested) {
+        return TrendCreateContentResponseDto.builder()
                 .keyword(keyword)
                 .requested(requested)
                 .build();

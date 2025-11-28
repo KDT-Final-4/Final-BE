@@ -22,23 +22,23 @@ public class ContentService {
     private final UploadChannelMapper uploadChannelMapper;
 
     // 검수할 컨텐츠 목록 조회
-    public List<ContentListResponse> getContents(Long userId, int page, int size) {
+    public List<ContentListResponseDto> getContents(Long userId, int page, int size) {
         int offset = page * size;
         List<Content> contents = contentMapper.findAll(userId, size, offset);
         return contents.stream()
-                .map(ContentListResponse::from)
+                .map(ContentListResponseDto::from)
                 .toList();
     }
 
     // 컨텐츠 상세 조회
-    public ContentDetailResponse getContentDetail(Long userId, Long id) {
+    public ContentDetailResponseDto getContentDetail(Long userId, Long id) {
         Content content = getVerifiedContent(userId, id);
-        return ContentDetailResponse.from(content);
+        return ContentDetailResponseDto.from(content);
     }
 
     // 컨텐츠 등록(파이썬에서 호출)
     @Transactional
-    public ContentCreateResponse createContent(ContentCreateRequest request) {
+    public ContentCreateResponseDto createContent(ContentCreateRequestDto request) {
         // 1. 채널 조회 및 소유권 검증
         UploadChannel channel = uploadChannelMapper.findById(request.getUploadChannelId());
         if (channel == null) {
@@ -64,29 +64,29 @@ public class ContentService {
                 .build();
         contentMapper.insert(content);
 
-        return ContentCreateResponse.from(content);
+        return ContentCreateResponseDto.from(content);
     }
 
     // 컨텐츠 수정
     @Transactional
-    public ContentUpdateResponse updateContent(Long userId, Long id, @Valid ContentUpdateRequest request) {
+    public ContentUpdateResponseDto updateContent(Long userId, Long id, @Valid ContentUpdateRequestDto request) {
         Content content = getVerifiedContent(userId, id);
 
         content.updateContent(request.getTitle(), request.getBody());
         contentMapper.update(content);
 
-        return ContentUpdateResponse.from(content);
+        return ContentUpdateResponseDto.from(content);
     }
 
     // 컨텐츠 상태 변경
     @Transactional
-    public ContentUpdateResponse updateContentStatus(Long userId, Long id, @Valid ContentStatusUpdateRequest request) {
+    public ContentUpdateResponseDto updateContentStatus(Long userId, Long id, @Valid ContentStatusUpdateRequestDto request) {
         Content content = getVerifiedContent(userId, id);
 
         content.updateStatus(request.getStatus());
         contentMapper.updateStatus(content);
 
-        return ContentUpdateResponse.from(content);
+        return ContentUpdateResponseDto.from(content);
     }
 
     private Content getVerifiedContent(Long userId, Long id) {

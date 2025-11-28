@@ -17,5 +17,5 @@ public class UserFullResponse {
     private String role;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Integer isDelete;
+    private Boolean isDelete;
 }

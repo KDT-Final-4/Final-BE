@@ -78,8 +78,8 @@ public class JwtTokenService {
         if (user == null) {
             throw new JwtException("존재하지 않는 사용자입니다.");
         }
-        Integer deleteFlag = user.getIsDelete();
-        if (deleteFlag != null && deleteFlag != 0) {
+        Boolean deleteFlag = user.getIsDelete();
+        if (Boolean.TRUE.equals(deleteFlag)) {
             throw new JwtException("삭제된 사용자입니다.");
         }
         Role role = user.getRole();
@@ -94,7 +94,7 @@ public class JwtTokenService {
         List<SimpleGrantedAuthority> authorities = toAuthorities(roles);
 
 
-        boolean enabled = user.getIsDelete() == null || user.getIsDelete() == 0;
+        boolean enabled = !Boolean.TRUE.equals(user.getIsDelete());
 
         JwtPrincipal principal = JwtPrincipal.builder()
 

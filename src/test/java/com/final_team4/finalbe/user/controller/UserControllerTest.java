@@ -1,8 +1,10 @@
 package com.final_team4.finalbe.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.final_team4.finalbe._core.jwt.JwtToken;
 import com.final_team4.finalbe._core.jwt.JwtTokenService;
 import com.final_team4.finalbe._core.security.AccessCookieManager;
+import com.final_team4.finalbe._core.security.AccessTokenPayload;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
 import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
@@ -13,7 +15,11 @@ import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
 import com.final_team4.finalbe.setting.mapper.notification.NotificationCredentialMapper;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
+import com.final_team4.finalbe.user.domain.RoleType;
+import com.final_team4.finalbe.user.domain.User;
+import com.final_team4.finalbe.user.dto.PasswordUpdateRequest;
 import com.final_team4.finalbe.user.dto.UserRegisterRequestDto;
+import com.final_team4.finalbe.user.dto.UserUpdateRequest;
 import com.final_team4.finalbe.user.dto.response.UserFullResponse;
 import com.final_team4.finalbe.user.dto.response.UserSummaryResponse;
 import com.final_team4.finalbe.user.mapper.UserInfoMapper;
@@ -21,17 +27,18 @@ import com.final_team4.finalbe.user.mapper.UserMapper;
 import com.final_team4.finalbe.user.service.UserService;
 import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
 
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,6 +51,8 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
@@ -111,6 +120,10 @@ class UserControllerTest {
     @MockitoBean
     ClicksMapper clicksMapper;
 
+    ContentMapper contentMapper;
+
+    @MockitoBean
+    NotificationCredentialMapper notificationCredentialMapper;
 
     @AfterEach
     void clearSecurityContext() {
@@ -139,7 +152,7 @@ class UserControllerTest {
 
         UserRegisterRequestDto request = UserRegisterRequestDto.builder()
                 .email("codex@example.com")
-                .password("pw1234!")
+                .password("pw1234!@")
                 .name("codex")
                 .build();
 
@@ -157,7 +170,7 @@ class UserControllerTest {
         verify(userService).register(captor.capture());
         UserRegisterRequestDto captured = captor.getValue();
         assertThat(captured.getEmail()).isEqualTo("codex@example.com");
-        assertThat(captured.getPassword()).isEqualTo("pw1234!");
+        assertThat(captured.getPassword()).isEqualTo("pw1234!@");
         assertThat(captured.getName()).isEqualTo("codex");
     }
 
@@ -245,9 +258,9 @@ class UserControllerTest {
                 true,
                 true
         );
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(principal, "token", principal.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         //when
          mockMvc.perform(post("/api/user/logout")
@@ -261,5 +274,98 @@ class UserControllerTest {
 
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
 
+    }
+
+    @DisplayName("이름 수정 시 새 토큰/쿠키를 발급한다")
+    @Test
+    void update_success() throws Exception {
+        JwtPrincipal principal = new JwtPrincipal(
+                1L,
+                "me@example.com",
+                "me",
+                "ROLE_USER",
+                List.of(new SimpleGrantedAuthority("ROLE_USER")),
+                true,true,true,true);
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(principal, "oldToken", principal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        User updated = User.builder()
+                .id(1L)
+                .roleId(RoleType.USER.getId())
+                .email("me@example.com")
+                .name("new-Name")
+                .build();
+
+        JwtToken newToken = new JwtToken(
+                "new.jwt.token",
+                Instant.parse("2024-01-01T00:00:00Z"),
+                Instant.parse("2024-01-01T01:00:00Z"),
+                1L,
+                "new-Name",
+                "ROLE_USER"
+        );
+
+        Authentication refreshedAuth = new UsernamePasswordAuthenticationToken(
+                principal, newToken.value(), principal.getAuthorities()
+        );
+
+        given(userService.updateProfile(eq(1L), any(UserUpdateRequest.class))).willReturn(updated);
+        given(jwtTokenService.issueToken(updated)).willReturn(newToken);
+        given(jwtTokenService.authenticate(newToken.value())).willReturn(refreshedAuth);
+
+
+        mockMvc.perform(patch("/api/user/update")
+                        .with(authentication(authenticationToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"new-Name\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("new-Name"));
+
+        ArgumentCaptor<UserUpdateRequest> captor = ArgumentCaptor.forClass(UserUpdateRequest.class);
+        verify(userService).updateProfile(eq(1L), captor.capture());
+        assertThat(captor.getValue().getName()).isEqualTo("new-Name");
+        verify(jwtTokenService).issueToken(updated);
+        verify(jwtTokenService).authenticate(newToken.value());
+        verify(accessCookieManager).clearAccessCookies(any());
+        verify(accessCookieManager).setAccessCookies(any(), eq(AccessTokenPayload.from(newToken)));
+    }
+
+    @DisplayName("비밀번호 변경 시 서비스 호출 후 쿠키 삭제")
+    @Test
+    void updatePassword_success() throws Exception {
+        JwtPrincipal principal = new JwtPrincipal(
+                1L,
+                "me@example.com",
+                "me", "ROLE_USER",
+                List.of(new SimpleGrantedAuthority("ROLE_USER")),
+                true,
+                true,
+                true,
+                true
+        );
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(principal, "token", principal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        mockMvc.perform(patch("/api/user/password")
+                        .with(authentication(authenticationToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                          {"oldPassword":"oldPass!23","newPassword":"newPass!23","confirmNewPassword":"newPass!23"}
+                          """))
+                .andExpect(status().isNoContent());
+
+
+        ArgumentCaptor<PasswordUpdateRequest> captor = ArgumentCaptor.forClass(PasswordUpdateRequest.class);
+        verify(userService).updatePassword(captor.capture(), eq(principal.userId()));
+        PasswordUpdateRequest captured = captor.getValue();
+        assertThat(captured.getOldPassword()).isEqualTo("oldPass!23");
+        assertThat(captured.getNewPassword()).isEqualTo("newPass!23");
+        assertThat(captured.getConfirmNewPassword()).isEqualTo("newPass!23");
+        verify(accessCookieManager).clearAccessCookies(any());
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
     }
 }

@@ -65,4 +65,12 @@ public class NotificationCredentialService {
         return notificationMapper.updateByActive(userId, id, isActive);
 
     }
+
+    public Long findActiveChannelIdByUserId(Long userId) {
+        Long activeChannelIdByUserId = notificationMapper.findActiveChannelIdByUserId(userId);
+        if (activeChannelIdByUserId == null) {
+            throw new ContentNotFoundException("활성화된 설정을 찾을 수 없습니다.");
+        }
+        return activeChannelIdByUserId;
+    }
 }

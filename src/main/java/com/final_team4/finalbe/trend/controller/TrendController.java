@@ -23,14 +23,14 @@ public class TrendController {
     // 인기검색어 삽입 (python 호출용)
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TrendCreateResponse createTrend(@Valid @RequestBody TrendCreateRequest request) {
+    public TrendCreateResponseDto createTrend(@Valid @RequestBody TrendCreateRequestDto request) {
         return trendService.createTrend(request);
     }
 
     // 인기검색어 목록 조회
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<TrendResponse> getTrends(
+    public List<TrendResponseDto> getTrends(
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "10") @Positive int size) {
         return trendService.getTrends(page, size);
@@ -39,8 +39,8 @@ public class TrendController {
     // 인기검색어 컨텐츠 생성 요청(python에 요청)
     @PostMapping("/content")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public TrendCreateContentResponse requestCreateContent(
-            @RequestBody @Valid TrendCreateContentRequest request,
+    public TrendCreateContentResponseDto requestCreateContent(
+            @RequestBody @Valid TrendCreateContentRequestDto request,
             @AuthenticationPrincipal JwtPrincipal principal) {
         return trendService.requestCreateContent(request, principal.userId());
     }

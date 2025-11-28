@@ -6,8 +6,8 @@ import java.util.Arrays;
 
 @Getter
 public enum RoleType {
-    USER(1L, "ROLE_USER", "Default user role"),
-    ADMIN(2L, "ROLE_ADMIN", "Administrator role");
+    ADMIN(1L, "ROLE_ADMIN", "Administrator role"),
+    USER(2L, "ROLE_USER", "Default user role");
 
     private final Long id;
     private final String name;

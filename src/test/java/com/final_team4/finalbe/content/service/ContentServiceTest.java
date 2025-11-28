@@ -1,0 +1,209 @@
+package com.final_team4.finalbe.content.service;
+
+import com.final_team4.finalbe.content.domain.*;
+import com.final_team4.finalbe.content.dto.*;
+import com.final_team4.finalbe.content.mapper.ContentMapper;
+import com.final_team4.finalbe.uploadChannel.domain.Channel;
+import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
+import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
+class ContentServiceTest {
+
+    @Mock
+    ContentMapper contentMapper;
+
+    @Mock
+    UploadChannelMapper uploadChannelMapper;
+
+    @InjectMocks
+    ContentService contentService;
+
+    @DisplayName("컨텐츠 목록을 페이지로 조회한다")
+    @Test
+    void getContents() {
+        // given
+        List<Content> contents = List.of(
+                content(1L, "job-1", "title-1"),
+                content(2L, "job-2", "title-2")
+        );
+        given(contentMapper.findAll(1L, 2, 0)).willReturn(contents);
+
+        // when
+        List<ContentListResponseDto> response = contentService.getContents(1L, 0, 2);
+
+        // then
+        assertThat(response)
+                .hasSize(2)
+                .extracting(ContentListResponseDto::getTitle)
+                .containsExactly("title-1", "title-2");
+    }
+
+    @DisplayName("존재하지 않는 컨텐츠 상세 조회 시 예외를 던진다")
+    @Test
+    void getContentDetail_notFound() {
+        given(contentMapper.findById(1L, 9L)).willReturn(null);
+
+        assertThatThrownBy(() -> contentService.getContentDetail(1L, 9L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("컨텐츠");
+    }
+
+    @DisplayName("컨텐츠를 생성하면 채널 소유권을 검증하고 insert한다")
+    @Test
+    void createContent_success() {
+        // given
+        UploadChannel channel = UploadChannel.builder()
+                .id(5L)
+                .userId(1L)
+                .name(Channel.X)
+                .apiKey("key")
+                .status(true)
+                .build();
+        given(uploadChannelMapper.findById(5L)).willReturn(channel);
+
+        ContentCreateRequestDto request = ContentCreateRequestDto.builder()
+                .jobId("job-123")
+                .uploadChannelId(5L)
+                .userId(1L)
+                .title("title")
+                .body("body")
+                .status(ContentStatus.APPROVED)
+                .generationType(ContentGenType.AUTO)
+                .build();
+
+        givenInsertSetsId(10L);
+
+        // when
+        ContentCreateResponseDto response = contentService.createContent(request);
+
+        // then
+        assertThat(response.getId()).isEqualTo(10L);
+        assertThat(response.getStatus()).isEqualTo(ContentStatus.PENDING);
+        assertThat(response.getGenerationType()).isEqualTo(ContentGenType.MANUAL);
+        verify(contentMapper).insert(any(Content.class));
+    }
+
+    @DisplayName("존재하지 않는 채널로 생성 시 예외")
+    @Test
+    void createContent_channelNotFound() {
+        given(uploadChannelMapper.findById(1L)).willReturn(null);
+
+        ContentCreateRequestDto request = ContentCreateRequestDto.builder()
+                .jobId("job")
+                .uploadChannelId(1L)
+                .userId(1L)
+                .title("title")
+                .body("body")
+                .status(ContentStatus.PENDING)
+                .generationType(ContentGenType.AUTO)
+                .build();
+
+        assertThatThrownBy(() -> contentService.createContent(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("채널");
+    }
+
+    @DisplayName("다른 사용자의 채널이면 생성할 수 없다")
+    @Test
+    void createContent_channelForbidden() {
+        UploadChannel channel = UploadChannel.builder()
+                .id(1L)
+                .userId(2L)
+                .name(Channel.X)
+                .build();
+        given(uploadChannelMapper.findById(1L)).willReturn(channel);
+
+        ContentCreateRequestDto request = ContentCreateRequestDto.builder()
+                .jobId("job")
+                .uploadChannelId(1L)
+                .userId(1L)
+                .title("title")
+                .body("body")
+                .status(ContentStatus.PENDING)
+                .generationType(ContentGenType.AUTO)
+                .build();
+
+        assertThatThrownBy(() -> contentService.createContent(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("권한");
+    }
+
+    @DisplayName("컨텐츠 수정 시 내용 업데이트 후 매퍼를 호출한다")
+    @Test
+    void updateContent_success() {
+        Content content = content(3L, "job", "old title");
+        given(contentMapper.findById(1L, 3L)).willReturn(content);
+
+        ContentUpdateRequestDto request = ContentUpdateRequestDto.builder()
+                .title("new title")
+                .body("new body")
+                .build();
+
+        ContentUpdateResponseDto response = contentService.updateContent(1L, 3L, request);
+
+        ArgumentCaptor<Content> captor = ArgumentCaptor.forClass(Content.class);
+        verify(contentMapper).update(captor.capture());
+
+        assertThat(captor.getValue().getTitle()).isEqualTo("new title");
+        assertThat(response.getBody()).isEqualTo("new body");
+    }
+
+    @DisplayName("컨텐츠 상태를 변경한다")
+    @Test
+    void updateContentStatus_success() {
+        Content content = content(4L, "job", "title");
+        given(contentMapper.findById(1L, 4L)).willReturn(content);
+
+        ContentStatusUpdateRequestDto request = ContentStatusUpdateRequestDto.builder()
+                .status(ContentStatus.APPROVED)
+                .build();
+
+        contentService.updateContentStatus(1L, 4L, request);
+
+        ArgumentCaptor<Content> captor = ArgumentCaptor.forClass(Content.class);
+        verify(contentMapper).updateStatus(captor.capture());
+        assertThat(captor.getValue().getStatus()).isEqualTo(ContentStatus.APPROVED);
+    }
+
+    private void givenInsertSetsId(Long id) {
+        org.mockito.Mockito.doAnswer(invocation -> {
+            Content argument = invocation.getArgument(0);
+            ReflectionTestUtils.setField(argument, "id", id);
+            return null;
+        }).when(contentMapper).insert(any(Content.class));
+    }
+
+    private Content content(Long id, String jobId, String title) {
+        LocalDateTime now = LocalDateTime.now();
+        return Content.builder()
+                .id(id)
+                .jobId(jobId)
+                .userId(1L)
+                .uploadChannelId(1L)
+                .title(title)
+                .body("body")
+                .status(ContentStatus.PENDING)
+                .generationType(ContentGenType.MANUAL)
+                .createdAt(now.minusDays(1))
+                .updatedAt(now)
+                .build();
+    }
+}
