@@ -21,7 +21,7 @@ public class SlackService {
 
         NotificationWithTypeAndChannelAndCredential dto = notificationMapper.findByIdWithTypeAndChannelAndCredential(userId, id);
 
-        if (dto.getChannelName().isEmpty() || dto.getChannelName().equals("SLACK")) {
+        if (dto.getChannelName().isEmpty() || !dto.getChannelName().equals("SLACK")) {
             throw new ContentNotFoundException("잘못된 체널입니다.");
         }
 
