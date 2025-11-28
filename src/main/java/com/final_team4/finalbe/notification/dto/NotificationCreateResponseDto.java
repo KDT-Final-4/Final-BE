@@ -1,5 +1,6 @@
 package com.final_team4.finalbe.notification.dto;
 
+import com.final_team4.finalbe.notification.domain.Notification;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,4 +17,17 @@ public class NotificationCreateResponseDto {
     private String message;
     private Long notificationLevel;
     private LocalDateTime createdAt;
+
+    public static NotificationCreateResponseDto from(Notification entity) {
+        return NotificationCreateResponseDto.builder()
+                .id(entity.getId())
+                .channelId(entity.getChannelId())
+                .typeId(entity.getTypeId())
+                .contentId(entity.getContentId())
+                .title(entity.getTitle())
+                .message(entity.getMessage())
+                .notificationLevel(entity.getNotificationLevel())
+                .createdAt(entity.getCreatedAt())
+                .build();
+    }
 }
