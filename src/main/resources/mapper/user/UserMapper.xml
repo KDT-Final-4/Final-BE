@@ -92,4 +92,12 @@
         WHERE ID = #{id}
           AND IS_DELETE = 0
     </update>
+
+    <update id="updatePassword">
+        UPDATE USERS
+        SET PASSWORD = #{password},
+            UPDATED_AT = SYSTIMESTAMP
+        WHERE ID = #{id}
+          AND IS_DELETE = 0
+    </update>
 </mapper>

@@ -29,11 +29,12 @@ public class UserRegisterRequestDto {
 
     @Schema(example = "P@ssw0rd!")
     @NotBlank
-    @Size(min = 3, max = 30)
+    @Size(min = 8, max = 14)
     private String password;
 
     @Schema(example = "Test User")
     @NotBlank
+    @Size(min = 1, max = 10, message = "이름은 1자 이상 10자 이하여야 합니다.")
     private String name;
 
 
