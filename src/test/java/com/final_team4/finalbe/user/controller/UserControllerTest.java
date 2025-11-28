@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.final_team4.finalbe._core.jwt.JwtTokenService;
 import com.final_team4.finalbe._core.security.AccessCookieManager;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
+import com.final_team4.finalbe.content.mapper.ContentMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
+import com.final_team4.finalbe.setting.mapper.notification.NotificationCredentialMapper;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
 import com.final_team4.finalbe.user.dto.UserRegisterRequestDto;
@@ -98,6 +100,12 @@ class UserControllerTest {
 
     @MockitoBean
     JwtTokenService jwtTokenService;
+
+    @MockitoBean
+    NotificationCredentialMapper notificationCredentialMapper;
+
+    @MockitoBean
+    ContentMapper contentMapper;
 
 
     @AfterEach
