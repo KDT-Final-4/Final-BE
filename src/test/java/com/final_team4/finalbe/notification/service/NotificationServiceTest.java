@@ -28,7 +28,6 @@ public class NotificationServiceTest {
         Long userId = 1L;
         NotificationCreateRequestDto dto = NotificationCreateRequestDto.builder()
                 .title("test")
-                .channelId(2L)
                 .contentId(3L)
                 .message("test")
                 .notificationLevel(1L)
@@ -41,13 +40,11 @@ public class NotificationServiceTest {
 
         // then
         assertThat(responseDto.getId()).isNotNull();
-        assertThat(responseDto.getChannelId()).isEqualTo(dto.getChannelId());
         assertThat(responseDto.getTypeId()).isEqualTo(dto.getTypeId());
         assertThat(responseDto.getContentId()).isEqualTo(dto.getContentId());
         assertThat(responseDto.getTitle()).isEqualTo(dto.getTitle());
         assertThat(responseDto.getMessage()).isEqualTo(dto.getMessage());
         assertThat(responseDto.getNotificationLevel()).isEqualTo(dto.getNotificationLevel());
-        assertThat(responseDto.getCreatedAt()).isNotNull();
     }
 
     @Test
@@ -67,7 +64,6 @@ public class NotificationServiceTest {
         Long userId = 1L;
         NotificationCreateRequestDto dto = NotificationCreateRequestDto.builder()
                 .title("test")
-                .channelId(2L)
                 .contentId(3L)
                 .message("test")
                 .notificationLevel(1L)
@@ -81,7 +77,6 @@ public class NotificationServiceTest {
         // then
         assertThat(found).isNotNull();
         assertThat(found.getId()).isEqualTo(saved.getId());
-        assertThat(found.getChannelId()).isEqualTo(dto.getChannelId());
         assertThat(found.getTypeId()).isEqualTo(dto.getTypeId());
         assertThat(found.getContentId()).isEqualTo(dto.getContentId());
         assertThat(found.getTitle()).isEqualTo(dto.getTitle());
