@@ -68,7 +68,6 @@ public class NotificationCredentialService {
 
     public Long findActiveChannelIdByUserId(Long userId) {
         Long activeChannelIdByUserId = notificationMapper.findActiveChannelIdByUserId(userId);
-        System.out.println("active: " + activeChannelIdByUserId);
         if (activeChannelIdByUserId == null) {
             throw new ContentNotFoundException("활성화된 설정을 찾을 수 없습니다.");
         }
