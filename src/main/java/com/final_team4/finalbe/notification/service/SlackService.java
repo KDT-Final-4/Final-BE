@@ -29,7 +29,7 @@ public class SlackService {
             throw new ContentNotFoundException("잘못된 체널입니다.");
         }
 
-        if (dto.getCredentialWebhook() == null || dto.getCredentialWebhook().isEmpty() || dto.getCredentialWebhook().isBlank()) {
+        if (dto.getCredentialWebhook() == null || dto.getCredentialWebhook().isBlank()) {
             throw new ContentNotFoundException("WEBHOOK URL이 존재하지 않습니다.");
         }
 
@@ -41,7 +41,4 @@ public class SlackService {
                 .toBodilessEntity();
     }
 
-//    public String validateUri(String uri) {
-//
-//    }
 }
