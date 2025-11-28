@@ -1,9 +1,8 @@
 package com.final_team4.finalbe.dashboard.controller;
 
-import com.final_team4.finalbe.dashboard.dto.DashboardStatusGetRequest;
-import com.final_team4.finalbe.dashboard.dto.DashboardStatusGetResponse;
+import com.final_team4.finalbe.dashboard.dto.DashboardStatusGetResponseDto;
 import com.final_team4.finalbe.dashboard.service.DashboardService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,17 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/dashboard")
+@RequiredArgsConstructor
 public class DashboardController {
 
-
-    @Autowired
-    private DashboardService dashboardService;
+    private final DashboardService dashboardService;
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/")
-    public DashboardStatusGetResponse getStatus(DashboardStatusGetRequest request){
+    @GetMapping("/status")
+    public DashboardStatusGetResponseDto getStatus() {
 
-        return dashboardService.getStatus(request);
+        return dashboardService.getStatus();
 
     }
 

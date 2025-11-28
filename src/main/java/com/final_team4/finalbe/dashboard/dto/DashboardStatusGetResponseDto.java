@@ -1,10 +1,15 @@
 package com.final_team4.finalbe.dashboard.dto;
 
-public class DashboardStatusGetResponse {
+import lombok.Builder;
+import lombok.Getter;
 
-    private long allViews;
+@Getter
+@Builder
+public class DashboardStatusGetResponseDto {
 
     private long allClicks;
+
+    private long allViews;
 
     private long visitors;
 

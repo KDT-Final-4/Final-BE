@@ -5,6 +5,7 @@ import com.final_team4.finalbe._core.jwt.JwtTokenService;
 import com.final_team4.finalbe._core.security.AccessCookieManager;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
+import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
@@ -106,6 +107,9 @@ class UserControllerTest {
 
     @MockitoBean
     ContentMapper contentMapper;
+
+    @MockitoBean
+    ClicksMapper clicksMapper;
 
 
     @AfterEach
