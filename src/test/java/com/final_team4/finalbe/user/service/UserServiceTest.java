@@ -66,14 +66,14 @@ class UserServiceTest {
     @Test
     void register_duplicateEmail_throwsException() {
         // given
-        UserRegisterRequestDto request = registerRequest("dup@example.com", "pw123!", "dup");
+        UserRegisterRequestDto request = registerRequest("dup@example.com", "pw123456!", "dup");
         userService.register(request);
 
         // when & then
-        assertThatThrownBy(() -> userService.register(registerRequest("dup@example.com", "pw123!", "dup")))
+        assertThatThrownBy(() -> userService.register(registerRequest("dup@example.com", "pw123456!", "dup")))
                 .isInstanceOf(DuplicateEmailException.class)
                 .hasMessageContaining("dup@example.com");
-    }
+}
 
     private UserRegisterRequestDto registerRequest(String email, String password, String name) {
         return UserRegisterRequestDto.builder()

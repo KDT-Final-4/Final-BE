@@ -1,10 +1,6 @@
 package com.final_team4.finalbe._core.config;
 
-import com.final_team4.finalbe._core.exception.ContentNotFoundException;
-import com.final_team4.finalbe._core.exception.DuplicateEmailException;
-import com.final_team4.finalbe._core.exception.PermissionDeniedException;
-import com.final_team4.finalbe._core.exception.UnauthorizedException;
-import org.apache.coyote.BadRequestException;
+import com.final_team4.finalbe._core.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
