@@ -42,18 +42,18 @@ public class DashboardServiceTest {
 
     private Long findAnyCategoryId() {
         return jdbcTemplate.queryForObject(
-                "SELECT id FROM product_category FETCH FIRST 1 ROWS ONLY",
+                "SELECT id FROM product_category LIMIT 1",
                 Long.class
         );
     }
 
-    //product 테입르에 대한 내용이 사전에 필요해서 insert
+    //product 테이블에 대한 내용이 사전에 필요해서 insert
     private Long insertProduct(Long categoryId) {
         KeyHolder keyHolder = new GeneratedKeyHolder(); // Insert 실행후 DB가 자동생성해주는 PK 값을 받아오기 위한객체
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(
                     "INSERT INTO product (category_id, name, link, thumbnail, price) VALUES (?, ?, ?, ?, ?)",
-                    new String[] { "id" }
+                    new String[]{"id"}
             );
             ps.setLong(1, categoryId);
             ps.setString(2, "test-product");
