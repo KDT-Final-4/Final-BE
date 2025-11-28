@@ -21,4 +21,6 @@ public interface NotificationCredentialMapper {
 
    // 생성
    void insert(NotificationCredential entity);
+
+   Long findActiveChannelIdByUserId(Long userId);
 }
