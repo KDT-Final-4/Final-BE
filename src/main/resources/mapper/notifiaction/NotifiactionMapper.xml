@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.final_team4.finalbe.notification.mapper.NotificationMapper">
+    <resultMap id="NotificationWithCredentialMap" type="com.final_team4.finalbe.notification.vo.NotificationWithTypeAndChannelAndCredential">
+        <id     property="id"                  column="ID"/>
+        <result property="channelId"           column="CHANNEL_ID"/>
+        <result property="channelName"         column="CHANNEL_NAME"/>
+        <result property="userId"              column="USER_ID"/>
+        <result property="typeId"              column="TYPE_ID"/>
+        <result property="typeDescription"     column="TYPE_DESCRIPTION"/>
+        <result property="typeName"            column="TYPE_NAME"/>
+        <result property="credentialApiToken"  column="CREDENTIAL_API_TOKEN"/>
+        <result property="credentialWebhook"   column="CREDENTIAL_WEBHOOK"/>
+        <result property="contentId"           column="CONTENT_ID"/>
+        <result property="title"               column="TITLE"/>
+        <result property="message"             column="MESSAGE"/>
+        <result property="notificationLevel"   column="NOTIFICATION_LEVEL"/>
+        <result property="createdAt"           column="CREATED_AT"/>
+    </resultMap>
+    <select id="findById" parameterType="long" resultType="Notification" >
+        SELECT
+            *
+        FROM
+            NOTIFICATION
+        WHERE
+            ID = #{id}
+    </select>
+
+    <select id="findByIdWithTypeAndChannelAndCredential" parameterType="long" resultMap="NotificationWithCredentialMap" >
+        SELECT
+            n.ID,
+            n.CHANNEL_ID,
+            nc.NAME          AS CHANNEL_NAME,
+            n.USER_ID,
+            n.TYPE_ID,
+            nt.DESCRIPTION  AS TYPE_DESCRIPTION,
+            nt.NAME         AS TYPE_NAME,
+            unc.API_TOKEN   AS CREDENTIAL_API_TOKEN,
+            unc.WEBHOOK_URL AS CREDENTIAL_WEBHOOK,
+            n.CONTENT_ID,
+            n.TITLE,
+            n.MESSAGE,
+            n.NOTIFICATION_LEVEL,
+            n.CREATED_AT
+        FROM NOTIFICATION n
+                 JOIN NOTIFICATION_TYPE nt
+                      ON n.TYPE_ID = nt.ID
+                 JOIN NOTIFICATION_CHANNEL nc
+                      ON n.CHANNEL_ID = nc.ID
+                 LEFT JOIN USER_NOTIFICATION_CREDENTIAL unc
+                           ON unc.USER_ID = #{userId}
+                               AND unc.NOTIFICATION_CHANNEL_ID = n.CHANNEL_ID
+        WHERE
+            n.ID = #{id}
+        AND
+            n.USER_ID = #{userId}
+    </select>
+
+    <select id="findAllByUserId" parameterType="long" resultType="Notification">
+
+        SELECT
+            *
+        FROM
+            NOTIFICATION
+        WHERE
+            USER_ID = #{userId}
+    </select>
+    <insert id="insert" parameterType="Notification" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO NOTIFICATION (
+            channel_id,
+            user_id,
+            type_id,
+            content_id,
+            title,
+            message,
+            notification_level,
+            created_at
+        ) VALUES (
+            #{channelId},
+            #{userId},
+            #{typeId},
+            #{contentId},
+            #{title},
+            #{message},
+            #{notificationLevel},
+            SYSDATE
+        )
+    </insert>
+</mapper>
