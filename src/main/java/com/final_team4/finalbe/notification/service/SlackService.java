@@ -25,7 +25,7 @@ public class SlackService {
             throw new ContentNotFoundException("알림 설정이 없거나 혹은 엑티브 상태의 알림이 존재하지 않습니다.");
         }
 
-        if (dto.getChannelName().isEmpty() || !dto.getChannelName().equals("SLACK")) {
+        if (dto.getChannelName()  == null || !dto.getChannelName().equals("SLACK")) {
             throw new ContentNotFoundException("잘못된 체널입니다.");
         }
 
