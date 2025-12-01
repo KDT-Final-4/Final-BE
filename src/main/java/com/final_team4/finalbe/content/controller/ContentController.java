@@ -23,7 +23,7 @@ public class ContentController {
     // 검수할 컨텐츠 목록 조회
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ContentListResponse> getContents(
+    public List<ContentListResponseDto> getContents(
             @AuthenticationPrincipal JwtPrincipal principal,
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "10") @Positive int size) {
@@ -33,7 +33,7 @@ public class ContentController {
     // 컨텐츠 상세 조회
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContentDetailResponse getContentDetail(
+    public ContentDetailResponseDto getContentDetail(
             @AuthenticationPrincipal JwtPrincipal principal,
             @PathVariable Long id) {
         return contentService.getContentDetail(principal.userId(), id);
@@ -42,27 +42,27 @@ public class ContentController {
     // 컨텐츠 등록(파이썬에서 호출)
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ContentCreateResponse createContent(@Valid @RequestBody ContentCreateRequest request) {
+    public ContentCreateResponseDto createContent(@Valid @RequestBody ContentCreateRequestDto request) {
         return contentService.createContent(request);
     }
 
     // 컨텐츠 수정
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContentUpdateResponse updateContent(
+    public ContentUpdateResponseDto updateContent(
             @AuthenticationPrincipal JwtPrincipal principal,
             @PathVariable Long id,
-            @Valid @RequestBody ContentUpdateRequest request) {
+            @Valid @RequestBody ContentUpdateRequestDto request) {
         return contentService.updateContent(principal.userId(), id, request);
     }
 
     // 컨텐츠 상태 변경
     @PatchMapping("/status/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ContentUpdateResponse updateContentStatus(
+    public ContentUpdateResponseDto updateContentStatus(
             @AuthenticationPrincipal JwtPrincipal principal,
             @PathVariable Long id,
-            @Valid @RequestBody ContentStatusUpdateRequest request) {
+            @Valid @RequestBody ContentStatusUpdateRequestDto request) {
         return contentService.updateContentStatus(principal.userId(), id, request);
     }
 

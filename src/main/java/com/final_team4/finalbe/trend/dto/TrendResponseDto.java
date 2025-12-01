@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class TrendResponse {
+public class TrendResponseDto {
     private Long id;
     private Long categoryId;
     private String keyword;
@@ -16,8 +16,8 @@ public class TrendResponse {
     private LocalDateTime createdAt;
     private String snsType;
 
-    public static TrendResponse from(Trend trend) {
-        return TrendResponse.builder()
+    public static TrendResponseDto from(Trend trend) {
+        return TrendResponseDto.builder()
                 .id(trend.getId())
                 .categoryId(trend.getCategoryId())
                 .keyword(trend.getKeyword())
