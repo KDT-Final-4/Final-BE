@@ -185,7 +185,7 @@ class UserControllerTest {
                 .role("ROLE_USER")
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .isDelete(0)
+                .isDelete(false)
                 .build();
         given(userService.findProfile(1L)).willReturn(profile);
 
@@ -214,7 +214,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.role").value("ROLE_USER"))
                 .andExpect(jsonPath("$.createdAt").value(createdAt.format(fmt)))
                 .andExpect(jsonPath("$.updatedAt").value(updatedAt.format(fmt)))
-                .andExpect(jsonPath("$.isDelete").value(0));
+                .andExpect(jsonPath("$.isDelete").value(false));
         verify(userService).findProfile(1L);
     }
 
