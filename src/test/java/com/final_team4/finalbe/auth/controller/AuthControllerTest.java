@@ -9,6 +9,7 @@ import com.final_team4.finalbe.auth.dto.response.LoginResponse;
 import com.final_team4.finalbe.auth.service.AuthService;
 import com.final_team4.finalbe._core.jwt.JwtTokenService;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
+import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
@@ -79,6 +80,13 @@ class AuthControllerTest {
     AccessCookieManager accessCookieManager;
 
     @MockitoBean
+    NotificationCredentialMapper notificationCredentialMapper;
+
+    @MockitoBean
+    ContentMapper contentMapper;
+
+    @MockitoBean
+    ClicksMapper clicksMapper;
     ContentMapper contentMapper;
 
     @MockitoBean
