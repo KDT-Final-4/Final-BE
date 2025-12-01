@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.final_team4.finalbe.setting.mapper.llm.LlmChannelMapper">
+
+    <sql id="BaseColumns">
+        ID,
+        USER_ID,
+        NAME,
+        MODEL_NAME,
+        API_KEY,
+        BASE_URL,
+        STATUS,
+        MAX_TOKENS,
+        TEMPERATURE,
+        TOP_P,
+        CREATED_AT,
+        UPDATED_AT
+    </sql>
+
+    <select id="findById" parameterType="long" resultType="LlmChannel">
+        SELECT
+            <include refid="BaseColumns"/>
+        FROM
+            LLM_CHANNEL
+        WHERE
+            ID = #{id} AND 
+            USER_ID = #{userId}
+    </select>
+
+    <select id="findByUserId" parameterType="long" resultType="LlmChannel">
+        SELECT
+            <include refid="BaseColumns"/>
+        FROM
+            LLM_CHANNEL
+        WHERE
+            USER_ID = #{userId}
+        ORDER BY UPDATED_AT DESC
+        FETCH FIRST 1 ROW ONLY
+    </select>
+
+    <update id="update" parameterType="LlmChannel">
+        UPDATE
+            LLM_CHANNEL
+        SET
+            NAME = #{name},
+            MODEL_NAME = #{modelName},
+            API_KEY = #{apiKey},
+            BASE_URL = #{baseUrl},
+            STATUS = #{status},
+            MAX_TOKENS = #{maxTokens},
+            TEMPERATURE = #{temperature},
+            TOP_P = #{topP},
+            UPDATED_AT = SYSTIMESTAMP
+        WHERE
+            ID = #{id} AND 
+            USER_ID = #{userId}
+    </update>
+
+    <insert id="insert" parameterType="LlmChannel" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO
+            LLM_CHANNEL (
+                USER_ID,
+                NAME,
+                MODEL_NAME,
+                API_KEY,
+                BASE_URL,
+                STATUS,
+                MAX_TOKENS,
+                TEMPERATURE,
+                TOP_P,
+                CREATED_AT,
+                UPDATED_AT
+            )
+        VALUES (
+                #{userId},
+                #{name},
+                #{modelName},
+                #{apiKey},
+                #{baseUrl},
+                #{status},
+                #{maxTokens},
+                #{temperature},
+                #{topP},
+                SYSTIMESTAMP,
+                SYSTIMESTAMP
+            )
+    </insert>
+
+</mapper>
+

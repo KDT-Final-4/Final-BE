@@ -57,7 +57,7 @@ class UserServiceTest {
         assertThat(saved.getEmail()).isEqualTo("codex@example.com");
         assertThat(passwordEncoder.matches(request.getPassword(), saved.getPassword())).isTrue();
         assertThat(saved.getRoleId()).isEqualTo(RoleType.USER.getId());
-        assertThat(saved.getIsDelete()).isZero();
+        assertThat(saved.getIsDelete()).isFalse();
         assertThat(saved.getCreatedAt()).isNotNull();
         assertThat(saved.getUpdatedAt()).isNotNull();
     }
