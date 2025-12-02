@@ -9,5 +9,4 @@ import java.util.List;
 @Mapper
 public interface DashboardMapper {
     List<DashboardContentSummary> findContentsByUserId(@Param("userId") Long userId);
-    List<Long> findProductIdsByUserId(@Param("contentId") Long contentId);
 }

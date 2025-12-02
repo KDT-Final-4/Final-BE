@@ -12,10 +12,10 @@
         c.ID         AS contentId,
         c.TITLE      AS title,
         t.KEYWORD    AS keyword,
-        c.CREATED_AT AS createdAt,
-        c.UPDATED_AT AS updatedAt,
         c.LINK       AS contentLink,
-        COALESCE(COUNT(ck.ID), 0) AS clickCount
+        COALESCE(COUNT(ck.ID), 0) AS clickCount,
+        c.CREATED_AT AS createdAt,
+        c.UPDATED_AT AS updatedAt
         FROM CONTENT c
         LEFT JOIN TREND t           ON t.ID = c.TREND_ID
         LEFT JOIN PRODUCT_CONTENT pc ON pc.CONTENT_ID = c.ID
@@ -25,10 +25,5 @@
         ORDER BY c.UPDATED_AT DESC, c.CREATED_AT DESC
     </select>
 
-    <select id="findProductIdsByContentId" parameterType="long" resultType="long">
-        SELECT PRODUCT_ID
-        FROM PRODUCT_CONTENT
-        WHERE CONTENT_ID = #{contentId}
-    </select>
 
 </mapper>
