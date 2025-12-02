@@ -42,7 +42,7 @@ public class DashboardService {
 
         List<DashboardContentItemDto> items = new ArrayList<>();
         for (DashboardContentSummary summary : summaries) {
-            items.add(DashboardContentItemDto.from(summary, summary.getClickCount()));
+            items.add(DashboardContentItemDto.from(summary));
 
         }
 

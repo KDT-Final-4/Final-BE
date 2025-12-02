@@ -16,7 +16,7 @@ public class DashboardContentItemDto {
     private String contentLink;
     private long clickCount;
 
-    public static DashboardContentItemDto from(DashboardContentSummary summary, long clickCount) {
+    public static DashboardContentItemDto from(DashboardContentSummary summary) {
         return DashboardContentItemDto.builder()
                 .contentId(summary.getContentId())
                 .title(summary.getTitle())
@@ -24,7 +24,7 @@ public class DashboardContentItemDto {
                 .createdAt(summary.getCreatedAt())
                 .updatedAt(summary.getUpdatedAt())
                 .contentLink(summary.getContentLink())
-                .clickCount(clickCount)
+                .clickCount(summary.getClickCount())
                 .build();
     }
 

@@ -96,8 +96,8 @@ public class DashboardServiceTest {
                 .containsExactly(1L, 2L);
     }
 
-    private Long insertUser(String emailPrefix) {
-        String email = emailPrefix + "+" + System.nanoTime() + "@example.com";
+    private Long insertUser(String name) {
+        String email = name + "+" + System.nanoTime() + "@example.com";
         Long roleId = jdbcTemplate.queryForObject(
                 "SELECT id FROM role WHERE name = ?",
                 Long.class,
@@ -110,7 +110,7 @@ public class DashboardServiceTest {
                     new String[]{"id"}
             );
             ps.setLong(1, roleId);
-            ps.setString(2, "dashboard-user");
+            ps.setString(2, name);
             ps.setString(3, email);
             ps.setString(4, "password");
             return ps;

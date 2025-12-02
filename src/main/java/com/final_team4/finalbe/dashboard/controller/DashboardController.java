@@ -36,6 +36,10 @@ public class DashboardController {
 
     }
 
+    @Operation(
+            summary = "대시보드 콘텐츠 전체 조회",
+            description = "인증된 사용자가 작성한 모든 콘텐츠 목록을 조회합니다. 콘텐츠 ID, 제목, 키워드, 링크, 클릭 수, 생성/수정 시간을 포함합니다."
+            )
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/contents")
