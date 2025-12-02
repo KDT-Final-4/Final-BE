@@ -120,10 +120,7 @@ class UserControllerTest {
     @MockitoBean
     ClicksMapper clicksMapper;
 
-    ContentMapper contentMapper;
 
-    @MockitoBean
-    NotificationCredentialMapper notificationCredentialMapper;
 
     @AfterEach
     void clearSecurityContext() {

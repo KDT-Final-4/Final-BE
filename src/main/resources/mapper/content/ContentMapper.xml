@@ -15,7 +15,9 @@
             STATUS,
             GENERATION_TYPE,
             CREATED_AT,
-            UPDATED_AT
+            UPDATED_AT,
+            LINK       AS contentLink,
+            TREND_ID   AS trendId
         FROM
             CONTENT
         WHERE
@@ -36,7 +38,9 @@
             STATUS,
             GENERATION_TYPE,
             CREATED_AT,
-            UPDATED_AT
+            UPDATED_AT,
+            LINK       AS contentLink,
+            TREND_ID   AS trendId
         FROM
             CONTENT
         WHERE
@@ -55,7 +59,9 @@
                  GENERATION_TYPE,
                  UPLOAD_CHANNEL_ID,
                  CREATED_AT,
-                 UPDATED_AT
+                 UPDATED_AT,
+                 LINK,
+                 TREND_ID
         ) VALUES (
                 #{jobId},
                 #{userId},
@@ -65,7 +71,9 @@
                 #{generationType},
                 #{uploadChannelId},
                 #{createdAt},
-                #{updatedAt}
+                #{updatedAt},
+                #{contentLink},
+                #{trendId}
         )
     </insert>
 

@@ -87,6 +87,8 @@ class ContentServiceTest {
                 .body("body")
                 .status(ContentStatus.APPROVED)
                 .generationType(ContentGenType.AUTO)
+                .contentLink("https://example.com/content/1")  // 추가
+                .trendId(1L)                            // 추가
                 .build();
 
         givenInsertSetsId(10L);
@@ -114,6 +116,8 @@ class ContentServiceTest {
                 .body("body")
                 .status(ContentStatus.PENDING)
                 .generationType(ContentGenType.AUTO)
+                .contentLink("https://example.com/content/1")  // 추가
+                .trendId(1L)                            // 추가
                 .build();
 
         assertThatThrownBy(() -> contentService.createContent(request))
@@ -139,6 +143,8 @@ class ContentServiceTest {
                 .body("body")
                 .status(ContentStatus.PENDING)
                 .generationType(ContentGenType.AUTO)
+                .contentLink("https://example.com/content/1")  // 추가
+                .trendId(1L)                            // 추가
                 .build();
 
         assertThatThrownBy(() -> contentService.createContent(request))
