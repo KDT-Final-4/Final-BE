@@ -5,10 +5,14 @@ import com.final_team4.finalbe.content.domain.ContentStatus;
 import com.final_team4.finalbe.content.dto.*;
 import com.final_team4.finalbe.content.service.ContentService;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
+import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
+import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
+import com.final_team4.finalbe.notification.mapper.NotificationMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
+import com.final_team4.finalbe.setting.mapper.llm.LlmChannelMapper;
 import com.final_team4.finalbe.setting.mapper.notification.NotificationCredentialMapper;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
@@ -66,6 +70,10 @@ class ContentControllerTest {
     @MockitoBean TrendMapper trendMapper;
     @MockitoBean UploadChannelMapper uploadChannelMapper;
     @MockitoBean UserMapper userMapper;
+    @MockitoBean ClicksMapper clicksMapper;
+    @MockitoBean DashboardMapper dashboardMapper;
+    @MockitoBean NotificationMapper notificationMapper;
+    @MockitoBean LlmChannelMapper llmChannelMapper;
 
     @AfterEach
     void clearSecurityContext() {
@@ -135,7 +143,9 @@ class ContentControllerTest {
                   "title": "new-content",
                   "body": "body",
                   "status": "PENDING",
-                  "generationType": "AUTO"
+                  "generationType": "AUTO",
+                  "contentLink": "https://example.com/content/1",
+                  "trendId": 1
                 }
                 """;
 
