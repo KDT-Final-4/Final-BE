@@ -35,9 +35,6 @@ public class ScheduleSettingService {
         if (entity == null) {
             throw new ContentNotFoundException("해당 일정을 찾을 수 없습니다.");
         }
-        if (!entity.getUserId().equals(userId)) {
-            throw new PermissionDeniedException("접근 권한이 없습니다.");
-        }
         return ScheduleSettingDetailResponseDto.from(entity);
     }
 
