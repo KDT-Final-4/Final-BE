@@ -45,13 +45,6 @@ public class DashboardServiceTest {
         assertThat(result.getAverageDwellTime()).isZero();
     }
 
-    private Long findAnyCategoryId() {
-        return jdbcTemplate.queryForObject(
-                "SELECT id FROM product_category FETCH FIRST 1 ROWS ONLY", // Oracle 문법
-                Long.class
-        );
-    }
-
     @DisplayName("사용자별 콘텐츠 목록과 클릭수를 반환한다")
     @Test
     void getContents_returnsSummariesForUser() {
@@ -216,8 +209,22 @@ public class DashboardServiceTest {
     }
 
 
-
-
-
+    private Long findAnyCategoryId() {
+        Long id = jdbcTemplate.query("SELECT id FROM product_category FETCH FIRST 1 ROWS ONLY",
+                rs -> rs.next() ? rs.getLong(1) : null);
+        if (id != null) {
+            return id;
+        }
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(
+                    "INSERT INTO product_category (name, description) VALUES (?, ?)",
+                    new String[] {"id"});
+            ps.setString(1, "test-category");
+            ps.setString(2, "for dashboard test");
+            return ps;
+        }, keyHolder);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
 
 }
