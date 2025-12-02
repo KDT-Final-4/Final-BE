@@ -30,6 +30,14 @@ public class ScheduleSettingService {
         return ScheduleSettingDetailResponseDto.from(entity);
     }
 
+    public ScheduleSettingDetailResponseDto findByUserId(Long userId) {
+        ScheduleSetting entity = scheduleSettingMapper.findByUserId(userId);
+        if (entity == null) {
+            throw new ContentNotFoundException("해당 일정을 찾을 수 없습니다.");
+        }
+        return ScheduleSettingDetailResponseDto.from(entity);
+    }
+
     // Update
     @Transactional
     public ScheduleSettingUpdateResponseDto update(Long userId, Long id, ScheduleSettingUpdateRequestDto updateRequestDto) {
@@ -42,18 +50,6 @@ public class ScheduleSettingService {
         scheduleSettingMapper.update(verifiedScheduleEntity);
         return ScheduleSettingUpdateResponseDto.from(verifiedScheduleEntity);
     }
-
-    // Read(List)
-//    public List<ScheduleSettingDetailResponseDto> findAll(Long userId) {
-//        List<ScheduleSetting> entities = scheduleSettingMapper.findAll(userId);
-//        return entities.stream().map(ScheduleSettingDetailResponseDto::from).toList();
-//    }
-
-    // Delete
-//    public void delete(Long userId, Long id) {
-//        findVerifiedSchedule(userId, id);
-//        scheduleSettingMapper.delete(userId, id);
-//    }
 
     // 권한 및 에러를 검증하고 이상이 없다면 Schedule을 반환합니다.
     private ScheduleSetting findVerifiedSchedule(Long userId, Long id) {

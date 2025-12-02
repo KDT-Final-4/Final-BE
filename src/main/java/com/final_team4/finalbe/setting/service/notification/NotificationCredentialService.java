@@ -1,8 +1,8 @@
-package com.final_team4.finalbe.setting.service;
+package com.final_team4.finalbe.setting.service.notification;
 
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe.setting.domain.notification.NotificationCredential;
-import com.final_team4.finalbe.setting.dto.notificationCredential.*;
+import com.final_team4.finalbe.setting.dto.notification.*;
 import com.final_team4.finalbe.setting.mapper.notification.NotificationCredentialMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

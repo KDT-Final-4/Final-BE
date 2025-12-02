@@ -6,7 +6,7 @@ import com.final_team4.finalbe.notification.dto.NotificationCreateRequestDto;
 import com.final_team4.finalbe.notification.dto.NotificationCreateResponseDto;
 import com.final_team4.finalbe.notification.dto.NotificationDetailResponseDto;
 import com.final_team4.finalbe.notification.mapper.NotificationMapper;
-import com.final_team4.finalbe.setting.service.NotificationCredentialService;
+import com.final_team4.finalbe.setting.service.notification.NotificationCredentialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
