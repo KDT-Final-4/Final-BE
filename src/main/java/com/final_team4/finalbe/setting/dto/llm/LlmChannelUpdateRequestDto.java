@@ -42,6 +42,8 @@ public class LlmChannelUpdateRequestDto {
     @DecimalMin("0.0")
     @DecimalMax("1.0")
     private BigDecimal topP;
+
+    private String prompt; // CLOB 타입 (긴 텍스트)
     
     // 주의: userId는 보안상 Request Body에 포함하지 않고, 
     // 컨트롤러에서 @AuthenticationPrincipal로 주입받아 사용

@@ -74,7 +74,8 @@ public class LlmChannelService {
                 requestDto.getStatus(),
                 requestDto.getMaxTokens(),
                 requestDto.getTemperature(),
-                requestDto.getTopP()
+                requestDto.getTopP(),
+                requestDto.getPrompt()
         );
 
         llmChannelMapper.update(entity);
@@ -136,6 +137,7 @@ public class LlmChannelService {
                 .maxTokens(maxTokens)
                 .temperature(temperature)
                 .topP(topP)
+                .prompt(requestDto.getPrompt())
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
