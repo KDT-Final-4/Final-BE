@@ -39,6 +39,12 @@ public class Content {
 
     private LocalDateTime updatedAt;
 
+    @NotNull
+    private String contentLink;
+
+    @NotNull
+    private Long trendId;
+
     public void updateContent(String title, String body) {
         this.title = title;
         this.body = body;

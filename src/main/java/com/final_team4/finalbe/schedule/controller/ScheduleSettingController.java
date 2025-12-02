@@ -1,8 +1,10 @@
 package com.final_team4.finalbe.schedule.controller;
 
-import com.final_team4.finalbe.schedule.dto.scheduleSetting.*;
+import com.final_team4.finalbe._core.security.JwtPrincipal;
+import com.final_team4.finalbe.schedule.dto.scheduleSetting.ScheduleSettingDetailResponseDto;
+import com.final_team4.finalbe.schedule.dto.scheduleSetting.ScheduleSettingUpdateRequestDto;
+import com.final_team4.finalbe.schedule.dto.scheduleSetting.ScheduleSettingUpdateResponseDto;
 import com.final_team4.finalbe.schedule.service.ScheduleSettingService;
-import com.final_team4.finalbe.user.domain.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,19 +21,19 @@ public class ScheduleSettingController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ScheduleSettingUpdateResponseDto update(@AuthenticationPrincipal User user, @PathVariable Long id, @RequestBody @Valid ScheduleSettingUpdateRequestDto requestDto) {
+    public ScheduleSettingUpdateResponseDto update(@AuthenticationPrincipal JwtPrincipal user, @PathVariable Long id, @RequestBody @Valid ScheduleSettingUpdateRequestDto requestDto) {
         if(user == null) {
             throw new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다.");
         }
-        return scheduleSettingService.update(user.getId(), id, requestDto);
+        return scheduleSettingService.update(user.userId(), id, requestDto);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public ScheduleSettingDetailResponseDto findById(@AuthenticationPrincipal User user, @PathVariable Long id) {
-        if(user == null) {
+    public ScheduleSettingDetailResponseDto findByUserId(@AuthenticationPrincipal JwtPrincipal user) {
+        if (user == null) {
             throw new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다.");
         }
-        return scheduleSettingService.findById(user.getId(), id);
+        return scheduleSettingService.findByUserId(user.userId());
     }
 }

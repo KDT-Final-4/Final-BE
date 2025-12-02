@@ -7,9 +7,9 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface ScheduleSettingMapper {
-//    List<ScheduleSetting> findAll(@Param("userId") Long userId);
-//    void delete(@Param("userId")Long userId, @Param("id") Long id);
     void update(ScheduleSetting scheduleSetting);
     ScheduleSetting findById(@Param("userId") Long userId, @Param("id") Long id);
+    ScheduleSetting findByUserId(@Param("userId") Long userId);
     void insert(ScheduleSetting scheduleSetting);
+
 }

@@ -13,6 +13,6 @@ public class Click {
     private Long productId;
     private LocalDateTime clickedAt;
     private String ip;
-
-
 }
+
+

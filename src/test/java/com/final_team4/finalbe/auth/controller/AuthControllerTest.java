@@ -10,10 +10,13 @@ import com.final_team4.finalbe.auth.service.AuthService;
 import com.final_team4.finalbe._core.jwt.JwtTokenService;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
 import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
+import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
+import com.final_team4.finalbe.notification.mapper.NotificationMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
+import com.final_team4.finalbe.setting.mapper.llm.LlmChannelMapper;
 import com.final_team4.finalbe.setting.mapper.notification.NotificationCredentialMapper;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
@@ -87,10 +90,16 @@ class AuthControllerTest {
 
     @MockitoBean
     ClicksMapper clicksMapper;
-    ContentMapper contentMapper;
 
     @MockitoBean
-    NotificationCredentialMapper notificationCredentialMapper;
+    DashboardMapper dashboardMapper;
+
+    @MockitoBean
+    LlmChannelMapper llmChannelMapper;
+
+    @MockitoBean
+    NotificationMapper notificationMapper;
+
 
 
     @DisplayName("로그인 성공 - AuthService 응답 반환")
