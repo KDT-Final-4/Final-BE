@@ -1,13 +1,14 @@
 package com.final_team4.finalbe.setting.service;
 
 import com.final_team4.finalbe.setting.domain.notification.NotificationCredential;
-import com.final_team4.finalbe.setting.dto.notificationCredential.NotificationCredentialCreateRequestDto;
-import com.final_team4.finalbe.setting.dto.notificationCredential.NotificationCredentialCreateResponseDto;
-import com.final_team4.finalbe.setting.dto.notificationCredential.NotificationCredentialDetailResponseDto;
-import com.final_team4.finalbe.setting.dto.notificationCredential.NotificationCredentialUpdateRequestDto;
-import com.final_team4.finalbe.setting.dto.notificationCredential.NotificationCredentialUpdateResponseDto;
+import com.final_team4.finalbe.setting.dto.notification.NotificationCredentialCreateRequestDto;
+import com.final_team4.finalbe.setting.dto.notification.NotificationCredentialCreateResponseDto;
+import com.final_team4.finalbe.setting.dto.notification.NotificationCredentialDetailResponseDto;
+import com.final_team4.finalbe.setting.dto.notification.NotificationCredentialUpdateRequestDto;
+import com.final_team4.finalbe.setting.dto.notification.NotificationCredentialUpdateResponseDto;
 import com.final_team4.finalbe.setting.mapper.notification.NotificationCredentialMapper;
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
+import com.final_team4.finalbe.setting.service.notification.NotificationCredentialService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

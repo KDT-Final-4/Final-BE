@@ -21,6 +21,7 @@
             #{retryOnFail}
         )
     </insert>
+
     <!-- Read(one) -->
     <select id="findById" parameterType="long" resultType="ScheduleSetting">
         SELECT
@@ -31,6 +32,15 @@
             USER_ID = #{userId}
         and
             ID = #{id}
+    </select>
+
+    <select id="findByUserId" parameterType="long" resultType="ScheduleSetting">
+        SELECT
+            *
+        FROM
+            SCHEDULE_SETTING
+        WHERE
+            USER_ID = #{userId}
     </select>
 
     <!-- Read(List)-->
