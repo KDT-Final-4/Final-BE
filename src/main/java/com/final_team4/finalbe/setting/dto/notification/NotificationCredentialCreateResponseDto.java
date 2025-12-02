@@ -1,4 +1,4 @@
-package com.final_team4.finalbe.setting.dto.notificationCredential;
+package com.final_team4.finalbe.setting.dto.notification;
 
 import com.final_team4.finalbe.setting.domain.notification.NotificationCredential;
 import lombok.Builder;
