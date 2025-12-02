@@ -8,10 +8,13 @@ import com.final_team4.finalbe._core.security.AccessTokenPayload;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
 import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
+import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
+import com.final_team4.finalbe.notification.mapper.NotificationMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
+import com.final_team4.finalbe.setting.mapper.llm.LlmChannelMapper;
 import com.final_team4.finalbe.setting.mapper.notification.NotificationCredentialMapper;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
@@ -119,6 +122,16 @@ class UserControllerTest {
 
     @MockitoBean
     ClicksMapper clicksMapper;
+
+    @MockitoBean
+    DashboardMapper dashboardMapper;
+
+    @MockitoBean
+    LlmChannelMapper llmChannelMapper;
+
+    @MockitoBean
+    NotificationMapper notificationMapper;
+
 
 
 
