@@ -95,6 +95,7 @@ public class ScheduleService {
         return entity;
     }
 
+    @Transactional
     public void processDueSchedules() {
         // 실행 할 스케쥴 찾기
         List<Schedule> dueSchedules = scheduleMapper.findDueSchedules();
