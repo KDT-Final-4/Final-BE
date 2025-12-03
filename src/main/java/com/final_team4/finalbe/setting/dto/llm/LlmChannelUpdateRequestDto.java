@@ -27,9 +27,6 @@ public class LlmChannelUpdateRequestDto {
     @Size(max = 200)
     private String apiKey;
 
-    @Size(max = 200)
-    private String baseUrl;
-
     private Boolean status; // true: 활성, false: 비활성
 
     @Min(1)
@@ -38,10 +35,6 @@ public class LlmChannelUpdateRequestDto {
     @DecimalMin("0.0")
     @DecimalMax("2.0")
     private BigDecimal temperature;
-
-    @DecimalMin("0.0")
-    @DecimalMax("1.0")
-    private BigDecimal topP;
 
     private String prompt; // CLOB 타입 (긴 텍스트)
     
