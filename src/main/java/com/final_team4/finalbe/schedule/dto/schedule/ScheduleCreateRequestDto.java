@@ -31,6 +31,7 @@ public class ScheduleCreateRequestDto {
                .title(title)
                .startTime(startTime)
                .repeatInterval(repeatInterval)
+               .nextExecutionAt(startTime)
                .build();
     }
 }
