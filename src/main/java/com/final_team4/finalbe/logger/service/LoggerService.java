@@ -4,11 +4,10 @@ import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe.logger.domain.Log;
 import com.final_team4.finalbe.logger.domain.type.LogType;
 import com.final_team4.finalbe.logger.dto.LogCreateRequestDto;
-import com.final_team4.finalbe.logger.dto.LogTypeCountRow;
 import com.final_team4.finalbe.logger.dto.LogResponseDto;
+import com.final_team4.finalbe.logger.dto.LogTypeCountRow;
 import com.final_team4.finalbe.logger.dto.PipelineLogCreateRequest;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
@@ -16,14 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.time.format.DateTimeFormatter;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LoggerService {
 
@@ -39,7 +36,12 @@ public class LoggerService {
   @Qualifier("virtualThreadTaskExecutor")
   private final TaskExecutor taskExecutor;
 
-  /**
+    public LoggerService(LoggerMapper loggerMapper, @Qualifier("virtualThreadTaskExecutor") TaskExecutor taskExecutor) {
+        this.loggerMapper = loggerMapper;
+        this.taskExecutor = taskExecutor;
+    }
+
+    /**
    * 로그를 생성하고 콘솔에 출력합니다. 외부에서 직접 호출됩니다.
    */
   @Transactional
