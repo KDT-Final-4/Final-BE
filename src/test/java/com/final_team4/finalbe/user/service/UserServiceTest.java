@@ -5,6 +5,10 @@ import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.exception.DuplicateEmailException;
 import com.final_team4.finalbe._core.exception.UnauthorizedException;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
+import com.final_team4.finalbe.schedule.domain.ScheduleSetting;
+import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
+import com.final_team4.finalbe.setting.domain.llm.LlmChannel;
+import com.final_team4.finalbe.setting.mapper.llm.LlmChannelMapper;
 import com.final_team4.finalbe.user.domain.RoleType;
 import com.final_team4.finalbe.user.domain.User;
 import com.final_team4.finalbe.user.dto.PasswordUpdateRequest;
@@ -37,6 +41,12 @@ class UserServiceTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ScheduleSettingMapper scheduleSettingMapper;
+
+    @Autowired
+    private LlmChannelMapper llmChannelMapper;
+
     @DisplayName("회원가입 성공 - DB에 저장되고 암호화된 비밀번호와 기본 역할이 설정된다")
     @Test
     void register_success() {
@@ -46,6 +56,8 @@ class UserServiceTest {
         // when
         UserSummaryResponse result = userService.register(request);
         User saved = userMapper.findByEmail(request.getEmail());
+        ScheduleSetting defaultSchedule = scheduleSettingMapper.findByUserId(saved.getId());
+        LlmChannel defaultChannel = llmChannelMapper.findByUserId(saved.getId());
 
         // then
         assertThat(result.getUserId()).isEqualTo(saved.getId());
@@ -60,6 +72,22 @@ class UserServiceTest {
         assertThat(saved.getIsDelete()).isFalse();
         assertThat(saved.getCreatedAt()).isNotNull();
         assertThat(saved.getUpdatedAt()).isNotNull();
+
+        assertThat(defaultSchedule).isNotNull();
+        assertThat(defaultSchedule.isRun()).isFalse();
+        assertThat(defaultSchedule.getMaxDailyRuns()).isZero();
+        assertThat(defaultSchedule.getRetryOnFail()).isZero();
+
+        assertThat(defaultChannel).isNotNull();
+        assertThat(defaultChannel.getStatus()).isTrue();
+        assertThat(defaultChannel.getName()).isEqualTo("설정 필요");
+        assertThat(defaultChannel.getModelName()).isEqualTo("설정 필요");
+        assertThat(defaultChannel.getApiKey()).isEqualTo("설정 필요");
+        assertThat(defaultChannel.getBaseUrl()).isEqualTo("설정 필요");
+        assertThat(defaultChannel.getMaxTokens()).isEqualTo(2000);
+        assertThat(defaultChannel.getTemperature()).isEqualByComparingTo("0.9");
+        assertThat(defaultChannel.getTopP()).isEqualByComparingTo("0.7");
+        assertThat(defaultChannel.getPrompt()).isEqualTo("설정 필요");
     }
 
     @DisplayName("회원가입 실패 - 이메일 중복 시 예외 발생")
