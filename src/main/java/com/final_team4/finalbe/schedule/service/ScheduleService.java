@@ -67,6 +67,7 @@ public class ScheduleService {
         return ScheduleUpdateResponseDto.from(entity);
     }
 
+    @Transactional
     public void updateIsActive(Long userId, Long id) {
         Schedule verifiedSchedule = findVerifiedSchedule(userId, id);
         Boolean status = !verifiedSchedule.getIsActive();
@@ -104,7 +105,12 @@ public class ScheduleService {
             if (updated == 0) {
                 continue; // 이미 누군가 가져간 상태
             }
-            scheduleExecutor.execute(() -> executeSchedule(schedule));
+            try{
+                scheduleExecutor.execute(() -> executeSchedule(schedule));
+            } catch (Exception e){
+                scheduleMapper.unlockSchedule(schedule.getId());
+                throw e;
+            }
         }
 
     }

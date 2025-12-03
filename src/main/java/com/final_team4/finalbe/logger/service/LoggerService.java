@@ -33,7 +33,6 @@ public class LoggerService {
 
   private final LoggerMapper loggerMapper;
 
-  @Qualifier("virtualThreadTaskExecutor")
   private final TaskExecutor taskExecutor;
 
     public LoggerService(LoggerMapper loggerMapper, @Qualifier("virtualThreadTaskExecutor") TaskExecutor taskExecutor) {
