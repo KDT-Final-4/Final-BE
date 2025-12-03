@@ -118,40 +118,45 @@ public class ScheduleService {
 
     private void executeSchedule(Schedule schedule) {
         try {
-            // 실제 콘텐츠 생성/게시 로직
-            LocalDateTime updateExecutionAt = schedule.getNextExecutionAt();
-
             // 컨텐츠 생성하기 위한 준비
             TrendCreateContentRequestDto requestDto = TrendCreateContentRequestDto.builder()
                     .keyword("")
                     .build();
-
             // 컨텐츠 생성 로직
             trendService.requestCreateContent(requestDto, schedule.getUserId());
-
             // 작업 끝난 후 next_execution_at 갱신
-            switch (schedule.getRepeatInterval()) {
-                case RepeatInterval.DAILY:
-                    updateExecutionAt = updateExecutionAt.plusDays(1);
-                    break;
-                case RepeatInterval.WEEKLY:
-                    updateExecutionAt = updateExecutionAt.plusWeeks(1);
-                    break;
-                case RepeatInterval.MONTHLY:
-                    updateExecutionAt = updateExecutionAt.plusMonths(1);
-                    break;
-                case RepeatInterval.YEARLY:
-                    updateExecutionAt = updateExecutionAt.plusYears(1);
-                    break;
-                default:
-                    break;
-
-            }
+            LocalDateTime updateExecutionAt = updateExecutionAt(schedule);
             scheduleMapper.updateNextExecution(schedule.getId(), updateExecutionAt);
-
+        } catch (Exception e) {
+            // 실패 시 다음으로 갱신
+            updateExecutionAt(schedule);
+            throw e;
         } finally {
             // 락 해제
             scheduleMapper.unlockSchedule(schedule.getId());
         }
+    }
+
+    private LocalDateTime updateExecutionAt(Schedule schedule) {
+        LocalDateTime updateExecutionAt = schedule.getNextExecutionAt();
+
+        switch (schedule.getRepeatInterval()) {
+            case RepeatInterval.DAILY:
+                updateExecutionAt = updateExecutionAt.plusDays(1);
+                break;
+            case RepeatInterval.WEEKLY:
+                updateExecutionAt = updateExecutionAt.plusWeeks(1);
+                break;
+            case RepeatInterval.MONTHLY:
+                updateExecutionAt = updateExecutionAt.plusMonths(1);
+                break;
+            case RepeatInterval.YEARLY:
+                updateExecutionAt = updateExecutionAt.plusYears(1);
+                break;
+            default:
+                break;
+
+        }
+        return updateExecutionAt;
     }
 }
