@@ -74,11 +74,13 @@
     </delete>
 
     <select id="findDueSchedules" resultType="Schedule">
+        <![CDATA[
         SELECT *
         FROM SCHEDULE
-        WHERE TRUNC(next_execution_at, 'MI') = TRUNC(SYSDATE, 'MI')
+        WHERE TRUNC(next_execution_at, 'MI') <= TRUNC(SYSDATE, 'MI')
           AND is_active = 1
           AND is_locked = 0
+        ]]>
     </select>
 
     <update id="lockSchedule">
