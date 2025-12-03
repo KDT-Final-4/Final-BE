@@ -2,21 +2,35 @@ package com.final_team4.finalbe.schedule.service;
 
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.exception.PermissionDeniedException;
+import com.final_team4.finalbe.schedule.domain.RepeatInterval;
 import com.final_team4.finalbe.schedule.domain.Schedule;
 import com.final_team4.finalbe.schedule.dto.schedule.*;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
-import lombok.RequiredArgsConstructor;
+import com.final_team4.finalbe.trend.dto.TrendCreateContentRequestDto;
+import com.final_team4.finalbe.trend.service.TrendService;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ScheduleService {
 
     private final ScheduleMapper scheduleMapper;
+
+    private final ThreadPoolTaskExecutor scheduleExecutor;
+
+    private final TrendService trendService;
+
+    public ScheduleService(ScheduleMapper scheduleMapper, @Qualifier("scheduleExecutor")ThreadPoolTaskExecutor scheduleExecutor, TrendService trendService) {
+        this.scheduleMapper = scheduleMapper;
+        this.scheduleExecutor = scheduleExecutor;
+        this.trendService = trendService;
+    }
 
     // Create
     @Transactional
@@ -53,6 +67,12 @@ public class ScheduleService {
         return ScheduleUpdateResponseDto.from(entity);
     }
 
+    public void updateIsActive(Long userId, Long id) {
+        Schedule verifiedSchedule = findVerifiedSchedule(userId, id);
+        Boolean status = !verifiedSchedule.getIsActive();
+        scheduleMapper.updateIsActive(userId, id, status);
+    }
+
     // Delete
     @Transactional
     public void deleteById(Long userId, Long id) {
@@ -74,4 +94,57 @@ public class ScheduleService {
         return entity;
     }
 
+    public void processDueSchedules() {
+        // 실행 할 스케쥴 찾기
+        List<Schedule> dueSchedules = scheduleMapper.findDueSchedules();
+
+        // 각 스케줄 처리
+        for (Schedule schedule : dueSchedules) {
+            int updated = scheduleMapper.lockSchedule(schedule.getId());
+            if (updated == 0) {
+                continue; // 이미 누군가 가져간 상태
+            }
+            scheduleExecutor.execute(() -> executeSchedule(schedule));
+        }
+
+    }
+
+    private void executeSchedule(Schedule schedule) {
+        try {
+            // 실제 콘텐츠 생성/게시 로직
+            LocalDateTime updateExecutionAt = schedule.getNextExecutionAt();
+
+            // 컨텐츠 생성하기 위한 준비
+            TrendCreateContentRequestDto requestDto = TrendCreateContentRequestDto.builder()
+                    .keyword("")
+                    .build();
+
+            // 컨텐츠 생성 로직
+            trendService.requestCreateContent(requestDto, schedule.getUserId());
+
+            // 작업 끝난 후 next_execution_at 갱신
+            switch (schedule.getRepeatInterval()) {
+                case RepeatInterval.DAILY:
+                    updateExecutionAt = updateExecutionAt.plusDays(1);
+                    break;
+                case RepeatInterval.WEEKLY:
+                    updateExecutionAt = updateExecutionAt.plusWeeks(1);
+                    break;
+                case RepeatInterval.MONTHLY:
+                    updateExecutionAt = updateExecutionAt.plusMonths(1);
+                    break;
+                case RepeatInterval.YEARLY:
+                    updateExecutionAt = updateExecutionAt.plusYears(1);
+                    break;
+                default:
+                    break;
+
+            }
+            scheduleMapper.updateNextExecution(schedule.getId(), updateExecutionAt);
+
+        } finally {
+            // 락 해제
+            scheduleMapper.unlockSchedule(schedule.getId());
+        }
+    }
 }
