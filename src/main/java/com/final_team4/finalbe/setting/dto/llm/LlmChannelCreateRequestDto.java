@@ -3,6 +3,7 @@ package com.final_team4.finalbe.setting.dto.llm;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -12,11 +13,15 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+/**
+ * LLM 채널 등록 요청 DTO
+ */
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LlmChannelUpdateRequestDto {
+public class LlmChannelCreateRequestDto {
+    @NotBlank
     @Size(max = 50)
     private String name;
 
@@ -30,7 +35,7 @@ public class LlmChannelUpdateRequestDto {
     @Size(max = 200)
     private String baseUrl;
 
-    private Boolean status; // true: 활성, false: 비활성
+    private Boolean status; // true: 활성, false: 비활성 (기본값: true)
 
     @Min(1)
     private Integer maxTokens;

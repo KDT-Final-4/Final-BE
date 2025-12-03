@@ -20,11 +20,12 @@ public class LlmChannel {
     private Integer maxTokens;
     private BigDecimal temperature;
     private BigDecimal topP;
+    private String prompt; // CLOB 타입
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public void update(String name, String modelName, String apiKey, String baseUrl, 
-                      Boolean status, Integer maxTokens, BigDecimal temperature, BigDecimal topP) {
+                      Boolean status, Integer maxTokens, BigDecimal temperature, BigDecimal topP, String prompt) {
         if (name != null) this.name = name;
         if (modelName != null) this.modelName = modelName;
         if (apiKey != null) this.apiKey = apiKey;
@@ -33,6 +34,7 @@ public class LlmChannel {
         if (maxTokens != null) this.maxTokens = maxTokens;
         if (temperature != null) this.temperature = temperature;
         if (topP != null) this.topP = topP;
+        if (prompt != null) this.prompt = prompt;
         this.updatedAt = LocalDateTime.now();
     }
 
