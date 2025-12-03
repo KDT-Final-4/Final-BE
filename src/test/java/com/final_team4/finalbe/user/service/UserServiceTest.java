@@ -79,7 +79,7 @@ class UserServiceTest {
         assertThat(defaultSchedule.getRetryOnFail()).isZero();
 
         assertThat(defaultChannel).isNotNull();
-        assertThat(defaultChannel.getStatus()).isTrue();
+        assertThat(defaultChannel.getStatus()).isFalse();
         assertThat(defaultChannel.getName()).isEqualTo("설정 필요");
         assertThat(defaultChannel.getModelName()).isEqualTo("설정 필요");
         assertThat(defaultChannel.getApiKey()).isEqualTo("설정 필요");

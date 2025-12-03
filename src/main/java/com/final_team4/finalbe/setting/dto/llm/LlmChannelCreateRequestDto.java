@@ -35,7 +35,7 @@ public class LlmChannelCreateRequestDto {
     @Size(max = 200)
     private String baseUrl;
 
-    private Boolean status; // true: 활성, false: 비활성 (기본값: true)
+    private Boolean status; // true: 활성, false: 비활성 (기본값: false)
 
     @Min(1)
     private Integer maxTokens;
