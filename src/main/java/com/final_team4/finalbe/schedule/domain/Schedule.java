@@ -9,14 +9,21 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Schedule {
-    private Long id;
-    private Long userId;
-    private String title;
-    private LocalDateTime startTime;
-    private RepeatInterval repeatInterval;
-    private LocalDateTime lastExecutedAt;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Long id;                        // IDENTITY 컬럼
+    private Long userId;                    // USER_ID
+    private String title;                   // TITLE
+
+    private LocalDateTime startTime;        // START_TIME
+    private RepeatInterval repeatInterval;  // REPEAT_INTERVAL (Enum)
+
+    private LocalDateTime nextExecutionAt;  // NEXT_EXECUTION_AT
+    private LocalDateTime lastExecutedAt;   // LAST_EXECUTED_AT
+
+    private Boolean isActive;               // IS_ACTIVE (1/0)
+    private Boolean isLocked;               // IS_LOCKED (1/0)
+
+    private LocalDateTime createdAt;        // CREATED_AT
+    private LocalDateTime updatedAt;        // UPDATED_AT
 
     public void update(String title, LocalDateTime startTime, RepeatInterval repeatInterval) {
         if (title != null) this.title = title;

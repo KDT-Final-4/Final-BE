@@ -3,7 +3,10 @@ package com.final_team4.finalbe.user.service;
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.exception.DuplicateEmailException;
 import com.final_team4.finalbe._core.exception.UnauthorizedException;
-import com.final_team4.finalbe._core.security.JwtPrincipal;
+import com.final_team4.finalbe.schedule.dto.scheduleSetting.ScheduleSettingCreateRequestDto;
+import com.final_team4.finalbe.schedule.service.ScheduleSettingService;
+import com.final_team4.finalbe.setting.dto.llm.LlmChannelCreateRequestDto;
+import com.final_team4.finalbe.setting.service.llm.LlmChannelService;
 import com.final_team4.finalbe.user.domain.User;
 import com.final_team4.finalbe.user.dto.PasswordUpdateRequest;
 import com.final_team4.finalbe.user.dto.UserRegisterRequestDto;
@@ -18,17 +21,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.final_team4.finalbe._core.exception.BadRequestException;
+import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Validated
 public class UserService {
 
     private final UserMapper userMapper;
     private final UserInfoMapper userInfoMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ScheduleSettingService scheduleSettingService;
+    private final LlmChannelService llmChannelService;
 
     @Transactional
     public UserSummaryResponse register(@Valid UserRegisterRequestDto request) {
@@ -39,6 +47,30 @@ public class UserService {
                 .password(encoded)
                 .build();
         userMapper.insert(user);
+
+
+        ScheduleSettingCreateRequestDto defaultSetting = ScheduleSettingCreateRequestDto.builder()
+                .isRun(false)
+                .maxDailyRuns(0L)
+                .retryOnFail(0L)
+                .build();
+        scheduleSettingService.create(user.getId(), defaultSetting);
+        //스케쥴 세팅 기본값 채워주기
+
+        LlmChannelCreateRequestDto defaultLlmSetting = LlmChannelCreateRequestDto.builder()
+                .name("설정 필요")
+                .modelName("설정 필요")
+                .apiKey("설정 필요")
+                .baseUrl("설정 필요")
+                .status(false)
+                .maxTokens(2000)
+                .temperature(BigDecimal.valueOf(0.9))
+                .topP(BigDecimal.valueOf(0.7))
+                .prompt("설정 필요")
+                .build();
+        llmChannelService.create(user.getId(), defaultLlmSetting);
+        //llm 기본값 채워주기
+
         return userInfoMapper.toUserSummary(user);
     }
 
@@ -58,13 +90,10 @@ public class UserService {
 
     @Transactional
     public User updateProfile(Long userId, UserUpdateRequest request ) {
-        User user = Optional.ofNullable(userMapper.findAvailableById(userId))
-                .orElseThrow(()->new ContentNotFoundException("사용자를 찾을 수 없습니다."));
-
 
         int updated = userMapper.updateProfile(userId,request.getName());
         if(updated == 0){
-            throw new ContentNotFoundException("사용자를 찾을 수 없습니다.");
+            throw new ContentNotFoundException("업데이트를 실패했습니다.");
         }
 
         return Optional.ofNullable(userMapper.findAvailableById(userId))

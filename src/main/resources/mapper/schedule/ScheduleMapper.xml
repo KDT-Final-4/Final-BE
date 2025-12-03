@@ -11,14 +11,14 @@
             title,
             start_time,
             repeat_interval,
-            CREATED_AT
+            next_execution_at
         ) VALUES (
             #{userId},
             #{title},
             #{startTime},
             #{repeatInterval},
-            sysdate
-         )
+            #{nextExecutionAt}
+        )
     </insert>
     <!--    Read - List -->
     <select id="findAll" resultType="Schedule" parameterType="long">
@@ -51,6 +51,18 @@
         and
             USER_ID = #{userId}
     </update>
+
+    <update id="updateIsActive" >
+        UPDATE
+            SCHEDULE
+        SET
+            IS_ACTIVE = #{isActive}
+        WHERE
+            id = #{id}
+        and
+            USER_ID = #{userId}
+    </update>
+
     <!--    Delete-->
     <delete id="deleteById" parameterType="long">
         DELETE FROM
@@ -61,4 +73,40 @@
             USER_ID = #{userId}
     </delete>
 
+    <select id="findDueSchedules" resultType="Schedule">
+        <![CDATA[
+        SELECT *
+        FROM SCHEDULE
+        WHERE TRUNC(next_execution_at, 'MI') <= TRUNC(SYSDATE, 'MI')
+          AND is_active = 1
+          AND is_locked = 0
+        ]]>
+    </select>
+
+    <update id="lockSchedule">
+        UPDATE SCHEDULE
+        SET
+            is_locked = 1
+        WHERE
+            id = #{id}
+        AND
+            is_locked = 0
+    </update>
+
+    <update id="unlockSchedule">
+        UPDATE SCHEDULE
+        SET
+            is_locked = 0
+        WHERE
+            id = #{id}
+    </update>
+
+    <update id="updateNextExecution">
+        UPDATE SCHEDULE
+        SET
+            last_executed_at = sysdate,
+            next_execution_at = #{nextExecutionAt},
+            updated_at = sysdate
+        WHERE id = #{id}
+    </update>
 </mapper>
