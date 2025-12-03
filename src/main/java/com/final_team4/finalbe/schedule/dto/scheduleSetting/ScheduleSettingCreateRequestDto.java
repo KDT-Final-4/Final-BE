@@ -27,4 +27,5 @@ public class ScheduleSettingCreateRequestDto {
                 .updatedAt(LocalDateTime.now())
                 .build();
     }
+
 }

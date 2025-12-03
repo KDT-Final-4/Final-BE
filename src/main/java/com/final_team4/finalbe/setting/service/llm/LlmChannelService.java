@@ -92,15 +92,19 @@ public class LlmChannelService {
      */
     @Transactional
     public LlmChannelDetailResponseDto create(Long userId, LlmChannelCreateRequestDto requestDto) {
+
+        Boolean requestedStatus = requestDto.getStatus();
+        boolean active = Boolean.TRUE.equals(requestedStatus); // null/false일때는 비활성
+
+        // 활성일 때만 API 키 필수
+        if (active && !StringUtils.hasText(requestDto.getApiKey())) {
+            throw new BadRequestException("API 키는 필수입니다.");
+        }
+
         // 중복 체크: 사용자당 하나의 설정만 허용
         LlmChannel existing = llmChannelMapper.findByUserId(userId);
         if (existing != null) {
             throw new BadRequestException("이미 LLM 설정이 존재합니다. 수정 API를 사용해주세요.");
-        }
-
-        // API 키 필수 검증
-        if (!StringUtils.hasText(requestDto.getApiKey())) {
-            throw new BadRequestException("API 키는 필수입니다.");
         }
 
         // baseUrl이 없으면 모델별 기본값 설정
@@ -124,7 +128,7 @@ public class LlmChannelService {
 
         Boolean status = requestDto.getStatus() != null 
                 ? requestDto.getStatus() 
-                : true; // 기본값: true
+                : false; // 기본값: false
 
         LocalDateTime now = LocalDateTime.now();
         LlmChannel entity = LlmChannel.builder()
