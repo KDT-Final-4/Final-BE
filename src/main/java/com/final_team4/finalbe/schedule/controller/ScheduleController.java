@@ -46,4 +46,10 @@ public class ScheduleController {
     public void delete(@AuthenticationPrincipal JwtPrincipal principal, @PathVariable Long id) {
         scheduleService.deleteById(principal.userId(), id);
     }
+
+    @PutMapping("/active/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateIsActive(@AuthenticationPrincipal JwtPrincipal principal, @PathVariable Long id) {
+        scheduleService.updateIsActive(principal.userId(), id);
+    }
 }
