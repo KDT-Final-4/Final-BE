@@ -124,7 +124,7 @@ public class LlmChannelService {
 
         Boolean status = requestDto.getStatus() != null 
                 ? requestDto.getStatus() 
-                : true; // 기본값: true
+                : false; // 기본값: false
 
         LocalDateTime now = LocalDateTime.now();
         LlmChannel entity = LlmChannel.builder()
