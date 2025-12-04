@@ -25,7 +25,7 @@ public class ProductService {
         // 카테고리 검사
         Long categoryId = productCategoryService.findIdByName(requestDto.getCategory());
 
-        // 엔티티 변환
+        // 엔티티 변환: categoryName -> categoryId로 대입하기 위함.
         Product entity = requestDto.toEntity(categoryId);
 
         productMapper.insert(entity);
