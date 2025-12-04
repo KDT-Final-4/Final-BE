@@ -61,11 +61,9 @@ public class UserService {
                 .name("설정 필요")
                 .modelName("설정 필요")
                 .apiKey("설정 필요")
-                .baseUrl("설정 필요")
                 .status(false)
                 .maxTokens(2000)
                 .temperature(BigDecimal.valueOf(0.9))
-                .topP(BigDecimal.valueOf(0.7))
                 .prompt("설정 필요")
                 .build();
         llmChannelService.create(user.getId(), defaultLlmSetting);

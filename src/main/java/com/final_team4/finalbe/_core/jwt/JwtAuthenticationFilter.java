@@ -47,15 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   }
 
   private String extractToken(HttpServletRequest request) {
-    String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-      if (StringUtils.hasText(header) && header.startsWith(BEARER_PREFIX)) {
-          String token = header.substring(BEARER_PREFIX.length());
-          if (StringUtils.hasText(token)) {
-              return token.trim();
-          }
-    }
 
-      // 2) 헤더에 없으면 쿠키에서 ACCESS_TOKEN 찾기
       Cookie[] cookies = request.getCookies();
       if (cookies != null) {
           for (Cookie cookie : cookies) {
