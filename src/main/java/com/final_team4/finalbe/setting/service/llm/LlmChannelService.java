@@ -105,11 +105,6 @@ public class LlmChannelService {
             throw new BadRequestException("이미 LLM 설정이 존재합니다. 수정 API를 사용해주세요.");
         }
 
-        // API 키 필수 검증
-        if (!StringUtils.hasText(requestDto.getApiKey())) {
-            throw new BadRequestException("API 키는 필수입니다.");
-        }
-
         // 기본값 설정
         Integer maxTokens = requestDto.getMaxTokens() != null 
                 ? requestDto.getMaxTokens() 

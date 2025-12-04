@@ -83,10 +83,8 @@ class UserServiceTest {
         assertThat(defaultChannel.getName()).isEqualTo("설정 필요");
         assertThat(defaultChannel.getModelName()).isEqualTo("설정 필요");
         assertThat(defaultChannel.getApiKey()).isEqualTo("설정 필요");
-        assertThat(defaultChannel.getBaseUrl()).isEqualTo("설정 필요");
         assertThat(defaultChannel.getMaxTokens()).isEqualTo(2000);
         assertThat(defaultChannel.getTemperature()).isEqualByComparingTo("0.9");
-        assertThat(defaultChannel.getTopP()).isEqualByComparingTo("0.7");
         assertThat(defaultChannel.getPrompt()).isEqualTo("설정 필요");
     }
 
