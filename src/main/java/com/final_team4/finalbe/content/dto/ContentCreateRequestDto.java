@@ -32,10 +32,8 @@ public class ContentCreateRequestDto {
     @NotNull
     private ContentGenType generationType;
 
-    @NotNull
     private String contentLink;
 
-    @NotNull
-    private Long trendId;
+    private String keyword;
 
 }

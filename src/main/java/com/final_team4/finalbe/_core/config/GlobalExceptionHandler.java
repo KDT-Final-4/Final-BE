@@ -81,4 +81,18 @@ public class GlobalExceptionHandler {
 
         return problemDetail;
     }
+
+    // 400: 존재하지 않는 jobId 요청 시 발생
+    @ExceptionHandler(InvalidJobIdException.class)
+    public ProblemDetail handleInvalidJobIdException(InvalidJobIdException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                e.getMessage()
+        );
+
+        problemDetail.setTitle("Invalid Job ID");
+        problemDetail.setType(URI.create("/errors/invalid-job-id"));
+
+        return problemDetail;
+    }
 }

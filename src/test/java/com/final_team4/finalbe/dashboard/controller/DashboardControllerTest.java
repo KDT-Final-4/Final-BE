@@ -11,6 +11,7 @@ import com.final_team4.finalbe.dashboard.dto.DashboardStatusGetResponseDto;
 import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
 import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
 import com.final_team4.finalbe.dashboard.service.DashboardService;
+import com.final_team4.finalbe.link.mapper.LinkMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import com.final_team4.finalbe.notification.mapper.NotificationMapper;
@@ -104,6 +105,9 @@ public class DashboardControllerTest {
 
     @MockitoBean
     NotificationMapper notificationMapper;
+
+    @MockitoBean
+    LinkMapper linkMapper;
 
     @AfterEach
     void clearSecurityContext() {

@@ -145,7 +145,7 @@ class ContentControllerTest {
                   "status": "PENDING",
                   "generationType": "AUTO",
                   "contentLink": "https://example.com/content/1",
-                  "trendId": 1
+                  "keyword": "키워드"
                 }
                 """;
 
