@@ -14,6 +14,7 @@
         MAX_TOKENS,
         TEMPERATURE,
         PROMPT,
+        GENERATION_TYPE,
         CREATED_AT,
         UPDATED_AT
     </sql>
@@ -50,6 +51,7 @@
             MAX_TOKENS = #{maxTokens},
             TEMPERATURE = #{temperature},
             PROMPT = #{prompt},
+            GENERATION_TYPE = #{generationType},
             UPDATED_AT = SYSTIMESTAMP
         WHERE
             ID = #{id} AND 
@@ -67,6 +69,7 @@
                 MAX_TOKENS,
                 TEMPERATURE,
                 PROMPT,
+                GENERATION_TYPE,
                 CREATED_AT,
                 UPDATED_AT
         )
@@ -79,6 +82,7 @@
                 #{maxTokens},
                 #{temperature},
                 #{prompt},
+                #{generationType},
                 SYSTIMESTAMP,
                 SYSTIMESTAMP
             )

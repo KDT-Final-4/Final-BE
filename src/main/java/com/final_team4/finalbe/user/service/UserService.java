@@ -3,6 +3,7 @@ package com.final_team4.finalbe.user.service;
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.exception.DuplicateEmailException;
 import com.final_team4.finalbe._core.exception.UnauthorizedException;
+import com.final_team4.finalbe.content.domain.ContentGenType;
 import com.final_team4.finalbe.schedule.dto.scheduleSetting.ScheduleSettingCreateRequestDto;
 import com.final_team4.finalbe.schedule.service.ScheduleSettingService;
 import com.final_team4.finalbe.setting.dto.llm.LlmChannelCreateRequestDto;
@@ -65,6 +66,7 @@ public class UserService {
                 .maxTokens(2000)
                 .temperature(BigDecimal.valueOf(0.9))
                 .prompt("설정 필요")
+                .generationType(ContentGenType.AUTO)
                 .build();
         llmChannelService.create(user.getId(), defaultLlmSetting);
         //llm 기본값 채워주기

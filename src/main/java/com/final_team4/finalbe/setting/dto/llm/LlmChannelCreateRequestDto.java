@@ -1,5 +1,6 @@
 package com.final_team4.finalbe.setting.dto.llm;
 
+import com.final_team4.finalbe.content.domain.ContentGenType;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
@@ -42,6 +43,9 @@ public class LlmChannelCreateRequestDto {
     private BigDecimal temperature;
 
     private String prompt; // CLOB 타입 (긴 텍스트)
+
+    @NotNull
+    private ContentGenType generationType; // 자동생성/수동생성
     
     // 주의: userId는 보안상 Request Body에 포함하지 않고, 
     // 컨트롤러에서 @AuthenticationPrincipal로 주입받아 사용
