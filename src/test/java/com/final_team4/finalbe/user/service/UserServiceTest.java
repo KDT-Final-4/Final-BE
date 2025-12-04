@@ -5,6 +5,7 @@ import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.exception.DuplicateEmailException;
 import com.final_team4.finalbe._core.exception.UnauthorizedException;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
+import com.final_team4.finalbe.content.domain.ContentGenType;
 import com.final_team4.finalbe.schedule.domain.ScheduleSetting;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
 import com.final_team4.finalbe.setting.domain.llm.LlmChannel;
@@ -86,6 +87,7 @@ class UserServiceTest {
         assertThat(defaultChannel.getMaxTokens()).isEqualTo(2000);
         assertThat(defaultChannel.getTemperature()).isEqualByComparingTo("0.9");
         assertThat(defaultChannel.getPrompt()).isEqualTo("설정 필요");
+        assertThat(defaultChannel.getGenerationType()).isEqualTo(ContentGenType.AUTO);
     }
 
     @DisplayName("회원가입 실패 - 이메일 중복 시 예외 발생")

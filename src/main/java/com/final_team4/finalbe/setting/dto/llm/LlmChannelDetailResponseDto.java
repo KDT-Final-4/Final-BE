@@ -1,5 +1,6 @@
 package com.final_team4.finalbe.setting.dto.llm;
 
+import com.final_team4.finalbe.content.domain.ContentGenType;
 import com.final_team4.finalbe.setting.domain.llm.LlmChannel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class LlmChannelDetailResponseDto {
     private BigDecimal temperature;
     private String prompt; // CLOB 타입
     private String apiKey; // 마스킹 처리된 값
+    private ContentGenType generationType; // 자동생성/수동생성
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -33,6 +35,7 @@ public class LlmChannelDetailResponseDto {
                 .temperature(entity.getTemperature())
                 .prompt(entity.getPrompt())
                 .apiKey(maskApiKey(entity.getApiKey()))
+                .generationType(entity.getGenerationType())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();

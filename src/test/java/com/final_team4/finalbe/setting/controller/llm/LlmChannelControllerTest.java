@@ -4,6 +4,7 @@ import com.final_team4.finalbe._core.config.GlobalExceptionHandler;
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe._core.exception.BadRequestException;
+import com.final_team4.finalbe.content.domain.ContentGenType;
 import com.final_team4.finalbe.setting.dto.llm.LlmChannelCreateRequestDto;
 import com.final_team4.finalbe.setting.dto.llm.LlmChannelDetailResponseDto;
 import com.final_team4.finalbe.setting.dto.llm.LlmChannelUpdateRequestDto;
@@ -104,6 +105,7 @@ class LlmChannelControllerTest {
         .maxTokens(2000)
         .temperature(new BigDecimal("0.7"))
         .apiKey("****************1234")
+        .generationType(ContentGenType.AUTO)
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
         .build();
@@ -121,7 +123,8 @@ class LlmChannelControllerTest {
         .andExpect(jsonPath("$.modelName").value("gpt-4"))
         .andExpect(jsonPath("$.maxTokens").value(2000))
         .andExpect(jsonPath("$.temperature").value(0.7))
-        .andExpect(jsonPath("$.status").value(true));
+        .andExpect(jsonPath("$.status").value(true))
+        .andExpect(jsonPath("$.generationType").value("AUTO"));
 
     verify(llmChannelService).findByUserId(userId);
   }
@@ -165,6 +168,7 @@ class LlmChannelControllerTest {
         .maxTokens(2000)
         .temperature(new BigDecimal("0.7"))
         .prompt("You are a helpful assistant.")
+        .generationType(ContentGenType.AUTO)
         .build();
 
     LlmChannelDetailResponseDto responseDto = LlmChannelDetailResponseDto.builder()
@@ -177,6 +181,7 @@ class LlmChannelControllerTest {
         .temperature(new BigDecimal("0.7"))
         .prompt("You are a helpful assistant.")
         .apiKey("****************5678")
+        .generationType(ContentGenType.AUTO)
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
         .build();
@@ -197,7 +202,8 @@ class LlmChannelControllerTest {
         .andExpect(jsonPath("$.maxTokens").value(2000))
         .andExpect(jsonPath("$.temperature").value(0.7))
         .andExpect(jsonPath("$.prompt").value("You are a helpful assistant."))
-        .andExpect(jsonPath("$.status").value(true));
+        .andExpect(jsonPath("$.status").value(true))
+        .andExpect(jsonPath("$.generationType").value("AUTO"));
 
     verify(llmChannelService).create(eq(userId), any(LlmChannelCreateRequestDto.class));
   }
@@ -210,6 +216,7 @@ class LlmChannelControllerTest {
         .name("Test LLM")
         .modelName("gpt-4")
         .apiKey("sk-test-key")
+        .generationType(ContentGenType.AUTO)
         .build();
 
     // when & then
@@ -230,6 +237,7 @@ class LlmChannelControllerTest {
         // name이 null (필수 필드)
         .modelName("gpt-4")
         .apiKey("sk-test-key")
+        .generationType(ContentGenType.AUTO)
         .build();
 
     // when & then
@@ -251,6 +259,7 @@ class LlmChannelControllerTest {
         .name("Test LLM")
         // modelName이 null (필수 필드)
         .apiKey("sk-test-key")
+        .generationType(ContentGenType.AUTO)
         .build();
 
     // when & then
@@ -271,6 +280,7 @@ class LlmChannelControllerTest {
     LlmChannelCreateRequestDto requestDto = LlmChannelCreateRequestDto.builder()
         .name("Test LLM")
         .modelName("gpt-4")
+        .generationType(ContentGenType.AUTO)
         // apiKey가 null (비즈니스 로직 검증)
         .build();
 
@@ -299,6 +309,7 @@ class LlmChannelControllerTest {
         .name("Test LLM")
         .modelName("gpt-4")
         .apiKey("sk-test-key-12345678")
+        .generationType(ContentGenType.AUTO)
         .build();
 
     given(llmChannelService.create(eq(userId), any(LlmChannelCreateRequestDto.class)))
@@ -330,6 +341,7 @@ class LlmChannelControllerTest {
         .maxTokens(3000)
         .temperature(new BigDecimal("0.85"))
         .prompt("Updated prompt")
+        .generationType(ContentGenType.MANUAL)
         .build();
 
     LlmChannelDetailResponseDto responseDto = LlmChannelDetailResponseDto.builder()
@@ -342,6 +354,7 @@ class LlmChannelControllerTest {
         .temperature(new BigDecimal("0.85"))
         .prompt("Updated prompt")
         .apiKey("****************1234")
+        .generationType(ContentGenType.MANUAL)
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
         .build();
@@ -362,7 +375,8 @@ class LlmChannelControllerTest {
         .andExpect(jsonPath("$.maxTokens").value(3000))
         .andExpect(jsonPath("$.temperature").value(0.85))
         .andExpect(jsonPath("$.prompt").value("Updated prompt"))
-        .andExpect(jsonPath("$.status").value(true));
+        .andExpect(jsonPath("$.status").value(true))
+        .andExpect(jsonPath("$.generationType").value("MANUAL"));
 
     verify(llmChannelService).update(eq(userId), any(LlmChannelUpdateRequestDto.class));
   }
@@ -373,6 +387,7 @@ class LlmChannelControllerTest {
     // given
     LlmChannelUpdateRequestDto requestDto = LlmChannelUpdateRequestDto.builder()
         .modelName("gpt-4")
+        .generationType(ContentGenType.AUTO)
         .build();
 
     // when & then
@@ -391,6 +406,7 @@ class LlmChannelControllerTest {
 
     LlmChannelUpdateRequestDto requestDto = LlmChannelUpdateRequestDto.builder()
         .name("Test")
+        .generationType(ContentGenType.AUTO)
         // modelName이 null (필수 필드)
         .build();
 
@@ -411,6 +427,7 @@ class LlmChannelControllerTest {
 
     LlmChannelUpdateRequestDto requestDto = LlmChannelUpdateRequestDto.builder()
         .modelName("gpt-4")
+        .generationType(ContentGenType.AUTO)
         .build();
 
     given(llmChannelService.update(eq(userId), any(LlmChannelUpdateRequestDto.class)))
@@ -434,7 +451,8 @@ class LlmChannelControllerTest {
     String requestBody = """
         {
           "modelName": "gpt-4",
-          "temperature": 3.0
+          "temperature": 3.0,
+          "generationType": "AUTO"
         }
         """;
 
