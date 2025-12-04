@@ -9,6 +9,7 @@ import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
 import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
 import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
+import com.final_team4.finalbe.link.mapper.LinkMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import com.final_team4.finalbe.notification.mapper.NotificationMapper;
@@ -131,6 +132,9 @@ class UserControllerTest {
 
     @MockitoBean
     NotificationMapper notificationMapper;
+
+    @MockitoBean
+    LinkMapper linkMapper;
 
 
 
