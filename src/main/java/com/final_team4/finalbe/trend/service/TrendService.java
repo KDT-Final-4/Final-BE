@@ -23,7 +23,7 @@ public class TrendService {
 
     private final TrendMapper trendMapper;
     private final UploadChannelService uploadChannelService;
-    private final RestClientCallerService<TrendCreateContentPayloadDto> restClientCallerService;
+    private final RestClientCallerService restClientCallerService;
 
     // 인기검색어 저장(python 호출용)
     @Transactional
