@@ -14,11 +14,9 @@ public class LlmChannelDetailResponseDto {
     private Long userId;
     private String name;
     private String modelName;
-    private String baseUrl;
     private Boolean status;
     private Integer maxTokens;
     private BigDecimal temperature;
-    private BigDecimal topP;
     private String prompt; // CLOB 타입
     private String apiKey; // 마스킹 처리된 값
     private LocalDateTime createdAt;
@@ -30,11 +28,9 @@ public class LlmChannelDetailResponseDto {
                 .userId(entity.getUserId())
                 .name(entity.getName())
                 .modelName(entity.getModelName())
-                .baseUrl(entity.getBaseUrl())
                 .status(entity.getStatus())
                 .maxTokens(entity.getMaxTokens())
                 .temperature(entity.getTemperature())
-                .topP(entity.getTopP())
                 .prompt(entity.getPrompt())
                 .apiKey(maskApiKey(entity.getApiKey()))
                 .createdAt(entity.getCreatedAt())

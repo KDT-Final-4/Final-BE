@@ -70,11 +70,9 @@ public class LlmChannelService {
                 requestDto.getName(),
                 requestDto.getModelName(),
                 requestDto.getApiKey(),
-                requestDto.getBaseUrl(),
                 requestDto.getStatus(),
                 requestDto.getMaxTokens(),
                 requestDto.getTemperature(),
-                requestDto.getTopP(),
                 requestDto.getPrompt()
         );
 
@@ -107,10 +105,9 @@ public class LlmChannelService {
             throw new BadRequestException("이미 LLM 설정이 존재합니다. 수정 API를 사용해주세요.");
         }
 
-        // baseUrl이 없으면 모델별 기본값 설정
-        String baseUrl = requestDto.getBaseUrl();
-        if (!StringUtils.hasText(baseUrl)) {
-            baseUrl = getDefaultBaseUrl(requestDto.getModelName());
+        // API 키 필수 검증
+        if (!StringUtils.hasText(requestDto.getApiKey())) {
+            throw new BadRequestException("API 키는 필수입니다.");
         }
 
         // 기본값 설정
@@ -121,10 +118,6 @@ public class LlmChannelService {
         BigDecimal temperature = requestDto.getTemperature() != null 
                 ? requestDto.getTemperature() 
                 : BigDecimal.valueOf(0.7); // 기본값: 0.7
-        
-        BigDecimal topP = requestDto.getTopP() != null 
-                ? requestDto.getTopP() 
-                : BigDecimal.valueOf(0.9); // 기본값: 0.9
 
         Boolean status = requestDto.getStatus() != null 
                 ? requestDto.getStatus() 
@@ -136,11 +129,9 @@ public class LlmChannelService {
                 .name(requestDto.getName())
                 .modelName(requestDto.getModelName())
                 .apiKey(requestDto.getApiKey())
-                .baseUrl(baseUrl)
                 .status(status)
                 .maxTokens(maxTokens)
                 .temperature(temperature)
-                .topP(topP)
                 .prompt(requestDto.getPrompt())
                 .createdAt(now)
                 .updatedAt(now)
@@ -148,37 +139,6 @@ public class LlmChannelService {
 
         llmChannelMapper.insert(entity);
         return LlmChannelDetailResponseDto.from(entity);
-    }
-
-    /**
-     * 모델명에 따른 기본 baseUrl 반환
-     * @param modelName 모델명
-     * @return 기본 baseUrl
-     */
-    private String getDefaultBaseUrl(String modelName) {
-        if (modelName == null) {
-            return "https://api.openai.com/v1"; // 기본값
-        }
-
-        String lowerModelName = modelName.toLowerCase();
-
-        // OpenAI 모델 (gpt, gpt-3.5, gpt-4 등)
-        if (lowerModelName.startsWith("gpt") || lowerModelName.contains("openai")) {
-            return "https://api.openai.com/v1";
-        }
-
-        // Anthropic 모델 (claude 등)
-        if (lowerModelName.contains("claude") || lowerModelName.contains("anthropic")) {
-            return "https://api.anthropic.com/v1";
-        }
-
-        // Google 모델 (gemini, palm 등)
-        if (lowerModelName.contains("gemini") || lowerModelName.contains("palm") || lowerModelName.contains("google")) {
-            return "https://generativelanguage.googleapis.com/v1";
-        }
-
-        // 기본값: OpenAI
-        return "https://api.openai.com/v1";
     }
 }
 

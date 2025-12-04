@@ -10,11 +10,9 @@
         NAME,
         MODEL_NAME,
         API_KEY,
-        BASE_URL,
         STATUS,
         MAX_TOKENS,
         TEMPERATURE,
-        TOP_P,
         PROMPT,
         CREATED_AT,
         UPDATED_AT
@@ -48,11 +46,9 @@
             NAME = #{name},
             MODEL_NAME = #{modelName},
             API_KEY = #{apiKey},
-            BASE_URL = #{baseUrl},
             STATUS = #{status},
             MAX_TOKENS = #{maxTokens},
             TEMPERATURE = #{temperature},
-            TOP_P = #{topP},
             PROMPT = #{prompt},
             UPDATED_AT = SYSTIMESTAMP
         WHERE
@@ -67,25 +63,21 @@
                 NAME,
                 MODEL_NAME,
                 API_KEY,
-                BASE_URL,
                 STATUS,
-            MAX_TOKENS,
-            TEMPERATURE,
-            TOP_P,
-            PROMPT,
-            CREATED_AT,
-            UPDATED_AT
+                MAX_TOKENS,
+                TEMPERATURE,
+                PROMPT,
+                CREATED_AT,
+                UPDATED_AT
         )
         VALUES (
                 #{userId},
                 #{name},
                 #{modelName},
                 #{apiKey},
-                #{baseUrl},
                 #{status},
                 #{maxTokens},
                 #{temperature},
-                #{topP},
                 #{prompt},
                 SYSTIMESTAMP,
                 SYSTIMESTAMP

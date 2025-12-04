@@ -73,11 +73,9 @@ class LlmChannelServiceTest {
         .name("Updated LLM Channel")
         .modelName("gpt-4-turbo")
         .apiKey("sk-updated-key-1234")
-        .baseUrl("https://api.openai.com/v1")
         .status(true)
         .maxTokens(3000)
         .temperature(new BigDecimal("0.85"))
-        .topP(new BigDecimal("0.90"))
         .prompt("Updated prompt")
         .build();
 
@@ -90,7 +88,6 @@ class LlmChannelServiceTest {
     assertThat(result.getModelName()).isEqualTo("gpt-4-turbo");
     assertThat(result.getMaxTokens()).isEqualTo(3000);
     assertThat(result.getTemperature()).isEqualByComparingTo(new BigDecimal("0.85"));
-    assertThat(result.getTopP()).isEqualByComparingTo(new BigDecimal("0.90"));
     assertThat(result.getStatus()).isTrue();
     assertThat(result.getPrompt()).isEqualTo("Updated prompt");
   }
@@ -173,11 +170,9 @@ class LlmChannelServiceTest {
         .name("New LLM Channel")
         .modelName("gpt-4")
         .apiKey("sk-new-key-12345678")
-        .baseUrl("https://api.openai.com/v1")
         .status(true)
         .maxTokens(2000)
         .temperature(new BigDecimal("0.7"))
-        .topP(new BigDecimal("0.9"))
         .prompt("You are a helpful assistant.")
         .build();
 
@@ -190,11 +185,9 @@ class LlmChannelServiceTest {
     assertThat(result.getName()).isEqualTo("New LLM Channel");
     assertThat(result.getModelName()).isEqualTo("gpt-4");
     assertThat(result.getApiKey()).isNotNull(); // 마스킹 처리됨
-    assertThat(result.getBaseUrl()).isEqualTo("https://api.openai.com/v1");
     assertThat(result.getStatus()).isTrue();
     assertThat(result.getMaxTokens()).isEqualTo(2000);
     assertThat(result.getTemperature()).isEqualByComparingTo(new BigDecimal("0.7"));
-    assertThat(result.getTopP()).isEqualByComparingTo(new BigDecimal("0.9"));
     assertThat(result.getPrompt()).isEqualTo("You are a helpful assistant.");
 
     // DB에 실제로 저장되었는지 확인
@@ -212,7 +205,7 @@ class LlmChannelServiceTest {
         .name("Minimal LLM Channel")
         .modelName("gpt-4")
         .apiKey("sk-minimal-key-12345678")
-        // baseUrl, maxTokens, temperature, topP, status는 null
+        // maxTokens, temperature, status는 null
         .build();
 
     // when
@@ -220,47 +213,9 @@ class LlmChannelServiceTest {
 
     // then - 기본값 확인
     assertThat(result).isNotNull();
-    assertThat(result.getBaseUrl()).isEqualTo("https://api.openai.com/v1"); // 모델별 기본값
     assertThat(result.getMaxTokens()).isEqualTo(2000); // 기본값
     assertThat(result.getTemperature()).isEqualByComparingTo(new BigDecimal("0.7")); // 기본값
-    assertThat(result.getTopP()).isEqualByComparingTo(new BigDecimal("0.9")); // 기본값
     assertThat(result.getStatus()).isTrue(); // 기본값
-  }
-
-  @DisplayName("성공_baseUrl 모델별 자동 설정 확인 (Anthropic)")
-  @Test
-  void create_baseUrlAutoDetected_anthropic() {
-    // given
-    LlmChannelCreateRequestDto createRequest = LlmChannelCreateRequestDto.builder()
-        .name("Claude Channel")
-        .modelName("claude-3-opus")
-        .apiKey("sk-ant-key-12345678")
-        // baseUrl은 null
-        .build();
-
-    // when
-    LlmChannelDetailResponseDto result = llmChannelService.create(TEST_USER_ID, createRequest);
-
-    // then
-    assertThat(result.getBaseUrl()).isEqualTo("https://api.anthropic.com/v1");
-  }
-
-  @DisplayName("성공_baseUrl 모델별 자동 설정 확인 (Google)")
-  @Test
-  void create_baseUrlAutoDetected_google() {
-    // given
-    LlmChannelCreateRequestDto createRequest = LlmChannelCreateRequestDto.builder()
-        .name("Gemini Channel")
-        .modelName("gemini-pro")
-        .apiKey("sk-google-key-12345678")
-        // baseUrl은 null
-        .build();
-
-    // when
-    LlmChannelDetailResponseDto result = llmChannelService.create(TEST_USER_ID, createRequest);
-
-    // then
-    assertThat(result.getBaseUrl()).isEqualTo("https://generativelanguage.googleapis.com/v1");
   }
 
   @DisplayName("실패_이미 LLM 설정이 존재하면 BadRequestException 발생")
@@ -320,11 +275,9 @@ class LlmChannelServiceTest {
         .name("Test LLM Channel")
         .modelName("gpt-4")
         .apiKey("sk-test-key-12345678")
-        .baseUrl("https://api.openai.com/v1")
         .status(false)
         .maxTokens(2000)
         .temperature(new BigDecimal("0.7"))
-        .topP(new BigDecimal("0.8"))
         .prompt("Test prompt")
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())

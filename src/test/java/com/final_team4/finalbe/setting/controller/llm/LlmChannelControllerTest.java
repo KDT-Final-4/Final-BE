@@ -100,11 +100,9 @@ class LlmChannelControllerTest {
         .userId(userId)
         .name("Test LLM Channel")
         .modelName("gpt-4")
-        .baseUrl("https://api.openai.com/v1")
         .status(true)
         .maxTokens(2000)
         .temperature(new BigDecimal("0.7"))
-        .topP(new BigDecimal("0.8"))
         .apiKey("****************1234")
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
@@ -163,11 +161,9 @@ class LlmChannelControllerTest {
         .name("New LLM Channel")
         .modelName("gpt-4")
         .apiKey("sk-new-key-12345678")
-        .baseUrl("https://api.openai.com/v1")
         .status(true)
         .maxTokens(2000)
         .temperature(new BigDecimal("0.7"))
-        .topP(new BigDecimal("0.9"))
         .prompt("You are a helpful assistant.")
         .build();
 
@@ -176,11 +172,9 @@ class LlmChannelControllerTest {
         .userId(userId)
         .name("New LLM Channel")
         .modelName("gpt-4")
-        .baseUrl("https://api.openai.com/v1")
         .status(true)
         .maxTokens(2000)
         .temperature(new BigDecimal("0.7"))
-        .topP(new BigDecimal("0.9"))
         .prompt("You are a helpful assistant.")
         .apiKey("****************5678")
         .createdAt(LocalDateTime.now())
@@ -202,7 +196,6 @@ class LlmChannelControllerTest {
         .andExpect(jsonPath("$.modelName").value("gpt-4"))
         .andExpect(jsonPath("$.maxTokens").value(2000))
         .andExpect(jsonPath("$.temperature").value(0.7))
-        .andExpect(jsonPath("$.topP").value(0.9))
         .andExpect(jsonPath("$.prompt").value("You are a helpful assistant."))
         .andExpect(jsonPath("$.status").value(true));
 
@@ -333,11 +326,9 @@ class LlmChannelControllerTest {
         .name("Updated LLM Channel")
         .modelName("gpt-4-turbo")
         .apiKey("sk-updated-key-1234")
-        .baseUrl("https://api.openai.com/v1")
         .status(true)
         .maxTokens(3000)
         .temperature(new BigDecimal("0.85"))
-        .topP(new BigDecimal("0.90"))
         .prompt("Updated prompt")
         .build();
 
@@ -346,11 +337,9 @@ class LlmChannelControllerTest {
         .userId(userId)
         .name("Updated LLM Channel")
         .modelName("gpt-4-turbo")
-        .baseUrl("https://api.openai.com/v1")
         .status(true)
         .maxTokens(3000)
         .temperature(new BigDecimal("0.85"))
-        .topP(new BigDecimal("0.90"))
         .prompt("Updated prompt")
         .apiKey("****************1234")
         .createdAt(LocalDateTime.now())
@@ -372,7 +361,6 @@ class LlmChannelControllerTest {
         .andExpect(jsonPath("$.modelName").value("gpt-4-turbo"))
         .andExpect(jsonPath("$.maxTokens").value(3000))
         .andExpect(jsonPath("$.temperature").value(0.85))
-        .andExpect(jsonPath("$.topP").value(0.90))
         .andExpect(jsonPath("$.prompt").value("Updated prompt"))
         .andExpect(jsonPath("$.status").value(true));
 
