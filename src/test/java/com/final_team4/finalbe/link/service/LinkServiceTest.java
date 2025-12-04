@@ -124,25 +124,6 @@ class LinkServiceTest {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    private Long insertTrend(Long categoryId, String keyword) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-                PreparedStatement ps = con.prepareStatement(
-                        "INSERT INTO trend (category_id, keyword, search_volume, sns_type) VALUES (?, ?, ?, ?)",
-                        new String[]{"id"}
-                );
-                ps.setLong(1, categoryId);
-                ps.setString(2, keyword);
-                ps.setObject(3, null);
-                ps.setObject(4, null);
-                return ps;
-            }
-        }, keyHolder);
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
-    }
-
     private Long insertContent(Long userId, String keyword, Long uploadChannelId, String jobId, String link) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         LocalDateTime now = LocalDateTime.now();

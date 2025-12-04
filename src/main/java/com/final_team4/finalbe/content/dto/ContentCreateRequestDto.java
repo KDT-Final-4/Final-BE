@@ -32,7 +32,6 @@ public class ContentCreateRequestDto {
     @NotNull
     private ContentGenType generationType;
 
-    @NotNull
     private String contentLink;
 
     private String keyword;

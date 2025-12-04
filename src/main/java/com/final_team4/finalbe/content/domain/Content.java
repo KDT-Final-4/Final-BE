@@ -39,7 +39,6 @@ public class Content {
 
     private LocalDateTime updatedAt;
 
-    @NotNull
     private String contentLink;
 
     private String keyword;

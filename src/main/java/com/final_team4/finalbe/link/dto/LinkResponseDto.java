@@ -5,11 +5,10 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 public class LinkResponseDto {
 
 
-    String link;
+    private String link;
 
     private LinkResponseDto(String link) {
         this.link = link;
