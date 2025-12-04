@@ -1,6 +1,5 @@
 package com.final_team4.finalbe.link.service;
 
-import com.final_team4.finalbe.content.mapper.ContentMapper;
 import com.final_team4.finalbe.link.domain.LinkTarget;
 import com.final_team4.finalbe.link.dto.LinkResponseDto;
 import com.final_team4.finalbe.link.mapper.LinkMapper;
@@ -13,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class LinkService {
 
-    LinkMapper linkMapper;
+    private final LinkMapper linkMapper;
 
     @Transactional
     public LinkResponseDto resolveLink(String jobId, String ip){

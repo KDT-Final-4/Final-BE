@@ -1,7 +1,6 @@
 package com.final_team4.finalbe.link.dto;
 
 
-import io.swagger.v3.oas.models.links.Link;
 import lombok.Builder;
 import lombok.Getter;
 
