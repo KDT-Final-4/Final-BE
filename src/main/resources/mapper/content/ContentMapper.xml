@@ -17,7 +17,7 @@
             CREATED_AT,
             UPDATED_AT,
             LINK       AS contentLink,
-            TREND_ID   AS trendId
+            KEYWORD   AS keyword
         FROM
             CONTENT
         WHERE
@@ -40,7 +40,7 @@
             CREATED_AT,
             UPDATED_AT,
             LINK       AS contentLink,
-            TREND_ID   AS trendId
+            KEYWORD   AS keyword
         FROM
             CONTENT
         WHERE
@@ -61,7 +61,7 @@
                  CREATED_AT,
                  UPDATED_AT,
                  LINK,
-                 TREND_ID
+                 KEYWORD
         ) VALUES (
                 #{jobId},
                 #{userId},
@@ -73,7 +73,7 @@
                 #{createdAt},
                 #{updatedAt},
                 #{contentLink},
-                #{trendId}
+                #{keyword}
         )
     </insert>
 

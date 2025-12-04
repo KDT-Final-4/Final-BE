@@ -51,12 +51,12 @@ public class DashboardServiceTest {
         Long userId = insertUser("dashboard-user");
         Long otherUserId = insertUser("other-user");
         Long categoryId = findAnyCategoryId();
-        Long trendId = insertTrend(categoryId, "키워드");
+        String keyword = "키워드";
         Long uploadChannelId = insertUploadChannel(userId, "main-channel");
 
         LocalDateTime older = LocalDateTime.now().minusDays(1);
         Long firstContentId = insertContent(
-                userId, trendId, uploadChannelId, "첫번째 콘텐츠", "본문",
+                userId, keyword , uploadChannelId, "첫번째 콘텐츠", "본문",
                 "http://example.com/1", "job-1", "DONE", "AUTO", older
         );
         Long firstProductId = insertProduct(categoryId);
@@ -65,7 +65,7 @@ public class DashboardServiceTest {
         insertClick(firstProductId, "10.0.0.2");
 
         Long secondContentId = insertContent(
-                userId, trendId, uploadChannelId, "두번째 콘텐츠", "본문2",
+                userId, keyword, uploadChannelId, "두번째 콘텐츠", "본문2",
                 "http://example.com/2", "job-2", "DONE", "AUTO", LocalDateTime.now()
         );
         Long secondProductId = insertProduct(categoryId);
@@ -73,9 +73,9 @@ public class DashboardServiceTest {
         insertClick(secondProductId, "10.0.0.3");
 
         Long otherUploadChannelId = insertUploadChannel(otherUserId, "other-channel");
-        Long otherTrendId = insertTrend(categoryId, "다른키워드");
+        String otherKeyword = "다른 키원드";
         Long otherContentId = insertContent(
-                otherUserId, otherTrendId, otherUploadChannelId, "다른 유저 콘텐츠", "본문3",
+                otherUserId, otherKeyword, otherUploadChannelId, "다른 유저 콘텐츠", "본문3",
                 "http://example.com/3", "job-3", "DONE", "AUTO", LocalDateTime.now()
         );
         Long otherProductId = insertProduct(categoryId);
@@ -133,29 +133,13 @@ public class DashboardServiceTest {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    private Long insertTrend(Long categoryId, String keyword) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO trend (category_id, keyword, search_volume, sns_type) VALUES (?, ?, ?, ?)",
-                    new String[]{"id"}
-            );
-            ps.setLong(1, categoryId);
-            ps.setString(2, keyword);
-            ps.setObject(3, null);
-            ps.setObject(4, null);
-            return ps;
-        }, keyHolder);
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
-    }
-
-    private Long insertContent(Long userId, Long trendId, Long uploadChannelId,
+    private Long insertContent(Long userId, String keyword, Long uploadChannelId,
                                String title, String body, String link, String jobId,
                                String status, String generationType, LocalDateTime updatedAt) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO content (user_id, title, body, status, generation_type, created_at, updated_at, job_id, upload_channel_id, link, trend_id) " +
+                    "INSERT INTO content (user_id, title, body, status, generation_type, created_at, updated_at, job_id, upload_channel_id, link, keyword) " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     new String[]{"id"}
             );
@@ -170,7 +154,7 @@ public class DashboardServiceTest {
             ps.setString(8, jobId);
             ps.setLong(9, uploadChannelId);
             ps.setString(10, link);
-            ps.setLong(11, trendId);
+            ps.setString(11, keyword);
             return ps;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();

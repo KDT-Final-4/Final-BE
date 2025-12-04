@@ -42,8 +42,7 @@ public class Content {
     @NotNull
     private String contentLink;
 
-    @NotNull
-    private Long trendId;
+    private String keyword;
 
     public void updateContent(String title, String body) {
         this.title = title;

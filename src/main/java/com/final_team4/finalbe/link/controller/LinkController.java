@@ -25,6 +25,7 @@ public class LinkController {
         return linkService.resolveLink(jobId,clientIp);
     }
 
+    //사용자 Ip 수집
     private String resolveClientIp(HttpServletRequest request) {
 
         String forwarded = request.getHeader("X-Forwarded-For");
