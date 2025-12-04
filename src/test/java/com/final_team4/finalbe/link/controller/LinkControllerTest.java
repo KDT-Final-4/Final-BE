@@ -121,4 +121,19 @@ class LinkControllerTest {
         mockMvc.perform(get("/api/link"))
                 .andExpect(status().isBadRequest());
     }
+
+    @DisplayName("존재하지 않는 jobId면 400을 반환한다")
+    @Test
+    void getLink_unknownJobId() throws Exception {
+        given(linkService.resolveLink("missing-job", "198.51.100.5"))
+                .willThrow(new IllegalArgumentException("존재하지 않는 jobId입니다 : missing-job"));
+
+        mockMvc.perform(get("/api/link")
+                        .param("jobId", "missing-job")
+                        .header("X-Forwarded-For", "198.51.100.5")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(linkService).resolveLink("missing-job", "198.51.100.5");
+    }
 }

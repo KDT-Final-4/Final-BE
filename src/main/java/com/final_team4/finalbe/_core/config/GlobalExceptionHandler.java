@@ -81,4 +81,18 @@ public class GlobalExceptionHandler {
 
         return problemDetail;
     }
+
+    // 400: 잘못된 요청 파라미터가 전달될 때 발생
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ProblemDetail handleIllegalArgumentException(IllegalArgumentException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                e.getMessage()
+        );
+
+        problemDetail.setTitle("Invalid Argument");
+        problemDetail.setType(URI.create("/errors/invalid-argument"));
+
+        return problemDetail;
+    }
 }

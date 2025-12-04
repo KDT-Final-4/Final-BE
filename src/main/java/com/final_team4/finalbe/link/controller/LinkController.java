@@ -42,11 +42,18 @@ public class LinkController {
     private String resolveClientIp(HttpServletRequest request) {
 
         String forwarded = request.getHeader("X-Forwarded-For");
+        // 	•	여러 프록시를 거치면 IP가 콤마로 여러 개 들어옴 → 첫 번째 IP가 진짜 사용자 IP
+        //	•	예: 123.123.10.1, 10.0.0.2, 10.0.0.3 → 123.123.10.1 반환
+
         if(StringUtils.hasText(forwarded)) {
             return forwarded.split(",")[0].trim();
         }
 
         String realIp = request.getHeader("X-Real-IP");
+        //	•	일부 프록시 환경에서 실제 IP를 여기 넣어줌
+
+
         return StringUtils.hasText(realIp) ? realIp : request.getRemoteAddr();
-    }
+        //그래도 없으면 반드시 존재하는 request.getRemoteAddr() 로 fallback
+        }
 }
