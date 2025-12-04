@@ -23,8 +23,8 @@ public class TrendController {
     // 인기검색어 삽입 (python 호출용)
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TrendCreateResponseDto createTrend(@Valid @RequestBody TrendCreateRequestDto request) {
-        return trendService.createTrend(request);
+    public List<TrendCreateResponseDto> createTrends(@RequestBody @Valid List<TrendCreateRequestDto> requests) {
+        return trendService.createTrends(requests);
     }
 
     // 인기검색어 목록 조회

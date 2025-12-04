@@ -27,17 +27,24 @@ public class TrendService {
 
     // 인기검색어 저장(python 호출용)
     @Transactional
-    public TrendCreateResponseDto createTrend(TrendCreateRequestDto request) {
-        Trend trend = Trend.builder()
-                .categoryId(request.getCategoryId())
-                .keyword(request.getKeyword())
-                .searchVolume(request.getSearchVolume())
-                .createdAt(LocalDateTime.now())
-                .snsType(request.getSnsType())
-                .build();
-        trendMapper.insert(trend);
+    public List<TrendCreateResponseDto> createTrends(List<TrendCreateRequestDto> requests) {
+        if (requests == null || requests.isEmpty()) {
+            return List.of();
+        }
 
-        return TrendCreateResponseDto.from(trend);
+        return requests.stream()
+                .map(request -> {
+                    Trend trend = Trend.builder()
+                            .categoryId(request.getCategoryId())
+                            .keyword(request.getKeyword())
+                            .searchVolume(request.getSearchVolume())
+                            .createdAt(LocalDateTime.now())
+                            .snsType(request.getSnsType())
+                            .build();
+                    trendMapper.insert(trend);
+                    return TrendCreateResponseDto.from(trend);
+                })
+                .toList();
     }
 
     // 인기검색어 목록 조회

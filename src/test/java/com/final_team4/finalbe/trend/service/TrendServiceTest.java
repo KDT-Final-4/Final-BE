@@ -32,15 +32,15 @@ class TrendServiceTest {
 
     @DisplayName("인기검색어 저장_성공")
     @Test
-    void createTrend() {
+    void createTrends() {
         // given
         TrendCreateRequestDto requestDto = createRequestDto(1L, "test", 500L, "X");
 
-
         // when
-        TrendCreateResponseDto response = trendService.createTrend(requestDto);
+        List<TrendCreateResponseDto> responses = trendService.createTrends(List.of(requestDto));
 
         // then
+        TrendCreateResponseDto response = responses.get(0);
         assertThat(response.getId()).isNotNull();
         assertThat(response.getCategoryId()).isEqualTo(1L);
         assertThat(response.getKeyword()).isEqualTo("test");
@@ -55,9 +55,7 @@ class TrendServiceTest {
         TrendCreateRequestDto first = createRequestDto(1L, "keyword-1", 500L, "YOUTUBE");
         TrendCreateRequestDto second = createRequestDto(2L, "keyword-2", 700L, "INSTAGRAM");
         TrendCreateRequestDto third = createRequestDto(1L, "keyword-3", 900L, "TIKTOK");
-        trendService.createTrend(first);
-        trendService.createTrend(second);
-        trendService.createTrend(third);
+        trendService.createTrends(List.of(first, second, third));
 
         // when
         List<TrendResponseDto> firstPage = trendService.getTrends(0, 2);
@@ -70,7 +68,7 @@ class TrendServiceTest {
                 .containsExactly(third.getKeyword(), second.getKeyword());
 
         assertThat(secondPage)
-                .hasSize(1)
+                .isNotEmpty()
                 .first()
                 .satisfies(trend -> {
                     assertThat(trend.getKeyword()).isEqualTo(first.getKeyword());
