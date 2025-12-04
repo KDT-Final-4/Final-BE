@@ -44,7 +44,6 @@ public class ProductService {
     }
 
     public List<ProductListResponseDto> findByCategoryId(Long categoryId) {
-        productMapper.findByCategoryId(categoryId);
         List<Product> entities = productMapper.findByCategoryId(categoryId);
         return entities.stream().map(ProductListResponseDto::from).toList();
     }

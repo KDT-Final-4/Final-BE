@@ -2,6 +2,7 @@ package com.final_team4.finalbe.product.dto;
 
 import com.final_team4.finalbe.product.domain.Product;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ public class ProductCreateRequestDto {
 
     private String thumbnail;
 
-    @NotBlank
+    @NotNull
     private Long price;
 
     public Product toEntity(Long categoryId) {
