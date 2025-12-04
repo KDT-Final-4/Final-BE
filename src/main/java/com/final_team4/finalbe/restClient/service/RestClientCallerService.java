@@ -1,6 +1,7 @@
 package com.final_team4.finalbe.restClient.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import org.springframework.web.client.RestClient;
  */
 @Service
 @RequiredArgsConstructor
-public class RestClientCallerService <T>{
+public class RestClientCallerService{
   private final RestClient restClient;
 
   // 키워드 생성해달라고 요청
@@ -25,14 +26,27 @@ public class RestClientCallerService <T>{
     return result.getStatusCode().is2xxSuccessful();
   }
 
-  // 글 생성해달라고 요청
-  public boolean callGeneratePosts(T requestData) {
-    ResponseEntity<Void> result = restClient.post()
-            .uri("파이썬 쪽 글 생성 엔드포인트")
+  // 직접 uri를 정하고 싶을 경우 사용하는 메서드입니다.
+  // 유지보수를 위해 callGeneratePosts와 callUploadPosts를 추상화한 것 뿐입니다.
+  public ResponseEntity<Void> callPost(Object requestData, String uri) {
+    return restClient.post()
+            .uri(uri)
             .contentType(MediaType.APPLICATION_JSON)
             .body(requestData)
             .retrieve()
             .toBodilessEntity();
+  }
+
+  // 글 생성해달라고 요청
+  public boolean callGeneratePosts(Object requestData) {
+    ResponseEntity<Void> result = callPost(requestData, "파이썬 쪽 글 생성 엔드포인트");
+
+    return result.getStatusCode().is2xxSuccessful();
+  }
+
+  // 글 업로드 해달라고 요청
+  public boolean callUploadPosts(Object requestData) {
+    ResponseEntity<Void> result = callPost(requestData, "파이썬 쪽 글 업로드 엔드포인트");
 
     return result.getStatusCode().is2xxSuccessful();
   }
