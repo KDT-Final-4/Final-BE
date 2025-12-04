@@ -1,5 +1,6 @@
 package com.final_team4.finalbe.link.service;
 
+import com.final_team4.finalbe._core.exception.InvalidJobIdException;
 import com.final_team4.finalbe.link.dto.LinkResponseDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,7 @@ class LinkServiceTest {
         try {
             linkService.resolveLink("unknown-job", "127.0.0.1");
             fail("예외가 발생해야 합니다.");
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidJobIdException e) {
             assertThat(e.getMessage()).contains("jobId");
         }
     }

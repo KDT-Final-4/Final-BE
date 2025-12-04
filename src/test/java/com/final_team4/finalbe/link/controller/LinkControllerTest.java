@@ -1,5 +1,6 @@
 package com.final_team4.finalbe.link.controller;
 
+import com.final_team4.finalbe._core.exception.InvalidJobIdException;
 import com.final_team4.finalbe._core.jwt.JwtTokenService;
 import com.final_team4.finalbe._core.security.AccessCookieManager;
 import com.final_team4.finalbe.auth.service.AuthService;
@@ -126,7 +127,7 @@ class LinkControllerTest {
     @Test
     void getLink_unknownJobId() throws Exception {
         given(linkService.resolveLink("missing-job", "198.51.100.5"))
-                .willThrow(new IllegalArgumentException("존재하지 않는 jobId입니다 : missing-job"));
+                .willThrow(new InvalidJobIdException("존재하지 않는 jobId입니다."));
 
         mockMvc.perform(get("/api/link")
                         .param("jobId", "missing-job")

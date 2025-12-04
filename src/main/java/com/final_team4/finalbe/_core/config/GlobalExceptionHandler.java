@@ -82,16 +82,16 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
-    // 400: 잘못된 요청 파라미터가 전달될 때 발생
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ProblemDetail handleIllegalArgumentException(IllegalArgumentException e) {
+    // 400: 존재하지 않는 jobId 요청 시 발생
+    @ExceptionHandler(InvalidJobIdException.class)
+    public ProblemDetail handleInvalidJobIdException(InvalidJobIdException e) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,
                 e.getMessage()
         );
 
-        problemDetail.setTitle("Invalid Argument");
-        problemDetail.setType(URI.create("/errors/invalid-argument"));
+        problemDetail.setTitle("Invalid Job ID");
+        problemDetail.setType(URI.create("/errors/invalid-job-id"));
 
         return problemDetail;
     }
