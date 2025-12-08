@@ -3,10 +3,12 @@ package com.final_team4.finalbe.content.service;
 import com.final_team4.finalbe.content.domain.*;
 import com.final_team4.finalbe.content.dto.*;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
+import com.final_team4.finalbe.content.dto.ContentUploadPayloadDto;
 import com.final_team4.finalbe.product.dto.ProductCreateRequestDto;
 import com.final_team4.finalbe.product.dto.ProductCreateResponseDto;
 import com.final_team4.finalbe.product.mapper.ProductContentMapper;
 import com.final_team4.finalbe.product.service.ProductService;
+import com.final_team4.finalbe.restClient.service.RestClientCallerService;
 import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
 import jakarta.validation.Valid;
@@ -26,6 +28,7 @@ public class ContentService {
     private final UploadChannelMapper uploadChannelMapper;
     private final ProductService productService;
     private final ProductContentMapper productContentMapper;
+    private final RestClientCallerService restClientCallerService;
 
     // 검수할 컨텐츠 목록 조회
     public List<ContentListResponseDto> getContents(Long userId, int page, int size) {
@@ -107,6 +110,10 @@ public class ContentService {
     @Transactional
     public ContentUpdateResponseDto updateContentStatus(Long userId, Long id, @Valid ContentStatusUpdateRequestDto request) {
         Content content = getVerifiedContent(userId, id);
+
+        if (request.getStatus() == ContentStatus.APPROVED) {
+            restClientCallerService.callUploadPosts(ContentUploadPayloadDto.from(content));
+        }
 
         content.updateStatus(request.getStatus());
         contentMapper.updateStatus(content);

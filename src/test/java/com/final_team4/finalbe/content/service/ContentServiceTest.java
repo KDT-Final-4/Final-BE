@@ -3,10 +3,12 @@ package com.final_team4.finalbe.content.service;
 import com.final_team4.finalbe.content.domain.*;
 import com.final_team4.finalbe.content.dto.*;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
+import com.final_team4.finalbe.content.dto.ContentUploadPayloadDto;
 import com.final_team4.finalbe.product.dto.ProductCreateRequestDto;
 import com.final_team4.finalbe.product.dto.ProductCreateResponseDto;
 import com.final_team4.finalbe.product.mapper.ProductContentMapper;
 import com.final_team4.finalbe.product.service.ProductService;
+import com.final_team4.finalbe.restClient.service.RestClientCallerService;
 import com.final_team4.finalbe.uploadChannel.domain.Channel;
 import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
@@ -42,6 +44,9 @@ class ContentServiceTest {
 
     @Mock
     ProductContentMapper productContentMapper;
+
+    @Mock
+    RestClientCallerService restClientCallerService;
 
     @InjectMocks
     ContentService contentService;
@@ -206,6 +211,7 @@ class ContentServiceTest {
         ArgumentCaptor<Content> captor = ArgumentCaptor.forClass(Content.class);
         verify(contentMapper).updateStatus(captor.capture());
         assertThat(captor.getValue().getStatus()).isEqualTo(ContentStatus.APPROVED);
+        verify(restClientCallerService).callUploadPosts(any(ContentUploadPayloadDto.class));
     }
 
     private void givenInsertSetsId(Long id) {
