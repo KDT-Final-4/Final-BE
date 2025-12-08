@@ -1,19 +1,19 @@
 package com.final_team4.finalbe.dashboard.service;
 
 
-import com.final_team4.finalbe._core.security.JwtPrincipal;
-import com.final_team4.finalbe.dashboard.dto.DashboardContentItemDto;
-import com.final_team4.finalbe.dashboard.dto.DashboardContentSummary;
-import com.final_team4.finalbe.dashboard.dto.DashboardContentsResponseDto;
-import com.final_team4.finalbe.dashboard.dto.DashboardStatusGetResponseDto;
+import com.final_team4.finalbe.dashboard.dto.*;
 import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
 import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -49,5 +49,34 @@ public class DashboardService {
         return DashboardContentsResponseDto.from(items);
     }
 
+    public DashboardDailyClicksResponseDto getDailyClicks(Long userId, LocalDate start, LocalDate end) {
+        // end가 start보다 빠르면 잘못된 입력
+        if (end.isBefore(start)) {
+            throw new IllegalArgumentException("end 날짜는 start 날짜보다 빠를 수 없습니다.");
+        }
+
+        // DB에서 가져온 일별 클릭 합계를 날짜별로 바로 찾을 수 있게 Map으로 변환
+        Map<LocalDate, Long> clicksByDate = clicksMapper.findDailyClicks(userId, start, end).stream()
+                .collect(Collectors.toMap(
+                        dto -> LocalDate.parse(dto.getDate()),
+                        DailyClicksDto::getClicks,
+                        Long::sum)); // 같은 날짜가 중복되면 합산
+
+        List<DailyClicksDto> dailyClicks = new ArrayList<>();
+        // start부터 end까지 하루씩 증가시키며 빈 날짜는 0으로 채움
+        for (LocalDate day = start; !day.isAfter(end); day = day.plusDays(1)) {
+            dailyClicks.add(DailyClicksDto.builder()
+                    .date(day.toString())
+                    .clicks(clicksByDate.getOrDefault(day, 0L)) // 조회된 값 없으면 0
+                    .build());
+        }
+
+        // 응답 DTO 조립
+        return DashboardDailyClicksResponseDto.builder()
+                .start(start.toString())
+                .end(end.toString())
+                .dailyClicks(dailyClicks)
+                .build();
+    }
 
 }
