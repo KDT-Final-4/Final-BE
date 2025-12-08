@@ -17,7 +17,6 @@ public class ContentProductRequestDto {
     @NotBlank
     private String title;
 
-    @NotBlank
     private String link;
 
     private String thumbnail;

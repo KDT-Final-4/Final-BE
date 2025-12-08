@@ -16,6 +16,5 @@ public class ContentLinkUpdateRequestDto {
     @NotBlank
     private String jobId;
 
-    @NotBlank
     private String link;
 }
