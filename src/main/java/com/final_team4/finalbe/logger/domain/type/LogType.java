@@ -8,7 +8,7 @@ import java.util.Arrays;
 public enum LogType {
   INFO(1L, "INFO"),
   ERROR(2L, "ERROR"),
-  WARN(3L, "INFO");
+  WARN(3L, "WARN");
 
   private final long id;
   private final String label;
