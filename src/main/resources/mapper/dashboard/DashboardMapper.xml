@@ -10,9 +10,9 @@
             resultType="com.final_team4.finalbe.dashboard.dto.DashboardContentSummary">
         SELECT
         c.ID         AS contentId,
-        c.TITLE      AS title,
-        c.KEYWORD    AS keyword,
-        c.LINK       AS contentLink,
+        c.TITLE,
+        c.KEYWORD,
+        c.LINK,
         COALESCE(COUNT(ck.ID), 0) AS clickCount,
         c.CREATED_AT AS createdAt,
         c.UPDATED_AT AS updatedAt

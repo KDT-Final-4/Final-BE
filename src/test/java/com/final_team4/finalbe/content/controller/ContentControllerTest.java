@@ -152,7 +152,7 @@ class ContentControllerTest {
                   "body": "body",
                   "status": "PENDING",
                   "generationType": "AUTO",
-                  "contentLink": "https://example.com/content/1",
+                  "link": "https://example.com/content/1",
                   "keyword": "키워드",
                   "product": {
                     "title": "상품 제목",
@@ -171,6 +171,24 @@ class ContentControllerTest {
                 .andExpect(jsonPath("$.id").value(7));
 
         verify(contentService).createContent(any(ContentCreateRequestDto.class));
+    }
+
+    @DisplayName("컨텐츠 링크 업데이트")
+    @Test
+    void updateContentLink_success() throws Exception {
+        String payload = """
+                {
+                  "jobId": "job-1",
+                  "link": "https://example.com/uploaded"
+                }
+                """;
+
+        mockMvc.perform(patch("/api/content/link")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        verify(contentService).updateContentLink(any(ContentLinkUpdateRequestDto.class));
     }
 
     @DisplayName("컨텐츠 수정")

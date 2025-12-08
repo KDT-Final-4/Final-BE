@@ -4,6 +4,7 @@ import com.final_team4.finalbe.content.domain.*;
 import com.final_team4.finalbe.content.dto.*;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
 import com.final_team4.finalbe.content.dto.ContentUploadPayloadDto;
+import com.final_team4.finalbe.content.dto.ContentLinkUpdateRequestDto;
 import com.final_team4.finalbe.product.dto.ProductCreateRequestDto;
 import com.final_team4.finalbe.product.dto.ProductCreateResponseDto;
 import com.final_team4.finalbe.product.mapper.ProductContentMapper;
@@ -68,7 +69,7 @@ public class ContentService {
                 .body(request.getBody())
                 .status(ContentStatus.PENDING)
                 .generationType(ContentGenType.MANUAL)
-                .contentLink(request.getContentLink())   // 추가
+                .link(request.getLink())   // 추가
                 .keyword(request.getKeyword())    // 추가
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -119,6 +120,17 @@ public class ContentService {
         contentMapper.updateStatus(content);
 
         return ContentUpdateResponseDto.from(content);
+    }
+
+    // 파이썬에서 호출하여 링크만 갱신
+    @Transactional
+    public void updateContentLink(ContentLinkUpdateRequestDto request) {
+        Content content = contentMapper.findByJobId(request.getJobId());
+        if (content == null) {
+            throw new IllegalArgumentException("존재하지 않는 jobId입니다: " + request.getJobId());
+        }
+
+        contentMapper.updateLinkByJobId(request.getJobId(), request.getLink());
     }
 
     private Content getVerifiedContent(Long userId, Long id) {

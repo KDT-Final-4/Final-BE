@@ -16,8 +16,8 @@
             GENERATION_TYPE,
             CREATED_AT,
             UPDATED_AT,
-            LINK       AS contentLink,
-            KEYWORD   AS keyword
+            LINK,
+            KEYWORD
         FROM
             CONTENT
         WHERE
@@ -25,6 +25,26 @@
         ORDER BY
             UPDATED_AT DESC, CREATED_AT DESC
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="findByJobId" parameterType="string" resultType="Content">
+        SELECT
+            ID,
+            JOB_ID,
+            USER_ID,
+            UPLOAD_CHANNEL_ID,
+            TITLE,
+            BODY,
+            STATUS,
+            GENERATION_TYPE,
+            CREATED_AT,
+            UPDATED_AT,
+            LINK,
+            KEYWORD
+        FROM
+            CONTENT
+        WHERE
+            JOB_ID = #{jobId}
     </select>
 
     <select id="findById" parameterType="long" resultType="Content">
@@ -39,8 +59,8 @@
             GENERATION_TYPE,
             CREATED_AT,
             UPDATED_AT,
-            LINK       AS contentLink,
-            KEYWORD   AS keyword
+            LINK,
+            KEYWORD
         FROM
             CONTENT
         WHERE
@@ -72,8 +92,8 @@
                 #{uploadChannelId},
                 #{createdAt},
                 #{updatedAt},
-                #{contentLink},
-                #{keyword}
+                #{link, jdbcType=VARCHAR},
+                #{keyword, jdbcType=VARCHAR}
         )
     </insert>
 
@@ -98,6 +118,15 @@
             ID = #{id}
         AND
             USER_ID = #{userId}
+    </update>
+
+    <update id="updateLinkByJobId">
+        UPDATE CONTENT
+        SET
+            LINK = #{link, jdbcType=VARCHAR},
+            UPDATED_AT = SYSTIMESTAMP
+        WHERE
+            JOB_ID = #{jobId}
     </update>
 
 </mapper>

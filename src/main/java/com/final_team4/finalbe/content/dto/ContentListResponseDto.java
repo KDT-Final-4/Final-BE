@@ -20,6 +20,8 @@ public class ContentListResponseDto {
     private String body;
     private ContentStatus status;
     private ContentGenType generationType;
+    private String link;
+    private String keyword;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -33,6 +35,8 @@ public class ContentListResponseDto {
                 .body(content.getBody())
                 .status(content.getStatus())
                 .generationType(content.getGenerationType())
+                .link(content.getLink())
+                .keyword(content.getKeyword())
                 .createdAt(content.getCreatedAt())
                 .updatedAt(content.getUpdatedAt())
                 .build();

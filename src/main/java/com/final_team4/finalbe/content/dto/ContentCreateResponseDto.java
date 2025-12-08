@@ -17,6 +17,8 @@ public class ContentCreateResponseDto {
     private String body;
     private ContentStatus status;
     private ContentGenType generationType;
+    private String link;
+    private String keyword;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -30,6 +32,8 @@ public class ContentCreateResponseDto {
                 .body(content.getBody())
                 .status(content.getStatus())
                 .generationType(content.getGenerationType())
+                .link(content.getLink())
+                .keyword(content.getKeyword())
                 .createdAt(content.getCreatedAt())
                 .updatedAt(content.getUpdatedAt())
                 .build();

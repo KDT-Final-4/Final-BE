@@ -146,7 +146,7 @@ public class DashboardControllerTest {
                 .keyword("키워드")
                 .createdAt(LocalDateTime.of(2024, 1, 1, 12, 0))
                 .updatedAt(LocalDateTime.of(2024, 1, 2, 12, 0))
-                .contentLink("http://example.com/content")
+                .link("http://example.com/content")
                 .clickCount(5L)
                 .build();
 

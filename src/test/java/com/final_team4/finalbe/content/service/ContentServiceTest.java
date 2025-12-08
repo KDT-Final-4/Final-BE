@@ -102,7 +102,7 @@ class ContentServiceTest {
                 .body("body")
                 .status(ContentStatus.APPROVED)
                 .generationType(ContentGenType.AUTO)
-                .contentLink("https://example.com/content/1")  // 추가
+                .link("https://example.com/content/1")  // 추가
                 .keyword("키워드")                            // 추가
                 .product(productRequest())
                 .build();
@@ -138,7 +138,7 @@ class ContentServiceTest {
                 .body("body")
                 .status(ContentStatus.PENDING)
                 .generationType(ContentGenType.AUTO)
-                .contentLink("https://example.com/content/1")  // 추가
+                .link("https://example.com/content/1")  // 추가
                 .keyword("키워드")                            // 추가
                 .product(productRequest())
                 .build();
@@ -166,7 +166,7 @@ class ContentServiceTest {
                 .body("body")
                 .status(ContentStatus.PENDING)
                 .generationType(ContentGenType.AUTO)
-                .contentLink("https://example.com/content/1")  // 추가
+                .link("https://example.com/content/1")  // 추가
                 .keyword("키워드")                            // 추가
                 .product(productRequest())
                 .build();
@@ -212,6 +212,22 @@ class ContentServiceTest {
         verify(contentMapper).updateStatus(captor.capture());
         assertThat(captor.getValue().getStatus()).isEqualTo(ContentStatus.APPROVED);
         verify(restClientCallerService).callUploadPosts(any(ContentUploadPayloadDto.class));
+    }
+
+    @DisplayName("jobId로 컨텐츠 링크를 갱신한다")
+    @Test
+    void updateContentLink_success() {
+        Content content = content(5L, "job-5", "title");
+        given(contentMapper.findByJobId("job-5")).willReturn(content);
+
+        ContentLinkUpdateRequestDto request = ContentLinkUpdateRequestDto.builder()
+                .jobId("job-5")
+                .link("https://example.com/new-link")
+                .build();
+
+        contentService.updateContentLink(request);
+
+        verify(contentMapper).updateLinkByJobId("job-5", "https://example.com/new-link");
     }
 
     private void givenInsertSetsId(Long id) {

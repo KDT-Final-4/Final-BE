@@ -32,7 +32,7 @@ public class ContentUploadPayloadDto {
     @NotNull
     private final String body;
 
-    private final String contentLink;
+    private final String link;
 
     private final String keyword;
 
@@ -44,7 +44,7 @@ public class ContentUploadPayloadDto {
                 .jobId(content.getJobId())
                 .title(content.getTitle())
                 .body(content.getBody())
-                .contentLink(content.getContentLink())
+                .link(content.getLink())
                 .keyword(content.getKeyword())
                 .build();
     }

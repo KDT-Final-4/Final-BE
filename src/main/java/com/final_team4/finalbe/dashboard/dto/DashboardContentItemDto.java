@@ -13,7 +13,7 @@ public class DashboardContentItemDto {
     private String keyword;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String contentLink;
+    private String link;
     private long clickCount;
 
     public static DashboardContentItemDto from(DashboardContentSummary summary) {
@@ -23,7 +23,7 @@ public class DashboardContentItemDto {
                 .keyword(summary.getKeyword())
                 .createdAt(summary.getCreatedAt())
                 .updatedAt(summary.getUpdatedAt())
-                .contentLink(summary.getContentLink())
+                .link(summary.getLink())
                 .clickCount(summary.getClickCount())
                 .build();
     }

@@ -12,7 +12,7 @@ public class DashboardContentSummary {
     private Long contentId;
     private String title;
     private String keyword;
-    private String contentLink;
+    private String link;
     private long clickCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
