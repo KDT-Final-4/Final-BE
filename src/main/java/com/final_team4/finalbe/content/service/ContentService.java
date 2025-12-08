@@ -113,7 +113,12 @@ public class ContentService {
         Content content = getVerifiedContent(userId, id);
 
         if (request.getStatus() == ContentStatus.APPROVED) {
-            restClientCallerService.callUploadPosts(ContentUploadPayloadDto.from(content));
+            UploadChannel uploadChannel = uploadChannelMapper.findById(content.getUploadChannelId());
+            if (uploadChannel == null) {
+                throw new IllegalStateException(
+                        "존재하지 않는 채널입니다: " + content.getUploadChannelId());
+            }
+            restClientCallerService.callUploadPosts(ContentUploadPayloadDto.from(content, uploadChannel));
         }
 
         content.updateStatus(request.getStatus());

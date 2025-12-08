@@ -1,6 +1,7 @@
 package com.final_team4.finalbe.content.dto;
 
 import com.final_team4.finalbe.content.domain.Content;
+import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,13 +16,10 @@ import lombok.NoArgsConstructor;
 public class ContentUploadPayloadDto {
 
     @NotNull
-    private final Long contentId;
-
-    @NotNull
     private final Long userId;
 
     @NotNull
-    private final Long uploadChannelId;
+    private final String channelName;
 
     @NotNull
     private final String jobId;
@@ -32,19 +30,15 @@ public class ContentUploadPayloadDto {
     @NotNull
     private final String body;
 
-    private final String link;
-
     private final String keyword;
 
-    public static ContentUploadPayloadDto from(Content content) {
+    public static ContentUploadPayloadDto from(Content content, UploadChannel uploadChannel) {
         return ContentUploadPayloadDto.builder()
-                .contentId(content.getId())
                 .userId(content.getUserId())
-                .uploadChannelId(content.getUploadChannelId())
+                .channelName(uploadChannel.getName().name())
                 .jobId(content.getJobId())
                 .title(content.getTitle())
                 .body(content.getBody())
-                .link(content.getLink())
                 .keyword(content.getKeyword())
                 .build();
     }

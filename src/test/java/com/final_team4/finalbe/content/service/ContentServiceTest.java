@@ -202,6 +202,12 @@ class ContentServiceTest {
     void updateContentStatus_success() {
         Content content = content(4L, "job", "title");
         given(contentMapper.findById(1L, 4L)).willReturn(content);
+        UploadChannel channel = UploadChannel.builder()
+                .id(content.getUploadChannelId())
+                .userId(content.getUserId())
+                .name(Channel.X)
+                .build();
+        given(uploadChannelMapper.findById(content.getUploadChannelId())).willReturn(channel);
 
         ContentStatusUpdateRequestDto request = ContentStatusUpdateRequestDto.builder()
                 .status(ContentStatus.APPROVED)
@@ -212,7 +218,27 @@ class ContentServiceTest {
         ArgumentCaptor<Content> captor = ArgumentCaptor.forClass(Content.class);
         verify(contentMapper).updateStatus(captor.capture());
         assertThat(captor.getValue().getStatus()).isEqualTo(ContentStatus.APPROVED);
-        verify(restClientCallerService).callUploadPosts(any(ContentUploadPayloadDto.class));
+        ArgumentCaptor<ContentUploadPayloadDto> payloadCaptor = ArgumentCaptor.forClass(ContentUploadPayloadDto.class);
+        verify(restClientCallerService).callUploadPosts(payloadCaptor.capture());
+        assertThat(payloadCaptor.getValue().getChannelName()).isEqualTo(Channel.X.name());
+    }
+
+    @DisplayName("승인 시 업로드 채널이 없으면 예외가 발생한다")
+    @Test
+    void updateContentStatus_channelNotFound() {
+        Content content = content(7L, "job", "title");
+        given(contentMapper.findById(1L, 7L)).willReturn(content);
+        given(uploadChannelMapper.findById(content.getUploadChannelId())).willReturn(null);
+
+        ContentStatusUpdateRequestDto request = ContentStatusUpdateRequestDto.builder()
+                .status(ContentStatus.APPROVED)
+                .build();
+
+        assertThatThrownBy(() -> contentService.updateContentStatus(1L, 7L, request))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("채널");
+
+        verify(restClientCallerService, never()).callUploadPosts(any());
     }
 
     @DisplayName("jobId로 컨텐츠 링크를 갱신한다")
