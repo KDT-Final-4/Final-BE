@@ -21,6 +21,14 @@ public class NotificationCredentialService {
         return NotificationCredentialDetailResponseDto.from(entity);
     }
 
+    public NotificationCredentialDetailResponseDto findByUserId(Long userId) {
+        NotificationCredential entity = notificationMapper.findByUserId(userId);
+        if (entity == null) {
+            throw new ContentNotFoundException("알림 설정을 찾을 수 없습니다.");
+        }
+        return NotificationCredentialDetailResponseDto.from(entity);
+    }
+
     public NotificationCredentialDetailResponseDto findByChannelId(Long userId, Long channelId) {
         NotificationCredential entity = notificationMapper.findByChannelId(userId, channelId);
 
