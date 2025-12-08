@@ -7,9 +7,13 @@ import com.final_team4.finalbe.content.service.ContentService;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
 import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
 import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
+import com.final_team4.finalbe.link.mapper.LinkMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import com.final_team4.finalbe.notification.mapper.NotificationMapper;
+import com.final_team4.finalbe.product.mapper.ProductCategoryMapper;
+import com.final_team4.finalbe.product.mapper.ProductContentMapper;
+import com.final_team4.finalbe.product.mapper.ProductMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
 import com.final_team4.finalbe.setting.mapper.llm.LlmChannelMapper;
@@ -74,6 +78,10 @@ class ContentControllerTest {
     @MockitoBean DashboardMapper dashboardMapper;
     @MockitoBean NotificationMapper notificationMapper;
     @MockitoBean LlmChannelMapper llmChannelMapper;
+    @MockitoBean ProductContentMapper productContentMapper;
+    @MockitoBean ProductMapper productMapper;
+    @MockitoBean ProductCategoryMapper productCategoryMapper;
+    @MockitoBean LinkMapper linkMapper;
 
     @AfterEach
     void clearSecurityContext() {
@@ -145,7 +153,14 @@ class ContentControllerTest {
                   "status": "PENDING",
                   "generationType": "AUTO",
                   "contentLink": "https://example.com/content/1",
-                  "keyword": "키워드"
+                  "keyword": "키워드",
+                  "product": {
+                    "title": "상품 제목",
+                    "link": "https://example.com/product",
+                    "thumbnail": "thumb.jpg",
+                    "price": 12000,
+                    "category": "digital"
+                  }
                 }
                 """;
 

@@ -4,13 +4,17 @@ import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
 import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
 import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
+import com.final_team4.finalbe.link.mapper.LinkMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
+import com.final_team4.finalbe.notification.mapper.NotificationMapper;
+import com.final_team4.finalbe.product.mapper.ProductCategoryMapper;
+import com.final_team4.finalbe.product.mapper.ProductContentMapper;
+import com.final_team4.finalbe.product.mapper.ProductMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
-import com.final_team4.finalbe.notification.mapper.NotificationMapper;
-import com.final_team4.finalbe.setting.mapper.notification.NotificationCredentialMapper;
 import com.final_team4.finalbe.setting.mapper.llm.LlmChannelMapper;
+import com.final_team4.finalbe.setting.mapper.notification.NotificationCredentialMapper;
 import com.final_team4.finalbe.trend.dto.*;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
 import com.final_team4.finalbe.trend.service.TrendService;
@@ -73,6 +77,10 @@ class TrendControllerTest {
     @MockitoBean TrendMapper trendMapper;
     @MockitoBean UploadChannelMapper uploadChannelMapper;
     @MockitoBean UserMapper userMapper;
+    @MockitoBean ProductContentMapper productContentMapper;
+    @MockitoBean ProductMapper productMapper;
+    @MockitoBean ProductCategoryMapper productCategoryMapper;
+    @MockitoBean LinkMapper linkMapper;
 
     // 테스트간 Authentication이 공유되지 않도록 매번 SecurityContext 초기화
     @AfterEach

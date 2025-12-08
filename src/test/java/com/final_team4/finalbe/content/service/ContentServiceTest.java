@@ -3,6 +3,10 @@ package com.final_team4.finalbe.content.service;
 import com.final_team4.finalbe.content.domain.*;
 import com.final_team4.finalbe.content.dto.*;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
+import com.final_team4.finalbe.product.dto.ProductCreateRequestDto;
+import com.final_team4.finalbe.product.dto.ProductCreateResponseDto;
+import com.final_team4.finalbe.product.mapper.ProductContentMapper;
+import com.final_team4.finalbe.product.service.ProductService;
 import com.final_team4.finalbe.uploadChannel.domain.Channel;
 import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
@@ -32,6 +36,12 @@ class ContentServiceTest {
 
     @Mock
     UploadChannelMapper uploadChannelMapper;
+
+    @Mock
+    ProductService productService;
+
+    @Mock
+    ProductContentMapper productContentMapper;
 
     @InjectMocks
     ContentService contentService;
@@ -89,9 +99,14 @@ class ContentServiceTest {
                 .generationType(ContentGenType.AUTO)
                 .contentLink("https://example.com/content/1")  // 추가
                 .keyword("키워드")                            // 추가
+                .product(productRequest())
                 .build();
 
         givenInsertSetsId(10L);
+        ProductCreateResponseDto productResponse = ProductCreateResponseDto.builder()
+                .id(77L)
+                .build();
+        given(productService.create(any(ProductCreateRequestDto.class))).willReturn(productResponse);
 
         // when
         ContentCreateResponseDto response = contentService.createContent(request);
@@ -101,6 +116,8 @@ class ContentServiceTest {
         assertThat(response.getStatus()).isEqualTo(ContentStatus.PENDING);
         assertThat(response.getGenerationType()).isEqualTo(ContentGenType.MANUAL);
         verify(contentMapper).insert(any(Content.class));
+        verify(productService).create(any(ProductCreateRequestDto.class));
+        verify(productContentMapper).insert(77L, 10L);
     }
 
     @DisplayName("존재하지 않는 채널로 생성 시 예외")
@@ -118,6 +135,7 @@ class ContentServiceTest {
                 .generationType(ContentGenType.AUTO)
                 .contentLink("https://example.com/content/1")  // 추가
                 .keyword("키워드")                            // 추가
+                .product(productRequest())
                 .build();
 
         assertThatThrownBy(() -> contentService.createContent(request))
@@ -145,6 +163,7 @@ class ContentServiceTest {
                 .generationType(ContentGenType.AUTO)
                 .contentLink("https://example.com/content/1")  // 추가
                 .keyword("키워드")                            // 추가
+                .product(productRequest())
                 .build();
 
         assertThatThrownBy(() -> contentService.createContent(request))
@@ -210,6 +229,16 @@ class ContentServiceTest {
                 .generationType(ContentGenType.MANUAL)
                 .createdAt(now.minusDays(1))
                 .updatedAt(now)
+                .build();
+    }
+
+    private ContentProductRequestDto productRequest() {
+        return ContentProductRequestDto.builder()
+                .title("상품 제목")
+                .link("https://example.com/product")
+                .thumbnail("thumb.jpg")
+                .price(12000L)
+                .category("digital")
                 .build();
     }
 }
