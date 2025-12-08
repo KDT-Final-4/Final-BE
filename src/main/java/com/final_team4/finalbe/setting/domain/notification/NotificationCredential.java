@@ -18,7 +18,8 @@ public class NotificationCredential {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public void update(String webhookUrl, String apiToken, Boolean isActive) {
+    public void update(Long channelId, String webhookUrl, String apiToken, Boolean isActive) {
+        this.channelId = channelId;
         this.webhookUrl = webhookUrl;
         this.apiToken = apiToken;
         this.isActive = isActive;
