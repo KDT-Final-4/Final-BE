@@ -1,6 +1,8 @@
 package com.final_team4.finalbe.trend.service;
 
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
+import com.final_team4.finalbe.setting.dto.llm.LlmChannelDetailResponseDto;
+import com.final_team4.finalbe.setting.service.llm.LlmChannelService;
 import com.final_team4.finalbe.restClient.service.RestClientCallerService;
 import com.final_team4.finalbe.trend.domain.Trend;
 import com.final_team4.finalbe.trend.dto.*;
@@ -24,6 +26,7 @@ public class TrendService {
     private final TrendMapper trendMapper;
     private final UploadChannelService uploadChannelService;
     private final RestClientCallerService restClientCallerService;
+    private final LlmChannelService llmChannelService;
 
     // 인기검색어 저장(python 호출용)
     @Transactional
@@ -65,11 +68,23 @@ public class TrendService {
             throw new ContentNotFoundException("등록된 업로드 채널이 없습니다.");
         }
 
+        // generationType 조회
+        LlmChannelDetailResponseDto llmChannel = llmChannelService.findByUserId(userId);
+        if (llmChannel == null || llmChannel.getGenerationType() == null) {
+            throw new ContentNotFoundException("LLM 설정을 찾을 수 없습니다.");
+        }
+
         // UUID 생성
         UUID jobId = UuidCreator.getTimeOrderedEpoch();
 
         // 파이썬 서비스 호출
-        TrendCreateContentPayloadDto payload = TrendCreateContentPayloadDto.of(userId, request.getKeyword(), channels, jobId);
+        TrendCreateContentPayloadDto payload = TrendCreateContentPayloadDto.of(
+                userId,
+                request.getKeyword(),
+                channels,
+                jobId,
+                llmChannel.getGenerationType()
+        );
         boolean requested = restClientCallerService.callGeneratePosts(payload);
 
         return TrendCreateContentResponseDto.of(request.getKeyword(), requested);
