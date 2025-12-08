@@ -3,6 +3,10 @@ package com.final_team4.finalbe.content.service;
 import com.final_team4.finalbe.content.domain.*;
 import com.final_team4.finalbe.content.dto.*;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
+import com.final_team4.finalbe.product.dto.ProductCreateRequestDto;
+import com.final_team4.finalbe.product.dto.ProductCreateResponseDto;
+import com.final_team4.finalbe.product.mapper.ProductContentMapper;
+import com.final_team4.finalbe.product.service.ProductService;
 import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
 import jakarta.validation.Valid;
@@ -20,6 +24,8 @@ public class ContentService {
 
     private final ContentMapper contentMapper;
     private final UploadChannelMapper uploadChannelMapper;
+    private final ProductService productService;
+    private final ProductContentMapper productContentMapper;
 
     // 검수할 컨텐츠 목록 조회
     public List<ContentListResponseDto> getContents(Long userId, int page, int size) {
@@ -65,6 +71,23 @@ public class ContentService {
                 .updatedAt(LocalDateTime.now())
                 .build();
         contentMapper.insert(content);
+
+        // product
+        ContentProductRequestDto product = request.getProduct();
+        if (product == null) {
+            throw new IllegalArgumentException("상품 정보가 없습니다.");
+        }
+
+        ProductCreateRequestDto productRequest = ProductCreateRequestDto.builder()
+                .category(product.getCategory())
+                .name(product.getTitle())
+                .link(product.getLink())
+                .thumbnail(product.getThumbnail())
+                .price(product.getPrice())
+                .build();
+
+        ProductCreateResponseDto productResponse = productService.create(productRequest);
+        productContentMapper.insert(productResponse.getId(), content.getId());
 
         return ContentCreateResponseDto.from(content);
     }

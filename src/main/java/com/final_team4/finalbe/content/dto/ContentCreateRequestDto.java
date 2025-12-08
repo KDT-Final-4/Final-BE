@@ -2,6 +2,7 @@ package com.final_team4.finalbe.content.dto;
 
 import com.final_team4.finalbe.content.domain.ContentGenType;
 import com.final_team4.finalbe.content.domain.ContentStatus;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -35,5 +36,9 @@ public class ContentCreateRequestDto {
     private String contentLink;
 
     private String keyword;
+
+    @Valid
+    @NotNull
+    private ContentProductRequestDto product;
 
 }
