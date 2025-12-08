@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -228,6 +229,23 @@ class ContentServiceTest {
         contentService.updateContentLink(request);
 
         verify(contentMapper).updateLinkByJobId("job-5", "https://example.com/new-link");
+    }
+
+    @DisplayName("존재하지 않는 jobId면 링크 갱신 시 예외가 발생한다")
+    @Test
+    void updateContentLink_notFound() {
+        given(contentMapper.findByJobId("job-404")).willReturn(null);
+
+        ContentLinkUpdateRequestDto request = ContentLinkUpdateRequestDto.builder()
+                .jobId("job-404")
+                .link("https://example.com/new-link")
+                .build();
+
+        assertThatThrownBy(() -> contentService.updateContentLink(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("jobId");
+
+        verify(contentMapper, never()).updateLinkByJobId(any(), any());
     }
 
     private void givenInsertSetsId(Long id) {

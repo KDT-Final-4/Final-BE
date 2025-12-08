@@ -45,6 +45,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -189,6 +190,24 @@ class ContentControllerTest {
                 .andExpect(status().isOk());
 
         verify(contentService).updateContentLink(any(ContentLinkUpdateRequestDto.class));
+    }
+
+    @DisplayName("컨텐츠 링크 업데이트 요청에 필수 값이 비어있으면 400을 응답한다")
+    @Test
+    void updateContentLink_invalidRequest() throws Exception {
+        String payload = """
+                {
+                  "jobId": "",
+                  "link": "https://example.com/uploaded"
+                }
+                """;
+
+        mockMvc.perform(patch("/api/content/link")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest());
+
+        verify(contentService, never()).updateContentLink(any(ContentLinkUpdateRequestDto.class));
     }
 
     @DisplayName("컨텐츠 수정")
