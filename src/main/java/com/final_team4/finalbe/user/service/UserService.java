@@ -4,10 +4,15 @@ import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.exception.DuplicateEmailException;
 import com.final_team4.finalbe._core.exception.UnauthorizedException;
 import com.final_team4.finalbe.content.domain.ContentGenType;
+import com.final_team4.finalbe.schedule.domain.RepeatInterval;
+import com.final_team4.finalbe.schedule.dto.schedule.ScheduleCreateRequestDto;
 import com.final_team4.finalbe.schedule.dto.scheduleSetting.ScheduleSettingCreateRequestDto;
+import com.final_team4.finalbe.schedule.service.ScheduleService;
 import com.final_team4.finalbe.schedule.service.ScheduleSettingService;
 import com.final_team4.finalbe.setting.dto.llm.LlmChannelCreateRequestDto;
+import com.final_team4.finalbe.setting.dto.notification.NotificationCredentialCreateRequestDto;
 import com.final_team4.finalbe.setting.service.llm.LlmChannelService;
+import com.final_team4.finalbe.setting.service.notification.NotificationCredentialService;
 import com.final_team4.finalbe.user.domain.User;
 import com.final_team4.finalbe.user.dto.PasswordUpdateRequest;
 import com.final_team4.finalbe.user.dto.UserRegisterRequestDto;
@@ -25,6 +30,9 @@ import com.final_team4.finalbe._core.exception.BadRequestException;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
@@ -38,6 +46,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final ScheduleSettingService scheduleSettingService;
     private final LlmChannelService llmChannelService;
+    private final ScheduleService scheduleService;
+    private final NotificationCredentialService notificationCredentialService;
 
     @Transactional
     public UserSummaryResponse register(@Valid UserRegisterRequestDto request) {
@@ -70,6 +80,23 @@ public class UserService {
                 .build();
         llmChannelService.create(user.getId(), defaultLlmSetting);
         //llm 기본값 채워주기
+
+        ScheduleCreateRequestDto scheduleCreateRequestDto = ScheduleCreateRequestDto.builder()
+                .title("기본 설정")
+                .repeatInterval(RepeatInterval.DAILY)
+                .startTime(LocalDateTime.of(LocalDate.now(), LocalTime.of(8, 0)))
+                .build();
+        scheduleService.insert(user.getId(), scheduleCreateRequestDto);
+        //스케줄 기본값 채워주기
+
+        NotificationCredentialCreateRequestDto notificationCredentialCreateRequestDto = NotificationCredentialCreateRequestDto.builder()
+                .channelId(1L)
+                .webhookUrl("")
+                .apiToken("")
+                .isActive(false)
+                .build();
+        notificationCredentialService.insert(user.getId(), notificationCredentialCreateRequestDto);
+        //알림 설정 기본값 채워주기
 
         return userInfoMapper.toUserSummary(user);
     }

@@ -9,6 +9,7 @@ public interface NotificationCredentialMapper {
 
    // Id 별 조회
    NotificationCredential findById(@Param("userId") Long userId, @Param("id") Long id);
+   NotificationCredential findByUserId(@Param("userId") Long userId);
 
    // 알림 채널 Id 별 조회
    NotificationCredential findByChannelId(@Param("userId") Long userId, @Param("channelId") Long channelId);
@@ -23,4 +24,6 @@ public interface NotificationCredentialMapper {
    void insert(NotificationCredential entity);
 
    Long findActiveChannelIdByUserId(Long userId);
+
+
 }

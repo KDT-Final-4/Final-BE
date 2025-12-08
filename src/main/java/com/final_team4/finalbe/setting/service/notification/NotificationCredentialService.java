@@ -21,6 +21,14 @@ public class NotificationCredentialService {
         return NotificationCredentialDetailResponseDto.from(entity);
     }
 
+    public NotificationCredentialDetailResponseDto findByUserId(Long userId) {
+        NotificationCredential entity = notificationMapper.findByUserId(userId);
+        if (entity == null) {
+            throw new ContentNotFoundException("알림 설정을 찾을 수 없습니다.");
+        }
+        return NotificationCredentialDetailResponseDto.from(entity);
+    }
+
     public NotificationCredentialDetailResponseDto findByChannelId(Long userId, Long channelId) {
         NotificationCredential entity = notificationMapper.findByChannelId(userId, channelId);
 
@@ -39,6 +47,7 @@ public class NotificationCredentialService {
             throw new ContentNotFoundException("알림 설정을 찾을 수 없습니다.");
         }
         entity.update(
+                requestDto.getChannelId(),
                 requestDto.getWebhookUrl(),
                 requestDto.getApiToken(),
                 requestDto.getIsActive()
@@ -57,6 +66,7 @@ public class NotificationCredentialService {
 
     public int updateByActive(Long userId, Long id, Boolean isActive) {
         NotificationCredential entity = notificationMapper.findById(userId, id);
+
 
         if (entity == null) {
             throw new ContentNotFoundException("알림 설정을 찾을 수 없습니다.");
