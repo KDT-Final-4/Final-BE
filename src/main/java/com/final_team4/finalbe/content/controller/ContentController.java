@@ -46,6 +46,13 @@ public class ContentController {
         return contentService.createContent(request);
     }
 
+    // 컨텐츠 링크 업데이트(파이썬에서 호출)
+    @PatchMapping("/link")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateContentLink(@Valid @RequestBody ContentLinkUpdateRequestDto request) {
+        contentService.updateContentLink(request);
+    }
+
     // 컨텐츠 수정
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)

@@ -39,7 +39,7 @@ public class Content {
 
     private LocalDateTime updatedAt;
 
-    private String contentLink;
+    private String link;
 
     private String keyword;
 

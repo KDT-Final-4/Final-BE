@@ -3,6 +3,13 @@ package com.final_team4.finalbe.content.service;
 import com.final_team4.finalbe.content.domain.*;
 import com.final_team4.finalbe.content.dto.*;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
+import com.final_team4.finalbe.content.dto.ContentUploadPayloadDto;
+import com.final_team4.finalbe.content.dto.ContentLinkUpdateRequestDto;
+import com.final_team4.finalbe.product.dto.ProductCreateRequestDto;
+import com.final_team4.finalbe.product.dto.ProductCreateResponseDto;
+import com.final_team4.finalbe.product.mapper.ProductContentMapper;
+import com.final_team4.finalbe.product.service.ProductService;
+import com.final_team4.finalbe.restClient.service.RestClientCallerService;
 import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
 import jakarta.validation.Valid;
@@ -20,6 +27,9 @@ public class ContentService {
 
     private final ContentMapper contentMapper;
     private final UploadChannelMapper uploadChannelMapper;
+    private final ProductService productService;
+    private final ProductContentMapper productContentMapper;
+    private final RestClientCallerService restClientCallerService;
 
     // 검수할 컨텐츠 목록 조회
     public List<ContentListResponseDto> getContents(Long userId, int page, int size) {
@@ -59,12 +69,29 @@ public class ContentService {
                 .body(request.getBody())
                 .status(ContentStatus.PENDING)
                 .generationType(ContentGenType.MANUAL)
-                .contentLink(request.getContentLink())   // 추가
+                .link(request.getLink())   // 추가
                 .keyword(request.getKeyword())    // 추가
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
         contentMapper.insert(content);
+
+        // product
+        ContentProductRequestDto product = request.getProduct();
+        if (product == null) {
+            throw new IllegalArgumentException("상품 정보가 없습니다.");
+        }
+
+        ProductCreateRequestDto productRequest = ProductCreateRequestDto.builder()
+                .category(product.getCategory())
+                .name(product.getTitle())
+                .link(product.getLink())
+                .thumbnail(product.getThumbnail())
+                .price(product.getPrice())
+                .build();
+
+        ProductCreateResponseDto productResponse = productService.create(productRequest);
+        productContentMapper.insert(productResponse.getId(), content.getId());
 
         return ContentCreateResponseDto.from(content);
     }
@@ -85,10 +112,30 @@ public class ContentService {
     public ContentUpdateResponseDto updateContentStatus(Long userId, Long id, @Valid ContentStatusUpdateRequestDto request) {
         Content content = getVerifiedContent(userId, id);
 
+        if (request.getStatus() == ContentStatus.APPROVED) {
+            UploadChannel uploadChannel = uploadChannelMapper.findById(content.getUploadChannelId());
+            if (uploadChannel == null) {
+                throw new IllegalStateException(
+                        "존재하지 않는 채널입니다: " + content.getUploadChannelId());
+            }
+            restClientCallerService.callUploadPosts(ContentUploadPayloadDto.from(content, uploadChannel));
+        }
+
         content.updateStatus(request.getStatus());
         contentMapper.updateStatus(content);
 
         return ContentUpdateResponseDto.from(content);
+    }
+
+    // 파이썬에서 호출하여 링크만 갱신
+    @Transactional
+    public void updateContentLink(ContentLinkUpdateRequestDto request) {
+        Content content = contentMapper.findByJobId(request.getJobId());
+        if (content == null) {
+            throw new IllegalArgumentException("존재하지 않는 jobId입니다: " + request.getJobId());
+        }
+
+        contentMapper.updateLinkByJobId(request.getJobId(), request.getLink());
     }
 
     private Content getVerifiedContent(Long userId, Long id) {

@@ -3,6 +3,12 @@ package com.final_team4.finalbe.content.service;
 import com.final_team4.finalbe.content.domain.*;
 import com.final_team4.finalbe.content.dto.*;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
+import com.final_team4.finalbe.content.dto.ContentUploadPayloadDto;
+import com.final_team4.finalbe.product.dto.ProductCreateRequestDto;
+import com.final_team4.finalbe.product.dto.ProductCreateResponseDto;
+import com.final_team4.finalbe.product.mapper.ProductContentMapper;
+import com.final_team4.finalbe.product.service.ProductService;
+import com.final_team4.finalbe.restClient.service.RestClientCallerService;
 import com.final_team4.finalbe.uploadChannel.domain.Channel;
 import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
@@ -22,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +39,15 @@ class ContentServiceTest {
 
     @Mock
     UploadChannelMapper uploadChannelMapper;
+
+    @Mock
+    ProductService productService;
+
+    @Mock
+    ProductContentMapper productContentMapper;
+
+    @Mock
+    RestClientCallerService restClientCallerService;
 
     @InjectMocks
     ContentService contentService;
@@ -87,11 +103,16 @@ class ContentServiceTest {
                 .body("body")
                 .status(ContentStatus.APPROVED)
                 .generationType(ContentGenType.AUTO)
-                .contentLink("https://example.com/content/1")  // 추가
+                .link("https://example.com/content/1")  // 추가
                 .keyword("키워드")                            // 추가
+                .product(productRequest())
                 .build();
 
         givenInsertSetsId(10L);
+        ProductCreateResponseDto productResponse = ProductCreateResponseDto.builder()
+                .id(77L)
+                .build();
+        given(productService.create(any(ProductCreateRequestDto.class))).willReturn(productResponse);
 
         // when
         ContentCreateResponseDto response = contentService.createContent(request);
@@ -101,6 +122,8 @@ class ContentServiceTest {
         assertThat(response.getStatus()).isEqualTo(ContentStatus.PENDING);
         assertThat(response.getGenerationType()).isEqualTo(ContentGenType.MANUAL);
         verify(contentMapper).insert(any(Content.class));
+        verify(productService).create(any(ProductCreateRequestDto.class));
+        verify(productContentMapper).insert(77L, 10L);
     }
 
     @DisplayName("존재하지 않는 채널로 생성 시 예외")
@@ -116,8 +139,9 @@ class ContentServiceTest {
                 .body("body")
                 .status(ContentStatus.PENDING)
                 .generationType(ContentGenType.AUTO)
-                .contentLink("https://example.com/content/1")  // 추가
+                .link("https://example.com/content/1")  // 추가
                 .keyword("키워드")                            // 추가
+                .product(productRequest())
                 .build();
 
         assertThatThrownBy(() -> contentService.createContent(request))
@@ -143,8 +167,9 @@ class ContentServiceTest {
                 .body("body")
                 .status(ContentStatus.PENDING)
                 .generationType(ContentGenType.AUTO)
-                .contentLink("https://example.com/content/1")  // 추가
+                .link("https://example.com/content/1")  // 추가
                 .keyword("키워드")                            // 추가
+                .product(productRequest())
                 .build();
 
         assertThatThrownBy(() -> contentService.createContent(request))
@@ -177,6 +202,12 @@ class ContentServiceTest {
     void updateContentStatus_success() {
         Content content = content(4L, "job", "title");
         given(contentMapper.findById(1L, 4L)).willReturn(content);
+        UploadChannel channel = UploadChannel.builder()
+                .id(content.getUploadChannelId())
+                .userId(content.getUserId())
+                .name(Channel.X)
+                .build();
+        given(uploadChannelMapper.findById(content.getUploadChannelId())).willReturn(channel);
 
         ContentStatusUpdateRequestDto request = ContentStatusUpdateRequestDto.builder()
                 .status(ContentStatus.APPROVED)
@@ -187,6 +218,60 @@ class ContentServiceTest {
         ArgumentCaptor<Content> captor = ArgumentCaptor.forClass(Content.class);
         verify(contentMapper).updateStatus(captor.capture());
         assertThat(captor.getValue().getStatus()).isEqualTo(ContentStatus.APPROVED);
+        ArgumentCaptor<ContentUploadPayloadDto> payloadCaptor = ArgumentCaptor.forClass(ContentUploadPayloadDto.class);
+        verify(restClientCallerService).callUploadPosts(payloadCaptor.capture());
+        assertThat(payloadCaptor.getValue().getChannelName()).isEqualTo(Channel.X.name());
+    }
+
+    @DisplayName("승인 시 업로드 채널이 없으면 예외가 발생한다")
+    @Test
+    void updateContentStatus_channelNotFound() {
+        Content content = content(7L, "job", "title");
+        given(contentMapper.findById(1L, 7L)).willReturn(content);
+        given(uploadChannelMapper.findById(content.getUploadChannelId())).willReturn(null);
+
+        ContentStatusUpdateRequestDto request = ContentStatusUpdateRequestDto.builder()
+                .status(ContentStatus.APPROVED)
+                .build();
+
+        assertThatThrownBy(() -> contentService.updateContentStatus(1L, 7L, request))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("채널");
+
+        verify(restClientCallerService, never()).callUploadPosts(any());
+    }
+
+    @DisplayName("jobId로 컨텐츠 링크를 갱신한다")
+    @Test
+    void updateContentLink_success() {
+        Content content = content(5L, "job-5", "title");
+        given(contentMapper.findByJobId("job-5")).willReturn(content);
+
+        ContentLinkUpdateRequestDto request = ContentLinkUpdateRequestDto.builder()
+                .jobId("job-5")
+                .link("https://example.com/new-link")
+                .build();
+
+        contentService.updateContentLink(request);
+
+        verify(contentMapper).updateLinkByJobId("job-5", "https://example.com/new-link");
+    }
+
+    @DisplayName("존재하지 않는 jobId면 링크 갱신 시 예외가 발생한다")
+    @Test
+    void updateContentLink_notFound() {
+        given(contentMapper.findByJobId("job-404")).willReturn(null);
+
+        ContentLinkUpdateRequestDto request = ContentLinkUpdateRequestDto.builder()
+                .jobId("job-404")
+                .link("https://example.com/new-link")
+                .build();
+
+        assertThatThrownBy(() -> contentService.updateContentLink(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("jobId");
+
+        verify(contentMapper, never()).updateLinkByJobId(any(), any());
     }
 
     private void givenInsertSetsId(Long id) {
@@ -210,6 +295,16 @@ class ContentServiceTest {
                 .generationType(ContentGenType.MANUAL)
                 .createdAt(now.minusDays(1))
                 .updatedAt(now)
+                .build();
+    }
+
+    private ContentProductRequestDto productRequest() {
+        return ContentProductRequestDto.builder()
+                .title("상품 제목")
+                .link("https://example.com/product")
+                .thumbnail("thumb.jpg")
+                .price(12000L)
+                .category("digital")
                 .build();
     }
 }

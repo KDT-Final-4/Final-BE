@@ -2,16 +2,20 @@ package com.final_team4.finalbe.trend.controller;
 
 import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
+import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
+import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
+import com.final_team4.finalbe.link.mapper.LinkMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
+import com.final_team4.finalbe.notification.mapper.NotificationMapper;
+import com.final_team4.finalbe.product.mapper.ProductCategoryMapper;
+import com.final_team4.finalbe.product.mapper.ProductContentMapper;
+import com.final_team4.finalbe.product.mapper.ProductMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
+import com.final_team4.finalbe.setting.mapper.llm.LlmChannelMapper;
 import com.final_team4.finalbe.setting.mapper.notification.NotificationCredentialMapper;
-import com.final_team4.finalbe.trend.dto.TrendCreateContentRequestDto;
-import com.final_team4.finalbe.trend.dto.TrendCreateContentResponseDto;
-import com.final_team4.finalbe.trend.dto.TrendCreateRequestDto;
-import com.final_team4.finalbe.trend.dto.TrendCreateResponseDto;
-import com.final_team4.finalbe.trend.dto.TrendResponseDto;
+import com.final_team4.finalbe.trend.dto.*;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
 import com.final_team4.finalbe.trend.service.TrendService;
 import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
@@ -36,9 +40,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.junit.jupiter.api.AfterEach;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -63,13 +66,21 @@ class TrendControllerTest {
     @MockitoBean TrendService trendService;
     @MockitoBean Loggable loggable;
     @MockitoBean ContentMapper contentMapper;
+    @MockitoBean ClicksMapper clicksMapper;
+    @MockitoBean DashboardMapper dashboardMapper;
+    @MockitoBean NotificationMapper notificationMapper;
     @MockitoBean LoggerMapper loggerMapper;
     @MockitoBean ScheduleMapper scheduleMapper;
     @MockitoBean ScheduleSettingMapper scheduleSettingMapper;
     @MockitoBean NotificationCredentialMapper notificationCredentialMapper;
+    @MockitoBean LlmChannelMapper llmChannelMapper;
     @MockitoBean TrendMapper trendMapper;
     @MockitoBean UploadChannelMapper uploadChannelMapper;
     @MockitoBean UserMapper userMapper;
+    @MockitoBean ProductContentMapper productContentMapper;
+    @MockitoBean ProductMapper productMapper;
+    @MockitoBean ProductCategoryMapper productCategoryMapper;
+    @MockitoBean LinkMapper linkMapper;
 
     // 테스트간 Authentication이 공유되지 않도록 매번 SecurityContext 초기화
     @AfterEach
@@ -88,7 +99,7 @@ class TrendControllerTest {
 
     @Test
     @DisplayName("인기검색어 생성 성공 시 201 Created와 응답 본문 반환")
-    void createTrend_success() throws Exception {
+    void createTrends_success() throws Exception {
         // given
         TrendCreateResponseDto responseDto = TrendCreateResponseDto.builder()
                 .id(4L)
@@ -97,16 +108,18 @@ class TrendControllerTest {
                 .searchVolume(900L)
                 .snsType("INSTAGRAM")
                 .build();
-        given(trendService.createTrend(any(TrendCreateRequestDto.class)))
-                .willReturn(responseDto);
+        given(trendService.createTrends(anyList()))
+                .willReturn(List.of(responseDto));
 
         String requestBody = """
-                {
-                  "categoryId": 2,
-                  "keyword": "beauty",
-                  "searchVolume": 900,
-                  "snsType": "INSTAGRAM"
-                }
+                [
+                  {
+                    "categoryId": 2,
+                    "keyword": "beauty",
+                    "searchVolume": 900,
+                    "snsType": "INSTAGRAM"
+                  }
+                ]
                 """;
 
         // when & then
@@ -114,11 +127,11 @@ class TrendControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(4))
-                .andExpect(jsonPath("$.categoryId").value(2))
-                .andExpect(jsonPath("$.keyword").value("beauty"));
+                .andExpect(jsonPath("$[0].id").value(4))
+                .andExpect(jsonPath("$[0].categoryId").value(2))
+                .andExpect(jsonPath("$[0].keyword").value("beauty"));
 
-        verify(trendService).createTrend(any(TrendCreateRequestDto.class));
+        verify(trendService).createTrends(anyList());
     }
 
     @Test
@@ -159,9 +172,10 @@ class TrendControllerTest {
                 }
                 """;
 
+        SecurityContextHolder.getContext().setAuthentication(authToken(principal));
+
         // when & then
         mockMvc.perform(post("/api/trend/content")
-                        .with(authentication(authToken(principal)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isAccepted())

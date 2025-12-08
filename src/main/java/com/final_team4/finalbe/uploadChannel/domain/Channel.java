@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum Channel {
     X("X"),
     INSTAGRAM("인스타그램"),
-    NAVER_BLOG("네이버 블로그");
+    NAVER("네이버 블로그");
 
     private final String description;
 

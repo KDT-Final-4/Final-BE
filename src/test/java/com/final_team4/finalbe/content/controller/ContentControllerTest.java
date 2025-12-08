@@ -7,9 +7,13 @@ import com.final_team4.finalbe.content.service.ContentService;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
 import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
 import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
+import com.final_team4.finalbe.link.mapper.LinkMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import com.final_team4.finalbe.notification.mapper.NotificationMapper;
+import com.final_team4.finalbe.product.mapper.ProductCategoryMapper;
+import com.final_team4.finalbe.product.mapper.ProductContentMapper;
+import com.final_team4.finalbe.product.mapper.ProductMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
 import com.final_team4.finalbe.setting.mapper.llm.LlmChannelMapper;
@@ -41,6 +45,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -74,6 +79,10 @@ class ContentControllerTest {
     @MockitoBean DashboardMapper dashboardMapper;
     @MockitoBean NotificationMapper notificationMapper;
     @MockitoBean LlmChannelMapper llmChannelMapper;
+    @MockitoBean ProductContentMapper productContentMapper;
+    @MockitoBean ProductMapper productMapper;
+    @MockitoBean ProductCategoryMapper productCategoryMapper;
+    @MockitoBean LinkMapper linkMapper;
 
     @AfterEach
     void clearSecurityContext() {
@@ -144,8 +153,15 @@ class ContentControllerTest {
                   "body": "body",
                   "status": "PENDING",
                   "generationType": "AUTO",
-                  "contentLink": "https://example.com/content/1",
-                  "keyword": "키워드"
+                  "link": "https://example.com/content/1",
+                  "keyword": "키워드",
+                  "product": {
+                    "title": "상품 제목",
+                    "link": "https://example.com/product",
+                    "thumbnail": "thumb.jpg",
+                    "price": 12000,
+                    "category": "digital"
+                  }
                 }
                 """;
 
@@ -156,6 +172,42 @@ class ContentControllerTest {
                 .andExpect(jsonPath("$.id").value(7));
 
         verify(contentService).createContent(any(ContentCreateRequestDto.class));
+    }
+
+    @DisplayName("컨텐츠 링크 업데이트")
+    @Test
+    void updateContentLink_success() throws Exception {
+        String payload = """
+                {
+                  "jobId": "job-1",
+                  "link": "https://example.com/uploaded"
+                }
+                """;
+
+        mockMvc.perform(patch("/api/content/link")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        verify(contentService).updateContentLink(any(ContentLinkUpdateRequestDto.class));
+    }
+
+    @DisplayName("컨텐츠 링크 업데이트 요청에 필수 값이 비어있으면 400을 응답한다")
+    @Test
+    void updateContentLink_invalidRequest() throws Exception {
+        String payload = """
+                {
+                  "jobId": "",
+                  "link": "https://example.com/uploaded"
+                }
+                """;
+
+        mockMvc.perform(patch("/api/content/link")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest());
+
+        verify(contentService, never()).updateContentLink(any(ContentLinkUpdateRequestDto.class));
     }
 
     @DisplayName("컨텐츠 수정")

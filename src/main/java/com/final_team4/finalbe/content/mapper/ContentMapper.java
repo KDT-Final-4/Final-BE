@@ -18,4 +18,8 @@ public interface ContentMapper {
 
     void updateStatus(Content content);
 
+    Content findByJobId(@Param("jobId") String jobId);
+
+    void updateLinkByJobId(@Param("jobId") String jobId, @Param("link") String link);
+
 }

@@ -135,13 +135,13 @@ class ProductServiceTest {
   }
 
   private ProductCreateRequestDto createRequest(String category, String name, String link, String thumbnail, Long price) {
-    ProductCreateRequestDto request = new ProductCreateRequestDto();
-    ReflectionTestUtils.setField(request, "category", category);
-    ReflectionTestUtils.setField(request, "name", name);
-    ReflectionTestUtils.setField(request, "link", link);
-    ReflectionTestUtils.setField(request, "thumbnail", thumbnail);
-    ReflectionTestUtils.setField(request, "price", price);
-    return request;
+    return ProductCreateRequestDto.builder()
+        .category(category)
+        .name(name)
+        .link(link)
+        .thumbnail(thumbnail)
+        .price(price)
+        .build();
   }
 
   private Product product(Long id, Long categoryId, String name, String link, String thumbnail, Long price, LocalDateTime createdAt) {
