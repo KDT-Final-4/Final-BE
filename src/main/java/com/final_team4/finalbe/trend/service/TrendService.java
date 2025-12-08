@@ -68,7 +68,7 @@ public class TrendService {
             throw new ContentNotFoundException("등록된 업로드 채널이 없습니다.");
         }
 
-        // generationType 조회
+        // LLM 채널 조회
         LlmChannelDetailResponseDto llmChannel = llmChannelService.findByUserId(userId);
         if (llmChannel == null || llmChannel.getGenerationType() == null) {
             throw new ContentNotFoundException("LLM 설정을 찾을 수 없습니다.");
@@ -83,7 +83,7 @@ public class TrendService {
                 request.getKeyword(),
                 channels,
                 jobId,
-                llmChannel.getGenerationType()
+                llmChannel
         );
         boolean requested = restClientCallerService.callGeneratePosts(payload);
 
