@@ -4,6 +4,7 @@ services:
   oracle:
     image: gvenzl/oracle-free:23.5-slim
     environment:
+      TZ: Asia/Seoul
       ORACLE_PASSWORD: ${ORACLE_PASSWORD}
       APP_USER: ${APP_USER}
       APP_USER_PASSWORD: ${APP_USER_PASSWORD}

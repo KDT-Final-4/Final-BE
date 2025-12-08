@@ -60,7 +60,7 @@ public class ContentService {
                 .status(ContentStatus.PENDING)
                 .generationType(ContentGenType.MANUAL)
                 .contentLink(request.getContentLink())   // 추가
-                .trendId(request.getTrendId())    // 추가
+                .keyword(request.getKeyword())    // 추가
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();

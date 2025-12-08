@@ -2,6 +2,7 @@ package com.final_team4.finalbe.setting.service.llm;
 
 import com.final_team4.finalbe._core.exception.BadRequestException;
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
+import com.final_team4.finalbe.content.domain.ContentGenType;
 import com.final_team4.finalbe.setting.domain.llm.LlmChannel;
 import com.final_team4.finalbe.setting.dto.llm.LlmChannelCreateRequestDto;
 import com.final_team4.finalbe.setting.dto.llm.LlmChannelDetailResponseDto;
@@ -77,6 +78,7 @@ class LlmChannelServiceTest {
         .maxTokens(3000)
         .temperature(new BigDecimal("0.85"))
         .prompt("Updated prompt")
+        .generationType(ContentGenType.MANUAL)
         .build();
 
     // when
@@ -90,6 +92,7 @@ class LlmChannelServiceTest {
     assertThat(result.getTemperature()).isEqualByComparingTo(new BigDecimal("0.85"));
     assertThat(result.getStatus()).isTrue();
     assertThat(result.getPrompt()).isEqualTo("Updated prompt");
+    assertThat(result.getGenerationType()).isEqualTo(ContentGenType.MANUAL);
   }
 
   @DisplayName("성공_LLM 설정 부분 수정 (일부 필드만 업데이트)")
@@ -103,6 +106,7 @@ class LlmChannelServiceTest {
         .name("Partially Updated")
         .modelName("gpt-4")
         .maxTokens(2500)
+        .generationType(ContentGenType.AUTO)
         .build();
 
     // when
@@ -113,6 +117,7 @@ class LlmChannelServiceTest {
     assertThat(result.getName()).isEqualTo("Partially Updated");
     assertThat(result.getModelName()).isEqualTo("gpt-4");
     assertThat(result.getMaxTokens()).isEqualTo(2500);
+    assertThat(result.getGenerationType()).isEqualTo(ContentGenType.AUTO);
     // 기존 값 유지 확인
     assertThat(result.getTemperature()).isEqualByComparingTo(new BigDecimal("0.7"));
   }
@@ -124,6 +129,7 @@ class LlmChannelServiceTest {
     Long nonExistentUserId = 999L;
     LlmChannelUpdateRequestDto updateRequest = LlmChannelUpdateRequestDto.builder()
         .modelName("gpt-4")
+        .generationType(ContentGenType.AUTO)
         .build();
 
     // when & then
@@ -174,6 +180,7 @@ class LlmChannelServiceTest {
         .maxTokens(2000)
         .temperature(new BigDecimal("0.7"))
         .prompt("You are a helpful assistant.")
+        .generationType(ContentGenType.AUTO)
         .build();
 
     // when
@@ -189,12 +196,14 @@ class LlmChannelServiceTest {
     assertThat(result.getMaxTokens()).isEqualTo(2000);
     assertThat(result.getTemperature()).isEqualByComparingTo(new BigDecimal("0.7"));
     assertThat(result.getPrompt()).isEqualTo("You are a helpful assistant.");
+    assertThat(result.getGenerationType()).isEqualTo(ContentGenType.AUTO);
 
     // DB에 실제로 저장되었는지 확인
     LlmChannel saved = llmChannelMapper.findByUserId(TEST_USER_ID);
     assertThat(saved).isNotNull();
     assertThat(saved.getName()).isEqualTo("New LLM Channel");
     assertThat(saved.getPrompt()).isEqualTo("You are a helpful assistant.");
+    assertThat(saved.getGenerationType()).isEqualTo(ContentGenType.AUTO);
   }
 
   @DisplayName("성공_등록 시 기본값 처리 확인")
@@ -205,6 +214,7 @@ class LlmChannelServiceTest {
         .name("Minimal LLM Channel")
         .modelName("gpt-4")
         .apiKey("sk-minimal-key-12345678")
+        .generationType(ContentGenType.AUTO)
         // maxTokens, temperature, status는 null
         .build();
 
@@ -216,6 +226,7 @@ class LlmChannelServiceTest {
     assertThat(result.getMaxTokens()).isEqualTo(2000); // 기본값
     assertThat(result.getTemperature()).isEqualByComparingTo(new BigDecimal("0.7")); // 기본값
     assertThat(result.getStatus()).isTrue(); // 기본값
+    assertThat(result.getGenerationType()).isEqualTo(ContentGenType.AUTO);
   }
 
   @DisplayName("실패_이미 LLM 설정이 존재하면 BadRequestException 발생")
@@ -229,6 +240,7 @@ class LlmChannelServiceTest {
         .name("Duplicate Channel")
         .modelName("gpt-4")
         .apiKey("sk-duplicate-key-12345678")
+        .generationType(ContentGenType.AUTO)
         .build();
 
     // when & then
@@ -244,6 +256,7 @@ class LlmChannelServiceTest {
     LlmChannelCreateRequestDto createRequest = LlmChannelCreateRequestDto.builder()
         .name("Test LLM")
         .modelName("gpt-4")
+        .generationType(ContentGenType.AUTO)
         // apiKey가 null
         .build();
 
@@ -261,6 +274,7 @@ class LlmChannelServiceTest {
         .name("Test LLM")
         .modelName("gpt-4")
         .apiKey("   ") // 공백만 있는 경우
+        .generationType(ContentGenType.AUTO)
         .build();
 
     // when & then
@@ -279,6 +293,7 @@ class LlmChannelServiceTest {
         .maxTokens(2000)
         .temperature(new BigDecimal("0.7"))
         .prompt("Test prompt")
+        .generationType(ContentGenType.AUTO)
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
         .build();

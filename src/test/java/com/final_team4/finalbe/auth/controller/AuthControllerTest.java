@@ -11,6 +11,7 @@ import com.final_team4.finalbe._core.jwt.JwtTokenService;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
 import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
 import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
+import com.final_team4.finalbe.link.mapper.LinkMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import com.final_team4.finalbe.notification.mapper.NotificationMapper;
@@ -99,6 +100,9 @@ class AuthControllerTest {
 
     @MockitoBean
     NotificationMapper notificationMapper;
+
+    @MockitoBean
+    LinkMapper linkMapper;
 
 
 
