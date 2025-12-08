@@ -30,9 +30,9 @@ public class DashboardController {
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/status")
-    public DashboardStatusGetResponseDto getStatus() {
+    public DashboardStatusGetResponseDto getStatus(@AuthenticationPrincipal JwtPrincipal jwtPrincipal) {
 
-        return dashboardService.getStatus();
+        return dashboardService.getStatus(jwtPrincipal.userId());
 
     }
 
@@ -49,7 +49,7 @@ public class DashboardController {
     }
 
 
-    @GetMapping("/daily-clicks")
+    @GetMapping("/daily")
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "기간별 일별 클릭 수 조회",

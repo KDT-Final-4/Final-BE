@@ -14,11 +14,14 @@
         WHERE PRODUCT_ID = #{productId}
     </select>
 
-    <!-- CLICKS 전체 클릭 수 -->
-    <select id="countAllClicks"
+    <select id="countAllClicksByUserId"
+            parameterType="long"
             resultType="long">
         SELECT COUNT(*)
-        FROM CLICKS
+        FROM CLICKS c
+        JOIN PRODUCT_CONTENT pc ON pc.PRODUCT_ID = c.PRODUCT_ID
+        JOIN CONTENT ct ON ct.ID = pc.CONTENT_ID
+        WHERE ct.USER_ID = #{userId}
     </select>
 
     <select id="findDailyClicks"

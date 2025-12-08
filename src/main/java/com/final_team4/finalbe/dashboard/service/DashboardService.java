@@ -25,8 +25,8 @@ public class DashboardService {
     private final DashboardMapper dashboardMapper;
 
 
-    public DashboardStatusGetResponseDto getStatus() {
-        long clicks = clicksMapper.countAllClicks();
+    public DashboardStatusGetResponseDto getStatus(Long  userId) {
+        long clicks = clicksMapper.countAllClicksByUserId(userId);
 
         return DashboardStatusGetResponseDto.builder()
                 .allClicks(clicks)
@@ -58,12 +58,13 @@ public class DashboardService {
         // DB에서 가져온 일별 클릭 합계를 날짜별로 바로 찾을 수 있게 Map으로 변환
         Map<LocalDate, Long> clicksByDate = clicksMapper.findDailyClicks(userId, start, end).stream()
                 .collect(Collectors.toMap(
-                        dto -> LocalDate.parse(dto.getDate()),
+                        dto -> LocalDate.parse(dto.getDate()), //DailyClicksDto의 날짜 문자열을 LocalDate 키로 변환
                         DailyClicksDto::getClicks,
-                        Long::sum)); // 같은 날짜가 중복되면 합산
+                        Long::sum)); //날짜가 중복되어 들어오면 합산해서 하나로 합침
 
         List<DailyClicksDto> dailyClicks = new ArrayList<>();
         // start부터 end까지 하루씩 증가시키며 빈 날짜는 0으로 채움
+        //!day.isAfter(end) ==   day <= end
         for (LocalDate day = start; !day.isAfter(end); day = day.plusDays(1)) {
             dailyClicks.add(DailyClicksDto.builder()
                     .date(day.toString())
