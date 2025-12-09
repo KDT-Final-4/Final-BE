@@ -13,8 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.time.LocalDate;
+
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -58,15 +58,12 @@ public class DashboardController {
     @ApiResponse(responseCode = "200", description = "조회 성공")
     public DashboardDailyClicksResponseDto getDailyClicks(
             @AuthenticationPrincipal JwtPrincipal principal,
-            @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
-            @RequestParam("end")   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end
+
     ) {
         return dashboardService.getDailyClicks(principal.userId(), start, end);
     }
-
-
-
-
 
 
 }

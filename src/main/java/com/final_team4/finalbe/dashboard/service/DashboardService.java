@@ -4,11 +4,13 @@ package com.final_team4.finalbe.dashboard.service;
 import com.final_team4.finalbe.dashboard.dto.*;
 import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
 import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
+import com.final_team4.finalbe._core.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +54,16 @@ public class DashboardService {
     public DashboardDailyClicksResponseDto getDailyClicks(Long userId, LocalDate start, LocalDate end) {
         // end가 start보다 빠르면 잘못된 입력
         if (end.isBefore(start)) {
-            throw new IllegalArgumentException("end 날짜는 start 날짜보다 빠를 수 없습니다.");
+            throw new BadRequestException("end 날짜는 start 날짜보다 빠를 수 없습니다.");
         }
+
+        //조회기간 최대 30일
+        long days = ChronoUnit.DAYS.between(start, end) + 1;
+        if (days > 30) {
+            throw new BadRequestException("조회 기간은 최대 30일(시작일 포함 기준)입니다.");
+        }
+
+
 
         // DB에서 가져온 일별 클릭 합계를 날짜별로 바로 찾을 수 있게 Map으로 변환
         Map<LocalDate, Long> clicksByDate = clicksMapper.findDailyClicks(userId, start, end).stream()
