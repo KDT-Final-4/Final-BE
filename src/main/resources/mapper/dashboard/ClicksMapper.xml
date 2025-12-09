@@ -14,11 +14,28 @@
         WHERE PRODUCT_ID = #{productId}
     </select>
 
-    <!-- CLICKS 전체 클릭 수 -->
-    <select id="countAllClicks"
+    <select id="countAllClicksByUserId"
+            parameterType="long"
             resultType="long">
         SELECT COUNT(*)
-        FROM CLICKS
+        FROM CLICKS c
+        JOIN PRODUCT_CONTENT pc ON pc.PRODUCT_ID = c.PRODUCT_ID
+        JOIN CONTENT ct ON ct.ID = pc.CONTENT_ID
+        WHERE ct.USER_ID = #{userId}
+    </select>
+
+    <select id="findDailyClicks"
+            resultType="com.final_team4.finalbe.dashboard.dto.DailyClicksDto">
+        SELECT
+        TO_CHAR(TRUNC(c.CLICKED_AT), 'YYYY-MM-DD') AS clickDate,
+        COUNT(*) AS clicks
+        FROM CLICKS c
+        JOIN PRODUCT_CONTENT pc ON pc.PRODUCT_ID = c.PRODUCT_ID
+        JOIN CONTENT ct ON ct.ID = pc.CONTENT_ID
+        WHERE ct.USER_ID = #{userId}
+        AND TRUNC(c.CLICKED_AT) BETWEEN #{start} AND #{end}
+        GROUP BY TRUNC(c.CLICKED_AT)
+        ORDER BY TRUNC(c.CLICKED_AT)
     </select>
 
 </mapper>

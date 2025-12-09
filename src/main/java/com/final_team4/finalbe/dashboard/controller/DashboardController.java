@@ -1,20 +1,21 @@
 package com.final_team4.finalbe.dashboard.controller;
 
 import com.final_team4.finalbe._core.security.JwtPrincipal;
+import com.final_team4.finalbe.dashboard.dto.DashboardContentsCountResponseDto;
 import com.final_team4.finalbe.dashboard.dto.DashboardContentsResponseDto;
+import com.final_team4.finalbe.dashboard.dto.DashboardDailyClicksResponseDto;
 import com.final_team4.finalbe.dashboard.dto.DashboardStatusGetResponseDto;
 import com.final_team4.finalbe.dashboard.service.DashboardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
+import java.time.LocalDate;
+
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -30,9 +31,9 @@ public class DashboardController {
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/status")
-    public DashboardStatusGetResponseDto getStatus() {
+    public DashboardStatusGetResponseDto getStatus(@AuthenticationPrincipal JwtPrincipal jwtPrincipal) {
 
-        return dashboardService.getStatus();
+        return dashboardService.getStatus(jwtPrincipal.userId());
 
     }
 
@@ -47,4 +48,32 @@ public class DashboardController {
 
         return dashboardService.getContents(principal.userId());
     }
+
+
+    @GetMapping("/daily")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "기간별 일별 클릭 수 조회",
+            description = "start~end(포함) 기간의 모든 상품 클릭 수를 일별로 반환합니다."
+    )
+    @ApiResponse(responseCode = "200", description = "조회 성공")
+    public DashboardDailyClicksResponseDto getDailyClicks(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end
+
+    ) {
+        return dashboardService.getDailyClicks(principal.userId(), start, end);
+    }
+
+
+    @GetMapping("/contents/count")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "200", description = "조회 성공")
+    public DashboardContentsCountResponseDto getContentCount(@AuthenticationPrincipal JwtPrincipal principal){
+
+        return dashboardService.countContents(principal.userId());
+
+    }
+
 }

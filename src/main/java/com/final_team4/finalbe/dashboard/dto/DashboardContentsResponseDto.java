@@ -16,4 +16,6 @@ public class DashboardContentsResponseDto {
                 contents(items).build();
 
     }
+
+
 }

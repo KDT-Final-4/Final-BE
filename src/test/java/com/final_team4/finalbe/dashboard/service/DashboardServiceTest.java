@@ -1,8 +1,6 @@
 package com.final_team4.finalbe.dashboard.service;
 
-import com.final_team4.finalbe.dashboard.dto.DashboardContentItemDto;
-import com.final_team4.finalbe.dashboard.dto.DashboardContentsResponseDto;
-import com.final_team4.finalbe.dashboard.dto.DashboardStatusGetResponseDto;
+import com.final_team4.finalbe.dashboard.dto.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +10,16 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.final_team4.finalbe._core.exception.BadRequestException;
+
+import java.time.LocalDate;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -32,12 +34,20 @@ public class DashboardServiceTest {
     @DisplayName("전체 클릭 수를 반환한다")
     @Test
     void getStatus_returnsClickCount() {
+        Long userId = insertUser("dashboard-user");
         Long categoryId = findAnyCategoryId();
+        Long uploadChannelId = insertUploadChannel(userId, "main-channel");
+        Long contentId = insertContent(
+                userId, "keyword", uploadChannelId, "제목", "본문",
+                "http://example.com/1", "job-1", "DONE", "AUTO", LocalDateTime.now()
+        );
         Long productId = insertProduct(categoryId);
+        linkProductToContent(productId, contentId);
+
         insertClick(productId, "127.0.0.1");
         insertClick(productId, "127.0.0.2");
 
-        DashboardStatusGetResponseDto result = dashboardService.getStatus();
+        DashboardStatusGetResponseDto result = dashboardService.getStatus(userId);
 
         assertThat(result.getAllClicks()).isEqualTo(2);
         assertThat(result.getAllViews()).isZero();
@@ -95,6 +105,58 @@ public class DashboardServiceTest {
                 .extracting(DashboardContentItemDto::getClickCount)
                 .containsExactly(1L, 2L);
     }
+
+    @DisplayName("일자별 클릭 수를 반환한다")
+    @Test
+    void getDailyClicks_returnsClicksPerDate() {
+        Long userId = insertUser("daily-user");
+        Long categoryId = findAnyCategoryId();
+        Long uploadChannelId = insertUploadChannel(userId, "daily-channel");
+        Long contentId = insertContent(
+                userId, "키워드", uploadChannelId, "daily title", "body",
+                "http://example.com/daily", "job-daily", "DONE", "AUTO", LocalDateTime.now()
+        );
+        Long productId = insertProduct(categoryId);
+        linkProductToContent(productId, contentId);
+
+        insertClick(productId, "10.0.0.1", LocalDate.of(2025, 1, 1));
+        insertClick(productId, "10.0.0.2", LocalDate.of(2025, 1, 1));
+        insertClick(productId, "10.0.0.3", LocalDate.of(2025, 1, 3));
+
+        DashboardDailyClicksResponseDto response = dashboardService.getDailyClicks(
+                userId,
+                LocalDate.of(2025, 1, 1),
+                LocalDate.of(2025, 1, 3)
+        );
+
+        assertThat(response.getDailyClicks())
+                .extracting(DailyClicksDto::getClicks)
+                .containsExactly(2L, 0L, 1L);
+    }
+
+    @DisplayName("end가 start보다 빠르면 예외를 던진다")
+    @Test
+    void getDailyClicks_endBeforeStart_throws() {
+        Long userId = insertUser("bad-range");
+        assertThatThrownBy(() -> dashboardService.getDailyClicks(
+                userId,
+                LocalDate.of(2025, 1, 10),
+                LocalDate.of(2025, 1, 9)))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @DisplayName("30일 초과 조회 시 예외를 던진다")
+    @Test
+    void getDailyClicks_over30days_throws() {
+        Long userId = insertUser("over-range");
+        assertThatThrownBy(() -> dashboardService.getDailyClicks(
+                userId,
+                LocalDate.of(2025, 1, 1),
+                LocalDate.of(2025, 2, 2)))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+
 
     private Long insertUser(String name) {
         String email = name + "+" + System.nanoTime() + "@example.com";
@@ -184,6 +246,12 @@ public class DashboardServiceTest {
                 productId, ip
         );
     }
+    private void insertClick(Long productId, String ip, LocalDate date) {
+        jdbcTemplate.update(
+                "INSERT INTO clicks (product_id, ip, clicked_at) VALUES (?, ?, ?)",
+                productId, ip, Timestamp.valueOf(date.atStartOfDay())
+        );
+    }
 
     private void linkProductToContent(Long productId, Long contentId) {
         jdbcTemplate.update(
@@ -210,5 +278,30 @@ public class DashboardServiceTest {
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
+
+    @DisplayName("사용자별 콘텐츠 개수를 반환한다")
+    @Test
+    void countContents_returnsCountPerUser() {
+        Long userId = insertUser("count-user");
+        Long otherUserId = insertUser("other-count-user");
+        Long uploadChannelId = insertUploadChannel(userId, "count-channel");
+        Long otherUploadChannelId = insertUploadChannel(otherUserId, "other-channel");
+
+        insertContent(userId, "키워드", uploadChannelId, "title1", "body1",
+                "http://example.com/cc1", "job-cc1", "DONE", "AUTO", LocalDateTime.now());
+        insertContent(userId, "키워드", uploadChannelId, "title2", "body2",
+                "http://example.com/cc2", "job-cc2", "DONE", "AUTO", LocalDateTime.now().plusMinutes(1));
+        insertContent(userId, "키워드", uploadChannelId, "title3", "body3",
+                "http://example.com/cc3", "job-cc3", "DONE", "AUTO", LocalDateTime.now().plusMinutes(2));
+
+        insertContent(otherUserId, "다른", otherUploadChannelId, "other title", "other body",
+                "http://example.com/other", "job-oc1", "DONE", "AUTO", LocalDateTime.now());
+
+        DashboardContentsCountResponseDto response = dashboardService.countContents(userId);
+
+        assertThat(response.getContentsCount()).isEqualTo(3L);
+    }
+
+
 
 }

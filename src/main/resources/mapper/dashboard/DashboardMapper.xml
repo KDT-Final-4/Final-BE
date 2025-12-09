@@ -24,5 +24,12 @@
         ORDER BY c.UPDATED_AT DESC, c.CREATED_AT DESC
     </select>
 
+    <select id="countAllContentsByUserId"
+            resultType="long">
+        SELECT COUNT(*) AS contentsCount
+        FROM CONTENT
+        WHERE USER_ID = #{userId}
+    </select>
+
 
 </mapper>
