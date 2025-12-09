@@ -1,8 +1,6 @@
 package com.final_team4.finalbe.dashboard.service;
 
-import com.final_team4.finalbe.dashboard.dto.DashboardContentItemDto;
-import com.final_team4.finalbe.dashboard.dto.DashboardContentsResponseDto;
-import com.final_team4.finalbe.dashboard.dto.DashboardStatusGetResponseDto;
+import com.final_team4.finalbe.dashboard.dto.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.final_team4.finalbe._core.exception.BadRequestException;
-import com.final_team4.finalbe.dashboard.dto.DashboardDailyClicksResponseDto;
-import com.final_team4.finalbe.dashboard.dto.DailyClicksDto;
+
 import java.time.LocalDate;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
@@ -280,6 +277,29 @@ public class DashboardServiceTest {
             return ps;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    @DisplayName("사용자별 콘텐츠 개수를 반환한다")
+    @Test
+    void countContents_returnsCountPerUser() {
+        Long userId = insertUser("count-user");
+        Long otherUserId = insertUser("other-count-user");
+        Long uploadChannelId = insertUploadChannel(userId, "count-channel");
+        Long otherUploadChannelId = insertUploadChannel(otherUserId, "other-channel");
+
+        insertContent(userId, "키워드", uploadChannelId, "title1", "body1",
+                "http://example.com/cc1", "job-cc1", "DONE", "AUTO", LocalDateTime.now());
+        insertContent(userId, "키워드", uploadChannelId, "title2", "body2",
+                "http://example.com/cc2", "job-cc2", "DONE", "AUTO", LocalDateTime.now().plusMinutes(1));
+        insertContent(userId, "키워드", uploadChannelId, "title3", "body3",
+                "http://example.com/cc3", "job-cc3", "DONE", "AUTO", LocalDateTime.now().plusMinutes(2));
+
+        insertContent(otherUserId, "다른", otherUploadChannelId, "other title", "other body",
+                "http://example.com/other", "job-oc1", "DONE", "AUTO", LocalDateTime.now());
+
+        DashboardContentsCountResponseDto response = dashboardService.countContents(userId);
+
+        assertThat(response.getContentsCount()).isEqualTo(3L);
     }
 
 

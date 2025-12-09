@@ -1,7 +1,6 @@
 package com.final_team4.finalbe.dashboard.controller;
 
 
-import com.final_team4.finalbe._core.exception.BadRequestException;
 import com.final_team4.finalbe._core.jwt.JwtTokenService;
 import com.final_team4.finalbe._core.security.AccessCookieManager;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
@@ -229,6 +228,25 @@ public class DashboardControllerTest {
                 .andExpect(jsonPath("$.dailyClicks[0].clicks").value(2))
                 .andExpect(jsonPath("$.dailyClicks[1].clicks").value(0))
                 .andExpect(jsonPath("$.dailyClicks[2].clicks").value(1));
+    }
+
+
+    @Test
+    @DisplayName("콘텐츠 개수 조회는 인증 사용자 id로 서비스 호출하고 개수를 반환")
+    void getContentCount_returnsCountForAuthenticatedUser() throws Exception {
+        JwtPrincipal principal = testPrincipal(5L);
+        var auth = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        DashboardContentsCountResponseDto response = DashboardContentsCountResponseDto.of(4L);
+        given(dashboardService.countContents(principal.userId())).willReturn(response);
+
+        mockMvc.perform(get("/api/dashboard/contents/count").principal(auth))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.contentsCount").value(4));
+
+        then(dashboardService).should().countContents(principal.userId());
     }
 
 
