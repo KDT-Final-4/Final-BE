@@ -1,6 +1,7 @@
 package com.final_team4.finalbe.dashboard.controller;
 
 import com.final_team4.finalbe._core.security.JwtPrincipal;
+import com.final_team4.finalbe.dashboard.dto.DashboardContentsCountResponseDto;
 import com.final_team4.finalbe.dashboard.dto.DashboardContentsResponseDto;
 import com.final_team4.finalbe.dashboard.dto.DashboardDailyClicksResponseDto;
 import com.final_team4.finalbe.dashboard.dto.DashboardStatusGetResponseDto;
@@ -65,5 +66,14 @@ public class DashboardController {
         return dashboardService.getDailyClicks(principal.userId(), start, end);
     }
 
+
+    @GetMapping("/contents/count")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "200", description = "조회 성공")
+    public DashboardContentsCountResponseDto getContentCount(@AuthenticationPrincipal JwtPrincipal principal){
+
+        return dashboardService.countContents(principal.userId());
+
+    }
 
 }

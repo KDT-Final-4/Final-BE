@@ -90,4 +90,10 @@ public class DashboardService {
                 .build();
     }
 
+    public DashboardContentsCountResponseDto countContents(Long userId) {
+        Long counts = dashboardMapper.countAllContentsByUserId(userId);
+        // 유저 id 로 콘텐츠 개수 찾기
+        return DashboardContentsCountResponseDto.of(counts);
+    }
+
 }
