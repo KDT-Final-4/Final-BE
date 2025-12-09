@@ -12,12 +12,17 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.final_team4.finalbe._core.exception.BadRequestException;
+import com.final_team4.finalbe.dashboard.dto.DashboardDailyClicksResponseDto;
+import com.final_team4.finalbe.dashboard.dto.DailyClicksDto;
+import java.time.LocalDate;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -32,12 +37,20 @@ public class DashboardServiceTest {
     @DisplayName("전체 클릭 수를 반환한다")
     @Test
     void getStatus_returnsClickCount() {
+        Long userId = insertUser("dashboard-user");
         Long categoryId = findAnyCategoryId();
+        Long uploadChannelId = insertUploadChannel(userId, "main-channel");
+        Long contentId = insertContent(
+                userId, "keyword", uploadChannelId, "제목", "본문",
+                "http://example.com/1", "job-1", "DONE", "AUTO", LocalDateTime.now()
+        );
         Long productId = insertProduct(categoryId);
+        linkProductToContent(productId, contentId);
+
         insertClick(productId, "127.0.0.1");
         insertClick(productId, "127.0.0.2");
 
-        DashboardStatusGetResponseDto result = dashboardService.getStatus();
+        DashboardStatusGetResponseDto result = dashboardService.getStatus(userId);
 
         assertThat(result.getAllClicks()).isEqualTo(2);
         assertThat(result.getAllViews()).isZero();
@@ -95,6 +108,58 @@ public class DashboardServiceTest {
                 .extracting(DashboardContentItemDto::getClickCount)
                 .containsExactly(1L, 2L);
     }
+
+    @DisplayName("일자별 클릭 수를 반환한다")
+    @Test
+    void getDailyClicks_returnsClicksPerDate() {
+        Long userId = insertUser("daily-user");
+        Long categoryId = findAnyCategoryId();
+        Long uploadChannelId = insertUploadChannel(userId, "daily-channel");
+        Long contentId = insertContent(
+                userId, "키워드", uploadChannelId, "daily title", "body",
+                "http://example.com/daily", "job-daily", "DONE", "AUTO", LocalDateTime.now()
+        );
+        Long productId = insertProduct(categoryId);
+        linkProductToContent(productId, contentId);
+
+        insertClick(productId, "10.0.0.1", LocalDate.of(2025, 1, 1));
+        insertClick(productId, "10.0.0.2", LocalDate.of(2025, 1, 1));
+        insertClick(productId, "10.0.0.3", LocalDate.of(2025, 1, 3));
+
+        DashboardDailyClicksResponseDto response = dashboardService.getDailyClicks(
+                userId,
+                LocalDate.of(2025, 1, 1),
+                LocalDate.of(2025, 1, 3)
+        );
+
+        assertThat(response.getDailyClicks())
+                .extracting(DailyClicksDto::getClicks)
+                .containsExactly(2L, 0L, 1L);
+    }
+
+    @DisplayName("end가 start보다 빠르면 예외를 던진다")
+    @Test
+    void getDailyClicks_endBeforeStart_throws() {
+        Long userId = insertUser("bad-range");
+        assertThatThrownBy(() -> dashboardService.getDailyClicks(
+                userId,
+                LocalDate.of(2025, 1, 10),
+                LocalDate.of(2025, 1, 9)))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @DisplayName("30일 초과 조회 시 예외를 던진다")
+    @Test
+    void getDailyClicks_over30days_throws() {
+        Long userId = insertUser("over-range");
+        assertThatThrownBy(() -> dashboardService.getDailyClicks(
+                userId,
+                LocalDate.of(2025, 1, 1),
+                LocalDate.of(2025, 2, 2)))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+
 
     private Long insertUser(String name) {
         String email = name + "+" + System.nanoTime() + "@example.com";
@@ -184,6 +249,12 @@ public class DashboardServiceTest {
                 productId, ip
         );
     }
+    private void insertClick(Long productId, String ip, LocalDate date) {
+        jdbcTemplate.update(
+                "INSERT INTO clicks (product_id, ip, clicked_at) VALUES (?, ?, ?)",
+                productId, ip, Timestamp.valueOf(date.atStartOfDay())
+        );
+    }
 
     private void linkProductToContent(Long productId, Long contentId) {
         jdbcTemplate.update(
@@ -210,5 +281,7 @@ public class DashboardServiceTest {
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
+
+
 
 }

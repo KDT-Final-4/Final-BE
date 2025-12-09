@@ -1,13 +1,12 @@
 package com.final_team4.finalbe.dashboard.controller;
 
 
+import com.final_team4.finalbe._core.exception.BadRequestException;
 import com.final_team4.finalbe._core.jwt.JwtTokenService;
 import com.final_team4.finalbe._core.security.AccessCookieManager;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
-import com.final_team4.finalbe.dashboard.dto.DashboardContentItemDto;
-import com.final_team4.finalbe.dashboard.dto.DashboardContentsResponseDto;
-import com.final_team4.finalbe.dashboard.dto.DashboardStatusGetResponseDto;
+import com.final_team4.finalbe.dashboard.dto.*;
 import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
 import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
 import com.final_team4.finalbe.dashboard.service.DashboardService;
@@ -15,6 +14,8 @@ import com.final_team4.finalbe.link.mapper.LinkMapper;
 import com.final_team4.finalbe.logger.aop.Loggable;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import com.final_team4.finalbe.notification.mapper.NotificationMapper;
+import com.final_team4.finalbe.product.mapper.ProductCategoryMapper;
+import com.final_team4.finalbe.product.mapper.ProductMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
 import com.final_team4.finalbe.setting.mapper.llm.LlmChannelMapper;
@@ -36,6 +37,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -109,6 +111,12 @@ public class DashboardControllerTest {
     @MockitoBean
     LinkMapper linkMapper;
 
+    @MockitoBean
+    ProductCategoryMapper productCategoryMapper;
+
+    @MockitoBean
+    ProductMapper productMapper;
+
     @AfterEach
     void clearSecurityContext() {
         SecurityContextHolder.clearContext();
@@ -117,6 +125,11 @@ public class DashboardControllerTest {
     @Test
     @DisplayName("대시보드 상태 조회는 200과 json 숫자 allClicks및 타 숫자들을 반환")
     void getStatus_returnsJsonWithAllClicks() throws Exception {
+        JwtPrincipal principal = testPrincipal(17L);
+        var auth = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
         DashboardStatusGetResponseDto response = DashboardStatusGetResponseDto.builder()
                 .allClicks(123L)
                 .allViews(0L)
@@ -124,13 +137,16 @@ public class DashboardControllerTest {
                 .averageDwellTime(0L)
                 .build();
 
-        given(dashboardService.getStatus()).willReturn(response);
+        given(dashboardService.getStatus(principal.userId())).willReturn(response);
 
         mockMvc.perform(get("/api/dashboard/status"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.allClicks").isNumber())
                 .andExpect(jsonPath("$.allClicks").value(123));
+
+        then(dashboardService).should().getStatus(principal.userId());
+
     }
     @Test
     @DisplayName("대시보드 콘텐츠 전체 조회는 인증 사용자 id로 서비스 호출하고 콘텐츠 목록을 반환")
@@ -179,6 +195,43 @@ public class DashboardControllerTest {
                 .enabled(true)
                 .build();
     }
+
+    @Test
+    @DisplayName("/daily 정상 조회 시 기간/일자별 클릭 수 반환")
+    void daily_returnsClicksByDate() throws Exception {
+        JwtPrincipal principal = testPrincipal(1L);
+        var auth = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        DashboardDailyClicksResponseDto response = DashboardDailyClicksResponseDto.builder()
+                .start("2025-01-01")
+                .end("2025-01-03")
+                .dailyClicks(List.of(
+                        DailyClicksDto.builder().date("2025-01-01").clicks(2).build(),
+                        DailyClicksDto.builder().date("2025-01-02").clicks(0).build(),
+                        DailyClicksDto.builder().date("2025-01-03").clicks(1).build()
+                ))
+                .build();
+
+        given(dashboardService.getDailyClicks(
+                principal.userId(),
+                LocalDate.parse("2025-01-01"),
+                LocalDate.parse("2025-01-03"))
+        ).willReturn(response);
+
+        mockMvc.perform(get("/api/dashboard/daily")
+                        .principal(auth)
+                        .param("start", "2025-01-01")
+                        .param("end", "2025-01-03"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.start").value("2025-01-01"))
+                .andExpect(jsonPath("$.end").value("2025-01-03"))
+                .andExpect(jsonPath("$.dailyClicks[0].clicks").value(2))
+                .andExpect(jsonPath("$.dailyClicks[1].clicks").value(0))
+                .andExpect(jsonPath("$.dailyClicks[2].clicks").value(1));
+    }
+
+
 }
 
 
