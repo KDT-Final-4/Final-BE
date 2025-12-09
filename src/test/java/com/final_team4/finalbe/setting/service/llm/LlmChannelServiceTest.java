@@ -225,7 +225,7 @@ class LlmChannelServiceTest {
     assertThat(result).isNotNull();
     assertThat(result.getMaxTokens()).isEqualTo(2000); // 기본값
     assertThat(result.getTemperature()).isEqualByComparingTo(new BigDecimal("0.7")); // 기본값
-    assertThat(result.getStatus()).isTrue(); // 기본값
+    assertThat(result.getStatus()).isFalse(); // 기본값: false
     assertThat(result.getGenerationType()).isEqualTo(ContentGenType.AUTO);
   }
 

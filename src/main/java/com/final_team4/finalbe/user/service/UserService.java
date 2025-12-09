@@ -69,13 +69,13 @@ public class UserService {
         //스케쥴 세팅 기본값 채워주기
 
         LlmChannelCreateRequestDto defaultLlmSetting = LlmChannelCreateRequestDto.builder()
-                .name("설정 필요")
-                .modelName("설정 필요")
-                .apiKey("설정 필요")
+                .name("openAi")
+                .modelName("gpt5")
+                .apiKey("")
                 .status(false)
                 .maxTokens(2000)
                 .temperature(BigDecimal.valueOf(0.9))
-                .prompt("설정 필요")
+                .prompt(null)
                 .generationType(ContentGenType.AUTO)
                 .build();
         llmChannelService.create(user.getId(), defaultLlmSetting);

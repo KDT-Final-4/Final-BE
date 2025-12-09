@@ -81,12 +81,12 @@ class UserServiceTest {
 
         assertThat(defaultChannel).isNotNull();
         assertThat(defaultChannel.getStatus()).isFalse();
-        assertThat(defaultChannel.getName()).isEqualTo("설정 필요");
-        assertThat(defaultChannel.getModelName()).isEqualTo("설정 필요");
-        assertThat(defaultChannel.getApiKey()).isEqualTo("설정 필요");
+        assertThat(defaultChannel.getName()).isEqualTo("openAi");
+        assertThat(defaultChannel.getModelName()).isEqualTo("gpt5");
+        assertThat(defaultChannel.getApiKey()).isEqualTo("");
         assertThat(defaultChannel.getMaxTokens()).isEqualTo(2000);
         assertThat(defaultChannel.getTemperature()).isEqualByComparingTo("0.9");
-        assertThat(defaultChannel.getPrompt()).isEqualTo("설정 필요");
+        assertThat(defaultChannel.getPrompt()).isNull();
         assertThat(defaultChannel.getGenerationType()).isEqualTo(ContentGenType.AUTO);
     }
 
