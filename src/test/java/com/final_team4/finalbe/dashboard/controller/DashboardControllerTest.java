@@ -206,9 +206,9 @@ public class DashboardControllerTest {
                 .start("2025-01-01")
                 .end("2025-01-03")
                 .dailyClicks(List.of(
-                        DailyClicksDto.builder().date("2025-01-01").clicks(2).build(),
-                        DailyClicksDto.builder().date("2025-01-02").clicks(0).build(),
-                        DailyClicksDto.builder().date("2025-01-03").clicks(1).build()
+                        DailyClicksDto.builder().clickDate("2025-01-01").clicks(2).build(),
+                        DailyClicksDto.builder().clickDate("2025-01-02").clicks(0).build(),
+                        DailyClicksDto.builder().clickDate("2025-01-03").clicks(1).build()
                 ))
                 .build();
 

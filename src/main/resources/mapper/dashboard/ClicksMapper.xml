@@ -27,7 +27,7 @@
     <select id="findDailyClicks"
             resultType="com.final_team4.finalbe.dashboard.dto.DailyClicksDto">
         SELECT
-        TO_CHAR(TRUNC(c.CLICKED_AT), 'YYYY-MM-DD') AS "DATE",
+        TO_CHAR(TRUNC(c.CLICKED_AT), 'YYYY-MM-DD') AS clickDate,
         COUNT(*) AS clicks
         FROM CLICKS c
         JOIN PRODUCT_CONTENT pc ON pc.PRODUCT_ID = c.PRODUCT_ID

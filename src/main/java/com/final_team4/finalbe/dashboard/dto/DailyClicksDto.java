@@ -4,10 +4,10 @@ import lombok.*;
 
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 public class DailyClicksDto {
 
-    private String date;
+    private String clickDate;
     private long clicks;
 }
