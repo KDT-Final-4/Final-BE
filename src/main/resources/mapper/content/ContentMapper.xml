@@ -22,9 +22,21 @@
             CONTENT
         WHERE
             USER_ID = #{userId}
+        <if test="status != null">
+            AND STATUS = #{status}
+        </if>
         ORDER BY
             UPDATED_AT DESC, CREATED_AT DESC
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*)
+        FROM CONTENT
+        WHERE USER_ID = #{userId}
+        <if test="status != null">
+            AND STATUS = #{status}
+        </if>
     </select>
 
     <select id="findByJobId" parameterType="string" resultType="Content">

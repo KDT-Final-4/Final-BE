@@ -104,17 +104,19 @@ class ContentControllerTest {
                 ContentListResponseDto.builder().id(1L).title("first").build(),
                 ContentListResponseDto.builder().id(2L).title("second").build()
         );
-        given(contentService.getContents(1L, 0, 10)).willReturn(responses);
+        ContentPagedResponseDto pagedResponse = ContentPagedResponseDto.of(responses, 15L, 0, 10);
+        given(contentService.getContents(1L, 0, 10, null)).willReturn(pagedResponse);
 
         mockMvc.perform(get("/api/content")
                         .with(authentication(authToken(principalOf(1L))))
                         .param("page", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("first"))
-                .andExpect(jsonPath("$[1].id").value(2));
+                .andExpect(jsonPath("$.items[0].title").value("first"))
+                .andExpect(jsonPath("$.items[1].id").value(2))
+                .andExpect(jsonPath("$.totalCount").value(15));
 
-        verify(contentService).getContents(1L, 0, 10);
+        verify(contentService).getContents(1L, 0, 10, null);
     }
 
     @DisplayName("컨텐츠 상세 조회")

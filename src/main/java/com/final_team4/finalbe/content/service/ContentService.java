@@ -32,12 +32,14 @@ public class ContentService {
     private final RestClientCallerService restClientCallerService;
 
     // 검수할 컨텐츠 목록 조회
-    public List<ContentListResponseDto> getContents(Long userId, int page, int size) {
+    public ContentPagedResponseDto getContents(Long userId, int page, int size, ContentStatus status) {
         int offset = page * size;
-        List<Content> contents = contentMapper.findAll(userId, size, offset);
-        return contents.stream()
+        List<Content> contents = contentMapper.findAll(userId, status, size, offset);
+        List<ContentListResponseDto> items = contents.stream()
                 .map(ContentListResponseDto::from)
                 .toList();
+        long totalCount = contentMapper.countAll(userId, status);
+        return ContentPagedResponseDto.of(items, totalCount, page, size);
     }
 
     // 컨텐츠 상세 조회

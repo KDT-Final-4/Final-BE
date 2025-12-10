@@ -1,6 +1,7 @@
 package com.final_team4.finalbe.content.mapper;
 
 import com.final_team4.finalbe.content.domain.Content;
+import com.final_team4.finalbe.content.domain.ContentStatus;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -8,7 +9,13 @@ import java.util.List;
 
 @Mapper
 public interface ContentMapper {
-    List<Content> findAll(Long userId, @Param("limit") int limit, @Param("offset") int offset);
+    List<Content> findAll(@Param("userId") Long userId,
+                          @Param("status") ContentStatus status,
+                          @Param("limit") int limit,
+                          @Param("offset") int offset);
+
+    long countAll(@Param("userId") Long userId,
+                  @Param("status") ContentStatus status);
 
     Content findById(Long userId, Long id);
 
