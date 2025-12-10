@@ -22,19 +22,21 @@
 
     <select id="findAll" resultType="Trend">
         SELECT
-            ID,
-            CATEGORY_ID,
-            KEYWORD,
-            SEARCH_VOLUME,
-            CREATED_AT,
-            SNS_TYPE
-        FROM TREND
+            t.ID,
+            t.CATEGORY_ID,
+            c.DESCRIPTION AS category_name,
+            t.KEYWORD,
+            t.SEARCH_VOLUME,
+            t.CREATED_AT,
+            t.SNS_TYPE
+        FROM TREND t
+        JOIN PRODUCT_CATEGORY c ON c.ID = t.CATEGORY_ID
         <where>
             <if test="snsType != null">
-                SNS_TYPE = #{snsType}
+                t.SNS_TYPE = #{snsType}
             </if>
         </where>
-        ORDER BY CREATED_AT DESC, SEARCH_VOLUME DESC
+        ORDER BY t.CREATED_AT DESC, t.SEARCH_VOLUME DESC
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
     </select>
 

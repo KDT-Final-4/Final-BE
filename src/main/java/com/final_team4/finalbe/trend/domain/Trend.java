@@ -17,6 +17,8 @@ public class Trend {
     @NotNull
     private Long categoryId;
 
+    private String categoryName;
+
     private String keyword;
 
     private Long searchVolume;

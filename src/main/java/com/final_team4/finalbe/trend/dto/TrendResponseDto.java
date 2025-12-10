@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class TrendResponseDto {
     private Long id;
     private Long categoryId;
+    private String categoryName;
     private String keyword;
     private Long searchVolume;
     private LocalDateTime createdAt;
@@ -21,6 +22,7 @@ public class TrendResponseDto {
         return TrendResponseDto.builder()
                 .id(trend.getId())
                 .categoryId(trend.getCategoryId())
+                .categoryName(trend.getCategoryName())
                 .keyword(trend.getKeyword())
                 .searchVolume(trend.getSearchVolume())
                 .createdAt(trend.getCreatedAt())

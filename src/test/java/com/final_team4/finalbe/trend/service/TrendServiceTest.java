@@ -74,6 +74,16 @@ class TrendServiceTest {
                 .extracting(TrendResponseDto::getKeyword)
                 .contains(first.getKeyword(), second.getKeyword(), third.getKeyword());
 
+        assertThat(aggregated.getItems())
+                .filteredOn(trend -> trend.getKeyword().equals(first.getKeyword()))
+                .first()
+                .satisfies(trend -> assertThat(trend.getCategoryName()).isNotBlank());
+
+        assertThat(aggregated.getItems())
+                .filteredOn(trend -> trend.getKeyword().equals(second.getKeyword()))
+                .first()
+                .satisfies(trend -> assertThat(trend.getCategoryName()).isNotBlank());
+
         assertThat(firstPage.getTotalCount()).isEqualTo(initialTotalCount + 3);
         assertThat(secondPage.getTotalCount()).isEqualTo(initialTotalCount + 3);
 
@@ -83,6 +93,7 @@ class TrendServiceTest {
         assertThat(instagramOnly.getItems())
                 .extracting(TrendResponseDto::getKeyword)
                 .contains(second.getKeyword());
+        assertThat(instagramOnly.getItems()).allSatisfy(trend -> assertThat(trend.getCategoryName()).isNotBlank());
         assertThat(instagramOnly.getTotalCount()).isEqualTo(initialInstagramCount + 1);
     }
 }

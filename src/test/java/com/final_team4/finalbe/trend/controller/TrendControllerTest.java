@@ -140,8 +140,8 @@ class TrendControllerTest {
     void getTrends_success() throws Exception {
         // given
         List<TrendResponseDto> responses = List.of(
-                TrendResponseDto.builder().id(1L).categoryId(1L).keyword("keyword-1").searchVolume(300L).snsType(TrendSnsType.GOOGLE).build(),
-                TrendResponseDto.builder().id(2L).categoryId(1L).keyword("keyword-2").searchVolume(200L).snsType(TrendSnsType.INSTAGRAM).build()
+                TrendResponseDto.builder().id(1L).categoryId(1L).categoryName("패션").keyword("keyword-1").searchVolume(300L).snsType(TrendSnsType.GOOGLE).build(),
+                TrendResponseDto.builder().id(2L).categoryId(1L).categoryName("패션").keyword("keyword-2").searchVolume(200L).snsType(TrendSnsType.INSTAGRAM).build()
         );
         TrendListResponseDto responseDto = TrendListResponseDto.of(responses, 15L, 0, 2);
         given(trendService.getTrends(0, 2, null)).willReturn(responseDto);
@@ -156,6 +156,7 @@ class TrendControllerTest {
                 .andExpect(jsonPath("$.size").value(2))
                 .andExpect(jsonPath("$.items[0].id").value(1))
                 .andExpect(jsonPath("$.items[0].keyword").value("keyword-1"))
+                .andExpect(jsonPath("$.items[0].categoryName").value("패션"))
                 .andExpect(jsonPath("$.items[1].id").value(2))
                 .andExpect(jsonPath("$.items[1].snsType").value("INSTAGRAM"));
 
@@ -167,7 +168,7 @@ class TrendControllerTest {
     void getTrends_withSnsType() throws Exception {
         // given
         List<TrendResponseDto> instagramTrends = List.of(
-                TrendResponseDto.builder().id(3L).categoryId(2L).keyword("reel").searchVolume(800L).snsType(TrendSnsType.INSTAGRAM).build()
+                TrendResponseDto.builder().id(3L).categoryId(2L).categoryName("뷰티").keyword("reel").searchVolume(800L).snsType(TrendSnsType.INSTAGRAM).build()
         );
         given(trendService.getTrends(0, 10, TrendSnsType.INSTAGRAM))
                 .willReturn(TrendListResponseDto.of(instagramTrends, 1L, 0, 10));
@@ -177,6 +178,7 @@ class TrendControllerTest {
                         .param("snsType", "INSTAGRAM"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items[0].snsType").value("INSTAGRAM"))
+                .andExpect(jsonPath("$.items[0].categoryName").value("뷰티"))
                 .andExpect(jsonPath("$.totalCount").value(1));
 
         verify(trendService).getTrends(0, 10, TrendSnsType.INSTAGRAM);
