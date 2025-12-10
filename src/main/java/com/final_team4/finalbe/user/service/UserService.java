@@ -75,7 +75,7 @@ public class UserService {
                 .status(false)
                 .maxTokens(2000)
                 .temperature(BigDecimal.valueOf(0.9))
-                .prompt(null)
+                .prompt("")
                 .generationType(ContentGenType.AUTO)
                 .build();
         llmChannelService.create(user.getId(), defaultLlmSetting);
