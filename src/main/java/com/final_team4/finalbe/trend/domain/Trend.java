@@ -23,5 +23,5 @@ public class Trend {
 
     private LocalDateTime createdAt;
 
-    private String snsType;
+    private TrendSnsType snsType;
 }

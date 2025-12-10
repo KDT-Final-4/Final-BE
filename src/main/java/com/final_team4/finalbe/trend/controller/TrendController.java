@@ -1,6 +1,7 @@
 package com.final_team4.finalbe.trend.controller;
 
 import com.final_team4.finalbe._core.security.JwtPrincipal;
+import com.final_team4.finalbe.trend.domain.TrendSnsType;
 import com.final_team4.finalbe.trend.dto.*;
 import com.final_team4.finalbe.trend.service.TrendService;
 import jakarta.validation.Valid;
@@ -32,8 +33,9 @@ public class TrendController {
     @ResponseStatus(HttpStatus.OK)
     public List<TrendResponseDto> getTrends(
             @RequestParam(defaultValue = "0") @Min(0) int page,
-            @RequestParam(defaultValue = "10") @Positive int size) {
-        return trendService.getTrends(page, size);
+            @RequestParam(defaultValue = "10") @Positive int size,
+            @RequestParam(required = false) TrendSnsType snsType) {
+        return trendService.getTrends(page, size, snsType);
     }
 
     // 인기검색어 컨텐츠 생성 요청(python에 요청)

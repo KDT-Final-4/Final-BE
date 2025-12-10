@@ -1,5 +1,6 @@
 package com.final_team4.finalbe.trend.dto;
 
+import com.final_team4.finalbe.trend.domain.TrendSnsType;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -16,5 +17,5 @@ public class TrendCreateRequestDto {
 
     private Long searchVolume;
 
-    private String snsType;
+    private TrendSnsType snsType;
 }

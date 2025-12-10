@@ -29,6 +29,11 @@
             CREATED_AT,
             SNS_TYPE
         FROM TREND
+        <where>
+            <if test="snsType != null">
+                SNS_TYPE = #{snsType}
+            </if>
+        </where>
         ORDER BY CREATED_AT DESC, SEARCH_VOLUME DESC
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
     </select>

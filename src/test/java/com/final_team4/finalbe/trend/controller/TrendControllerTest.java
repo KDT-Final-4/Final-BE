@@ -15,6 +15,7 @@ import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
 import com.final_team4.finalbe.setting.mapper.llm.LlmChannelMapper;
 import com.final_team4.finalbe.setting.mapper.notification.NotificationCredentialMapper;
+import com.final_team4.finalbe.trend.domain.TrendSnsType;
 import com.final_team4.finalbe.trend.dto.*;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
 import com.final_team4.finalbe.trend.service.TrendService;
@@ -106,7 +107,7 @@ class TrendControllerTest {
                 .categoryId(2L)
                 .keyword("beauty")
                 .searchVolume(900L)
-                .snsType("INSTAGRAM")
+                .snsType(TrendSnsType.INSTAGRAM)
                 .build();
         given(trendService.createTrends(anyList()))
                 .willReturn(List.of(responseDto));
@@ -139,10 +140,10 @@ class TrendControllerTest {
     void getTrends_success() throws Exception {
         // given
         List<TrendResponseDto> responses = List.of(
-                TrendResponseDto.builder().id(1L).categoryId(1L).keyword("keyword-1").searchVolume(300L).snsType("X").build(),
-                TrendResponseDto.builder().id(2L).categoryId(1L).keyword("keyword-2").searchVolume(200L).snsType("Y").build()
+                TrendResponseDto.builder().id(1L).categoryId(1L).keyword("keyword-1").searchVolume(300L).snsType(TrendSnsType.GOOGLE).build(),
+                TrendResponseDto.builder().id(2L).categoryId(1L).keyword("keyword-2").searchVolume(200L).snsType(TrendSnsType.INSTAGRAM).build()
         );
-        given(trendService.getTrends(0, 2)).willReturn(responses);
+        given(trendService.getTrends(0, 2, null)).willReturn(responses);
 
         // when & then
         mockMvc.perform(get("/api/trend")
@@ -152,9 +153,27 @@ class TrendControllerTest {
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].keyword").value("keyword-1"))
                 .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].snsType").value("Y"));
+                .andExpect(jsonPath("$[1].snsType").value("INSTAGRAM"));
 
-        verify(trendService).getTrends(0, 2);
+        verify(trendService).getTrends(0, 2, null);
+    }
+
+    @Test
+    @DisplayName("snsType 파라미터가 있으면 해당 타입만 조회 요청한다")
+    void getTrends_withSnsType() throws Exception {
+        // given
+        List<TrendResponseDto> instagramTrends = List.of(
+                TrendResponseDto.builder().id(3L).categoryId(2L).keyword("reel").searchVolume(800L).snsType(TrendSnsType.INSTAGRAM).build()
+        );
+        given(trendService.getTrends(0, 10, TrendSnsType.INSTAGRAM)).willReturn(instagramTrends);
+
+        // when & then
+        mockMvc.perform(get("/api/trend")
+                        .param("snsType", "INSTAGRAM"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].snsType").value("INSTAGRAM"));
+
+        verify(trendService).getTrends(0, 10, TrendSnsType.INSTAGRAM);
     }
 
     @Test

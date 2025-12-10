@@ -1,6 +1,7 @@
 package com.final_team4.finalbe.trend.dto;
 
 import com.final_team4.finalbe.trend.domain.Trend;
+import com.final_team4.finalbe.trend.domain.TrendSnsType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,7 +15,7 @@ public class TrendResponseDto {
     private String keyword;
     private Long searchVolume;
     private LocalDateTime createdAt;
-    private String snsType;
+    private TrendSnsType snsType;
 
     public static TrendResponseDto from(Trend trend) {
         return TrendResponseDto.builder()
