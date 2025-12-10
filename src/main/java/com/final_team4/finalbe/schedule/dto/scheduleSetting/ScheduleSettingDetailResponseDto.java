@@ -1,6 +1,8 @@
 package com.final_team4.finalbe.schedule.dto.scheduleSetting;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.final_team4.finalbe.schedule.domain.ScheduleSetting;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -18,6 +20,8 @@ public class ScheduleSettingDetailResponseDto {
     @NotNull
     private Long userId;
 
+    @JsonProperty("isRun")
+    @Schema(name = "isRun")
     private boolean isRun;
 
     @NotNull
