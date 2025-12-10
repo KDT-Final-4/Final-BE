@@ -5,6 +5,7 @@ import com.final_team4.finalbe.setting.dto.llm.LlmChannelDetailResponseDto;
 import com.final_team4.finalbe.setting.service.llm.LlmChannelService;
 import com.final_team4.finalbe.restClient.service.RestClientCallerService;
 import com.final_team4.finalbe.trend.domain.Trend;
+import com.final_team4.finalbe.trend.domain.TrendSnsType;
 import com.final_team4.finalbe.trend.dto.*;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
 import com.final_team4.finalbe.uploadChannel.dto.UploadChannelItemPayloadDto;
@@ -51,12 +52,13 @@ public class TrendService {
     }
 
     // 인기검색어 목록 조회
-    public List<TrendResponseDto> getTrends(int page, int size) {
+    public TrendListResponseDto getTrends(int page, int size, TrendSnsType snsType) {
         int offset = page * size;
-        List<Trend> trends = trendMapper.findAll(size, offset);
-        return trends.stream()
+        List<TrendResponseDto> trends = trendMapper.findAll(size, offset, snsType).stream()
                 .map(TrendResponseDto::from)
                 .toList();
+        long totalCount = trendMapper.countAll(snsType);
+        return TrendListResponseDto.of(trends, totalCount, page, size);
     }
 
     // 인기검색어 컨텐츠 생성 요청(python에 요청)

@@ -17,11 +17,13 @@ public class Trend {
     @NotNull
     private Long categoryId;
 
+    private String categoryName;
+
     private String keyword;
 
     private Long searchVolume;
 
     private LocalDateTime createdAt;
 
-    private String snsType;
+    private TrendSnsType snsType;
 }
