@@ -41,7 +41,7 @@ class TrendServiceTest {
         List<TrendCreateResponseDto> responses = trendService.createTrends(List.of(requestDto));
 
         // then
-        TrendCreateResponseDto response = responses.get(0);
+        TrendCreateResponseDto response = responses.getFirst();
         assertThat(response.getId()).isNotNull();
         assertThat(response.getCategoryId()).isEqualTo(1L);
         assertThat(response.getKeyword()).isEqualTo("test");
