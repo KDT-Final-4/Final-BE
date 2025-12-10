@@ -1,7 +1,7 @@
 name: Codex Code Review (Python & Java)
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, reopened, synchronize, ready_for_review]
 
 jobs:
@@ -17,10 +17,11 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
 
     steps:
-      - name: Checkout pull request merge commit
+      # ✅ base 브랜치만 checkout (신뢰된 코드만 실행)
+      - name: Checkout base branch (safe)
         uses: actions/checkout@v4
         with:
-          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          ref: ${{ github.event.pull_request.base.ref }}
           fetch-depth: 0
 
       - name: Get list of changed files
@@ -28,9 +29,12 @@ jobs:
         run: |
           set -euo pipefail
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
-          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
 
-          git diff --name-only "$BASE_SHA" "$HEAD_SHA" > changed_files.txt
+          # ✅ 포크 PR 포함, PR 헤드 커밋을 별도 ref(pr_head)로 fetch
+          git fetch origin "pull/$PR_NUMBER/head:pr_head"
+
+          git diff --name-only "$BASE_SHA" pr_head > changed_files.txt
           echo "Changed files:"
           cat changed_files.txt || true
 
@@ -43,7 +47,7 @@ jobs:
         run: |
           set -euo pipefail
           
-          if [ -z "$API_KEY" ]; then
+          if [ -z "${API_KEY:-}" ]; then
             echo "❌ FATAL ERROR: OPENAI_API_KEY is not set"
             echo "Please configure OPENAI_API_KEY in GitHub repository secrets"
             exit 1
@@ -72,10 +76,13 @@ jobs:
         run: |
           set -euo pipefail
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
-          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
 
-          # Diff 크기 체크 (5000줄 초과 시 경고)
-          DIFF_LINES=$(git --no-pager diff --unified=5 "$BASE_SHA" "$HEAD_SHA" | wc -l)
+          # 위에서 fetch 했어도 한 번 더 시도하는 것은 문제 없습니다.
+          git fetch origin "pull/$PR_NUMBER/head:pr_head" || true
+
+          # Diff 크기 체크
+          DIFF_LINES=$(git --no-pager diff --unified=5 "$BASE_SHA" pr_head | wc -l)
           echo "📊 Diff size: $DIFF_LINES lines"
           
           if [ "$DIFF_LINES" -gt 5000 ]; then
@@ -90,14 +97,14 @@ jobs:
           아래 Pull Request의 변경 사항에 대해 코드 리뷰를 수행하십시오.
 
           요구사항:
-          - 반드시 한국어로, 존댓말(하십시오체)로 답변하십시오.
+          - 반드시 한국어로, 존댓말(십시오체/합니다체)로 답변하십시오.
           - 리뷰 결과는 JSON 배열로만 작성하십시오. 다른 텍스트는 포함하지 마십시오.
           - 각 항목은 다음 필드를 포함해야 합니다:
             - "file": "변경된 파일의 상대 경로"
             - "line": 해당 이슈를 대표하는 코드의 1-based line 번호
             - "severity": "Critical", "Major", "Minor" 중 하나
             - "title": 이슈를 한 문장으로 요약한 한국어 제목
-            - "body": 문제 설명과 개선 제안을 담은 한국어 본문. 반드시 존댓말(십시오/합니다체)을 사용하십시오.
+            - "body": 문제 설명과 개선 제안을 담은 한국어 본문. 반드시 존댓말을 사용하십시오.
 
           심각도 기준:
           - Critical: 모델 로직이 잘못되어 결과가 완전히 틀어지는 경우, 심각한 메모리 누수, 무한 루프, 보안 이슈, NullPointerException 등 반드시 수정해야 하는 이슈
@@ -139,7 +146,7 @@ jobs:
 
           echo "" >> codex-prompt.md
           echo "=== DIFF START ===" >> codex-prompt.md
-          git --no-pager diff --unified=5 "$BASE_SHA" "$HEAD_SHA" >> codex-prompt.md
+          git --no-pager diff --unified=5 "$BASE_SHA" pr_head >> codex-prompt.md
 
       - name: Run Codex review
         id: run-codex
