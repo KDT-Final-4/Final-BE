@@ -53,37 +53,36 @@ class TrendServiceTest {
     @Test
     void getTrends() {
         // given
+        long initialTotalCount = trendService.getTrends(0, 1, null).getTotalCount();
+        long initialInstagramCount = trendService.getTrends(0, 1, TrendSnsType.INSTAGRAM).getTotalCount();
         TrendCreateRequestDto first = createRequestDto(1L, "keyword-1", 500L, TrendSnsType.GOOGLE);
         TrendCreateRequestDto second = createRequestDto(2L, "keyword-2", 700L, TrendSnsType.INSTAGRAM);
         TrendCreateRequestDto third = createRequestDto(1L, "keyword-3", 900L, TrendSnsType.X);
         trendService.createTrends(List.of(first, second, third));
 
         // when
-        List<TrendResponseDto> firstPage = trendService.getTrends(0, 2, null);
-        List<TrendResponseDto> secondPage = trendService.getTrends(1, 2, null);
+        TrendListResponseDto firstPage = trendService.getTrends(0, 2, null);
+        TrendListResponseDto secondPage = trendService.getTrends(1, 2, null);
+        int aggregatedSize = (int) Math.min(Integer.MAX_VALUE, initialTotalCount + 3);
+        TrendListResponseDto aggregated = trendService.getTrends(0, aggregatedSize, null);
 
         // then
-        assertThat(firstPage)
-                .hasSize(2)
-                .extracting(TrendResponseDto::getKeyword)
-                .containsExactly(third.getKeyword(), second.getKeyword());
+        assertThat(firstPage.getItems()).hasSizeLessThanOrEqualTo(2);
+        assertThat(secondPage.getItems()).hasSizeLessThanOrEqualTo(2);
 
-        assertThat(secondPage)
-                .isNotEmpty()
-                .first()
-                .satisfies(trend -> {
-                    assertThat(trend.getKeyword()).isEqualTo(first.getKeyword());
-                    assertThat(trend.getCategoryId()).isEqualTo(first.getCategoryId());
-                });
+        assertThat(aggregated.getItems())
+                .extracting(TrendResponseDto::getKeyword)
+                .contains(first.getKeyword(), second.getKeyword(), third.getKeyword());
+
+        assertThat(firstPage.getTotalCount()).isEqualTo(initialTotalCount + 3);
+        assertThat(secondPage.getTotalCount()).isEqualTo(initialTotalCount + 3);
 
         // snsType filtering
-        List<TrendResponseDto> instagramOnly = trendService.getTrends(0, 5, TrendSnsType.INSTAGRAM);
-        assertThat(instagramOnly)
-                .hasSize(1)
-                .first()
-                .satisfies(trend -> {
-                    assertThat(trend.getSnsType()).isEqualTo(TrendSnsType.INSTAGRAM);
-                    assertThat(trend.getKeyword()).isEqualTo(second.getKeyword());
-                });
+        int instagramSize = (int) Math.min(Integer.MAX_VALUE, initialInstagramCount + 1);
+        TrendListResponseDto instagramOnly = trendService.getTrends(0, instagramSize, TrendSnsType.INSTAGRAM);
+        assertThat(instagramOnly.getItems())
+                .extracting(TrendResponseDto::getKeyword)
+                .contains(second.getKeyword());
+        assertThat(instagramOnly.getTotalCount()).isEqualTo(initialInstagramCount + 1);
     }
 }

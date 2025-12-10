@@ -14,4 +14,6 @@ public interface TrendMapper {
             @Param("limit") int limit,
             @Param("offset") int offset,
             @Param("snsType") TrendSnsType snsType);
+
+    long countAll(@Param("snsType") TrendSnsType snsType);
 }

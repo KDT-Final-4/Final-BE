@@ -52,12 +52,13 @@ public class TrendService {
     }
 
     // 인기검색어 목록 조회
-    public List<TrendResponseDto> getTrends(int page, int size, TrendSnsType snsType) {
+    public TrendListResponseDto getTrends(int page, int size, TrendSnsType snsType) {
         int offset = page * size;
-        List<Trend> trends = trendMapper.findAll(size, offset, snsType);
-        return trends.stream()
+        List<TrendResponseDto> trends = trendMapper.findAll(size, offset, snsType).stream()
                 .map(TrendResponseDto::from)
                 .toList();
+        long totalCount = trendMapper.countAll(snsType);
+        return TrendListResponseDto.of(trends, totalCount, page, size);
     }
 
     // 인기검색어 컨텐츠 생성 요청(python에 요청)

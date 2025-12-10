@@ -31,7 +31,7 @@ public class TrendController {
     // 인기검색어 목록 조회
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<TrendResponseDto> getTrends(
+    public TrendListResponseDto getTrends(
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "10") @Positive int size,
             @RequestParam(required = false) TrendSnsType snsType) {

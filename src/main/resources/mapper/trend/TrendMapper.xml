@@ -38,4 +38,14 @@
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
     </select>
 
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*)
+        FROM TREND
+        <where>
+            <if test="snsType != null">
+                SNS_TYPE = #{snsType}
+            </if>
+        </where>
+    </select>
+
 </mapper>

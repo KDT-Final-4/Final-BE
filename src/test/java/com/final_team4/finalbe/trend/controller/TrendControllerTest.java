@@ -143,17 +143,21 @@ class TrendControllerTest {
                 TrendResponseDto.builder().id(1L).categoryId(1L).keyword("keyword-1").searchVolume(300L).snsType(TrendSnsType.GOOGLE).build(),
                 TrendResponseDto.builder().id(2L).categoryId(1L).keyword("keyword-2").searchVolume(200L).snsType(TrendSnsType.INSTAGRAM).build()
         );
-        given(trendService.getTrends(0, 2, null)).willReturn(responses);
+        TrendListResponseDto responseDto = TrendListResponseDto.of(responses, 15L, 0, 2);
+        given(trendService.getTrends(0, 2, null)).willReturn(responseDto);
 
         // when & then
         mockMvc.perform(get("/api/trend")
                         .param("page", "0")
                         .param("size", "2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].keyword").value("keyword-1"))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].snsType").value("INSTAGRAM"));
+                .andExpect(jsonPath("$.totalCount").value(15))
+                .andExpect(jsonPath("$.page").value(0))
+                .andExpect(jsonPath("$.size").value(2))
+                .andExpect(jsonPath("$.items[0].id").value(1))
+                .andExpect(jsonPath("$.items[0].keyword").value("keyword-1"))
+                .andExpect(jsonPath("$.items[1].id").value(2))
+                .andExpect(jsonPath("$.items[1].snsType").value("INSTAGRAM"));
 
         verify(trendService).getTrends(0, 2, null);
     }
@@ -165,13 +169,15 @@ class TrendControllerTest {
         List<TrendResponseDto> instagramTrends = List.of(
                 TrendResponseDto.builder().id(3L).categoryId(2L).keyword("reel").searchVolume(800L).snsType(TrendSnsType.INSTAGRAM).build()
         );
-        given(trendService.getTrends(0, 10, TrendSnsType.INSTAGRAM)).willReturn(instagramTrends);
+        given(trendService.getTrends(0, 10, TrendSnsType.INSTAGRAM))
+                .willReturn(TrendListResponseDto.of(instagramTrends, 1L, 0, 10));
 
         // when & then
         mockMvc.perform(get("/api/trend")
                         .param("snsType", "INSTAGRAM"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].snsType").value("INSTAGRAM"));
+                .andExpect(jsonPath("$.items[0].snsType").value("INSTAGRAM"))
+                .andExpect(jsonPath("$.totalCount").value(1));
 
         verify(trendService).getTrends(0, 10, TrendSnsType.INSTAGRAM);
     }
