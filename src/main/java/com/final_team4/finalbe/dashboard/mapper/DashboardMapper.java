@@ -9,7 +9,10 @@ import java.util.List;
 
 @Mapper
 public interface DashboardMapper {
-    List<DashboardContentSummary> findContentsByUserId(@Param("userId") Long userId);
+    List<DashboardContentSummary> findContentsByUserId(@Param("userId") Long userId,
+                                                       @Param("size") int size,
+                                                       @Param("offset") int offset);
+
 
     Long countAllContentsByUserId(@Param("userId") Long userId);
 

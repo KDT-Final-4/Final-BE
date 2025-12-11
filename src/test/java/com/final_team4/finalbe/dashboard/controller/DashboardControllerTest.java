@@ -165,7 +165,7 @@ public class DashboardControllerTest {
                 .clickCount(5L)
                 .build();
 
-        DashboardContentsResponseDto response = DashboardContentsResponseDto.builder()
+        DashboardContentPageResponseDto response = DashboardContentPageResponseDto.builder()
                 .contents(List.of(item))
                 .build();
 

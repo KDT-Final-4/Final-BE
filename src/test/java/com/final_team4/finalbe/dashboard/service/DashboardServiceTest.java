@@ -92,7 +92,7 @@ public class DashboardServiceTest {
         linkProductToContent(otherProductId, otherContentId);
         insertClick(otherProductId, "10.0.0.4");
 
-        DashboardContentsResponseDto response = dashboardService.getContents(userId);
+        DashboardContentPageResponseDto response = dashboardService.getContents(userId);
 
         assertThat(response.getContents()).hasSize(2);
         assertThat(response.getContents())

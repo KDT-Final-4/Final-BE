@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Service
@@ -39,17 +38,18 @@ public class DashboardService {
                 .build();
     }
 
-    public DashboardContentsResponseDto getContents(Long userId) {
-
-        List<DashboardContentSummary> summaries = dashboardMapper.findContentsByUserId(userId);
-
-        List<DashboardContentItemDto> items = new ArrayList<>();
-        for (DashboardContentSummary summary : summaries) {
-            items.add(DashboardContentItemDto.from(summary));
-
+    public DashboardContentPageResponseDto getContents(Long userId, int page, int size) {
+        if (size != 10 && size != 20 && size != 30) {
+            throw new BadRequestException("size는 10, 20, 30만 가능합니다.");
         }
+        int offset = page * size;
+        List<DashboardContentItemDto> items = dashboardMapper
+                .findContentsByUserId(userId, size, offset).stream()
+                .map(DashboardContentItemDto::from)
+                .toList();
+        long totalCount = dashboardMapper.countAllContentsByUserId(userId);
 
-        return DashboardContentsResponseDto.from(items);
+        return DashboardContentPageResponseDto.of(items, totalCount, page, size);
     }
 
     public DashboardDailyClicksResponseDto getDailyClicks(Long userId, LocalDate start, LocalDate end) {
