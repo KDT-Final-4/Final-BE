@@ -31,7 +31,8 @@ public class DashboardController {
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/status")
-    public DashboardStatusGetResponseDto getStatus(@AuthenticationPrincipal JwtPrincipal jwtPrincipal) {
+    public DashboardStatusGetResponseDto getStatus
+            (@AuthenticationPrincipal JwtPrincipal jwtPrincipal) {
 
         return dashboardService.getStatus(jwtPrincipal.userId());
 
