@@ -14,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -66,19 +67,20 @@ public class DashboardService {
 
 
         // DB에서 가져온 일별 클릭 합계를 날짜별로 바로 찾을 수 있게 Map으로 변환
-        Map<LocalDate, Long> clicksByDate = clicksMapper.findDailyClicks(userId, start, end).stream()
+        Map<LocalDate, DailyClicksDto> countsByDate = clicksMapper.findDailyClicks(userId, start, end).stream()
                 .collect(Collectors.toMap(
                         dto -> LocalDate.parse(dto.getClickDate()), //DailyClicksDto의 날짜 문자열을 LocalDate 키로 변환
-                        DailyClicksDto::getClicks,
-                        Long::sum)); //날짜가 중복되어 들어오면 합산해서 하나로 합침
+                        Function.identity()));
 
-        List<DailyClicksDto> dailyClicks = new ArrayList<>();
+        List<DailyClicksDto> dailyClicksAndUploads = new ArrayList<>();
         // start부터 end까지 하루씩 증가시키며 빈 날짜는 0으로 채움
         //!day.isAfter(end) ==   day <= end
         for (LocalDate day = start; !day.isAfter(end); day = day.plusDays(1)) {
-            dailyClicks.add(DailyClicksDto.builder()
+            DailyClicksDto found = countsByDate.get(day);
+            dailyClicksAndUploads.add(DailyClicksDto.builder()
                     .clickDate(day.toString())
-                    .clicks(clicksByDate.getOrDefault(day, 0L)) // 조회된 값 없으면 0
+                    .clicks(found != null ? found.getClicks() : 0L)
+                    .uploads(found != null ? found.getUploads() : 0L)
                     .build());
         }
 
@@ -86,7 +88,7 @@ public class DashboardService {
         return DashboardDailyClicksResponseDto.builder()
                 .start(start.toString())
                 .end(end.toString())
-                .dailyClicks(dailyClicks)
+                .dailyClicks(dailyClicksAndUploads)
                 .build();
     }
 
