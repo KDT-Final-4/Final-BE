@@ -1,6 +1,7 @@
 package com.final_team4.finalbe.content.controller;
 
 import com.final_team4.finalbe._core.security.JwtPrincipal;
+import com.final_team4.finalbe.content.domain.ContentStatus;
 import com.final_team4.finalbe.content.dto.*;
 import com.final_team4.finalbe.content.service.ContentService;
 import jakarta.validation.Valid;
@@ -10,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,11 +22,12 @@ public class ContentController {
     // 검수할 컨텐츠 목록 조회
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ContentListResponseDto> getContents(
+    public ContentPagedResponseDto getContents(
             @AuthenticationPrincipal JwtPrincipal principal,
             @RequestParam(defaultValue = "0") @Min(0) int page,
-            @RequestParam(defaultValue = "10") @Positive int size) {
-        return contentService.getContents(principal.userId(), page, size);
+            @RequestParam(defaultValue = "10") @Positive int size,
+            @RequestParam(required = false) ContentStatus status) {
+        return contentService.getContents(principal.userId(), page, size, status);
     }
 
     // 컨텐츠 상세 조회

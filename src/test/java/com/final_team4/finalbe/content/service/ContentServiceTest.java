@@ -27,6 +27,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -60,16 +62,18 @@ class ContentServiceTest {
                 content(1L, "job-1", "title-1"),
                 content(2L, "job-2", "title-2")
         );
-        given(contentMapper.findAll(1L, 2, 0)).willReturn(contents);
+        given(contentMapper.findAll(eq(1L), isNull(), eq(2), eq(0))).willReturn(contents);
+        given(contentMapper.countAll(1L, null)).willReturn(5L);
 
         // when
-        List<ContentListResponseDto> response = contentService.getContents(1L, 0, 2);
+        ContentPagedResponseDto response = contentService.getContents(1L, 0, 2, null);
 
         // then
-        assertThat(response)
+        assertThat(response.getItems())
                 .hasSize(2)
                 .extracting(ContentListResponseDto::getTitle)
                 .containsExactly("title-1", "title-2");
+        assertThat(response.getTotalCount()).isEqualTo(5L);
     }
 
     @DisplayName("존재하지 않는 컨텐츠 상세 조회 시 예외를 던진다")
