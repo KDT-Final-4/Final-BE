@@ -22,6 +22,7 @@ public class ContentListResponseDto {
     private ContentGenType generationType;
     private String link;
     private String keyword;
+    private String uploadChannelName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -37,6 +38,7 @@ public class ContentListResponseDto {
                 .generationType(content.getGenerationType())
                 .link(content.getLink())
                 .keyword(content.getKeyword())
+                .uploadChannelName(content.getUploadChannelName())
                 .createdAt(content.getCreatedAt())
                 .updatedAt(content.getUpdatedAt())
                 .build();
