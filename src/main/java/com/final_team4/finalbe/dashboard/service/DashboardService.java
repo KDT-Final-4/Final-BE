@@ -39,9 +39,7 @@ public class DashboardService {
     }
 
     public DashboardContentPageResponseDto getContents(Long userId, int page, int size) {
-        if (size != 10 && size != 20 && size != 30) {
-            throw new BadRequestException("size는 10, 20, 30만 가능합니다.");
-        }
+
         int offset = page * size;
         List<DashboardContentItemDto> items = dashboardMapper
                 .findContentsByUserId(userId, size, offset).stream()
