@@ -6,27 +6,29 @@
 
     <select id="findAll" resultType="Content">
         SELECT
-            ID,
-            JOB_ID,
-            USER_ID,
-            UPLOAD_CHANNEL_ID,
-            TITLE,
-            BODY,
-            STATUS,
-            GENERATION_TYPE,
-            CREATED_AT,
-            UPDATED_AT,
-            LINK,
-            KEYWORD
+            C.ID,
+            C.JOB_ID,
+            C.USER_ID,
+            C.UPLOAD_CHANNEL_ID,
+            C.TITLE,
+            C.BODY,
+            C.STATUS,
+            C.GENERATION_TYPE,
+            C.CREATED_AT,
+            C.UPDATED_AT,
+            C.LINK,
+            C.KEYWORD,
+            UC.NAME AS upload_channel_name
         FROM
-            CONTENT
+            CONTENT C
+                LEFT JOIN UPLOAD_CHANNEL UC ON C.UPLOAD_CHANNEL_ID = UC.ID
         WHERE
-            USER_ID = #{userId}
+            C.USER_ID = #{userId}
         <if test="status != null">
-            AND STATUS = #{status}
+            AND C.STATUS = #{status}
         </if>
         ORDER BY
-            UPDATED_AT DESC, CREATED_AT DESC
+            C.UPDATED_AT DESC, C.CREATED_AT DESC
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
     </select>
 

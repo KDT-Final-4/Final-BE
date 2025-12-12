@@ -43,6 +43,8 @@ public class Content {
 
     private String keyword;
 
+    private String uploadChannelName;
+
     public void updateContent(String title, String body) {
         this.title = title;
         this.body = body;
