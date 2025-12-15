@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Getter
 @Builder
@@ -15,6 +16,7 @@ public class ProductCreateResponseDto {
     private String link;
     private String thumbnail;
     private Long price;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
     public static ProductCreateResponseDto from(Product entity) {

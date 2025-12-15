@@ -4,6 +4,7 @@ import com.final_team4.finalbe.schedule.domain.RepeatInterval;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Getter
 @Builder
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ScheduleUpdateRequestDto {
     private String title;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime startTime;
     private RepeatInterval repeatInterval;
 
