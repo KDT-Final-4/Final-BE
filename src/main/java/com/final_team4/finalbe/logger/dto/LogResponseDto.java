@@ -24,7 +24,7 @@ public class LogResponseDto {
   private LogType logType;
   private String jobId;
   private String message;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "UTC")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "Asia/Seoul")
   private LocalDateTime createdAt;
 
   /**

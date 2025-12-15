@@ -17,7 +17,7 @@ public class NotificationDetailResponseDto {
     private String title;
     private String message;
     private Long notificationLevel;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
     public static NotificationDetailResponseDto from(Notification notification) {

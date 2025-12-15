@@ -16,7 +16,7 @@ public class NotificationCredentialDetailResponseDto {
     private String webhookUrl;
     private String apiToken;
     private Boolean isActive;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
     public static NotificationCredentialDetailResponseDto from(NotificationCredential entity) {

@@ -16,7 +16,7 @@ public class ProductDetailResponseDto {
     private String link;
     private String thumbnail;
     private Long price;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
     public static ProductDetailResponseDto from(Product entity) {
