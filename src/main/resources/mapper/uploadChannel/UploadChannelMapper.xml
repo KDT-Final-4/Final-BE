@@ -72,10 +72,11 @@
 
     <update id="update" parameterType="UploadChannel">
         UPDATE UPLOAD_CHANNEL SET
-                                  api_key = #{apiKey},
-                                  client_id = #{clientId},
-                                  client_pw = #{clientPw},
-                                  UPDATED_AT = sysdate
+            api_key = #{apiKey},
+            client_id = #{clientId},
+            client_pw = #{clientPw},
+            status = #{status},
+            UPDATED_AT = sysdate
         where
             id = #{id}
           and
@@ -84,7 +85,8 @@
 
     <update id="updateStatusById">
         UPDATE UPLOAD_CHANNEL SET
-            STATUS = #{status}
+            STATUS = #{status},
+            UPDATED_AT = sysdate
         where
             ID = #{id}
           and
