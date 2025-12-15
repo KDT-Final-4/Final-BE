@@ -1,12 +1,9 @@
 package com.final_team4.finalbe.content.service;
 
-import com.final_team4.finalbe.content.domain.Content;
-import com.final_team4.finalbe.content.domain.ContentGenType;
-import com.final_team4.finalbe.content.domain.ContentStatus;
+import com.final_team4.finalbe.content.domain.*;
 import com.final_team4.finalbe.content.dto.*;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
-import com.final_team4.finalbe.product.dto.ProductCreateRequestDto;
-import com.final_team4.finalbe.product.dto.ProductCreateResponseDto;
+import com.final_team4.finalbe.product.dto.*;
 import com.final_team4.finalbe.product.mapper.ProductContentMapper;
 import com.final_team4.finalbe.product.service.ProductService;
 import com.final_team4.finalbe.restClient.service.RestClientCallerService;
@@ -69,8 +66,8 @@ public class ContentService {
                 .userId(request.getUserId())
                 .title(request.getTitle())
                 .body(request.getBody())
-                .status(ContentStatus.PENDING)
-                .generationType(ContentGenType.MANUAL)
+                .status(request.getStatus())
+                .generationType(request.getGenerationType())
                 .link(request.getLink())   // 추가
                 .keyword(request.getKeyword())    // 추가
                 .createdAt(LocalDateTime.now())
