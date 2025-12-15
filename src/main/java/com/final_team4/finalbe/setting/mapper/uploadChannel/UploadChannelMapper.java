@@ -1,6 +1,6 @@
-package com.final_team4.finalbe.uploadChannel.mapper;
+package com.final_team4.finalbe.setting.mapper.uploadChannel;
 
-import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
+import com.final_team4.finalbe.setting.domain.uploadChannel.UploadChannel;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

@@ -1,9 +1,9 @@
-package com.final_team4.finalbe.uploadChannel.service;
+package com.final_team4.finalbe.setting.service.uploadChannel;
 
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
-import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
-import com.final_team4.finalbe.uploadChannel.dto.UploadChannelItemPayloadDto;
-import com.final_team4.finalbe.uploadChannel.mapper.UploadChannelMapper;
+import com.final_team4.finalbe.setting.domain.uploadChannel.UploadChannel;
+import com.final_team4.finalbe.setting.dto.uploadChannel.UploadChannelItemPayloadDto;
+import com.final_team4.finalbe.setting.mapper.uploadChannel.UploadChannelMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

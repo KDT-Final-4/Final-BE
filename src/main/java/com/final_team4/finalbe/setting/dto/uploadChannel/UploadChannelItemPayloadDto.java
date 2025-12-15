@@ -1,7 +1,7 @@
-package com.final_team4.finalbe.uploadChannel.dto;
+package com.final_team4.finalbe.setting.dto.uploadChannel;
 
-import com.final_team4.finalbe.uploadChannel.domain.Channel;
-import com.final_team4.finalbe.uploadChannel.domain.UploadChannel;
+import com.final_team4.finalbe.setting.domain.uploadChannel.Channel;
+import com.final_team4.finalbe.setting.domain.uploadChannel.UploadChannel;
 import lombok.Builder;
 import lombok.Getter;
 
