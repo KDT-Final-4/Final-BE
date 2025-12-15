@@ -12,5 +12,13 @@ public interface UploadChannelMapper {
     List<UploadChannel> findByUserId(@Param("userId") Long userId);
 
     // 채널 ID로 채널 정보 단건 조회
-    UploadChannel findById(@Param("id") Long id);
+    UploadChannel findById(@Param("userId") Long userId, @Param("id") Long id);
+
+    UploadChannel findActiveByUserId(@Param("userId") Long userId);
+
+    void update(UploadChannel uploadChannel);
+
+    void updateStatusById(@Param("userId") Long userId, @Param("id") Long id, @Param("status") Boolean status);
+
+    void insert(UploadChannel uploadChannel);
 }
