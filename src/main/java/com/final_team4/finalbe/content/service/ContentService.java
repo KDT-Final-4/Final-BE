@@ -1,12 +1,9 @@
 package com.final_team4.finalbe.content.service;
 
-import com.final_team4.finalbe.content.domain.Content;
-import com.final_team4.finalbe.content.domain.ContentGenType;
-import com.final_team4.finalbe.content.domain.ContentStatus;
+import com.final_team4.finalbe.content.domain.*;
 import com.final_team4.finalbe.content.dto.*;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
-import com.final_team4.finalbe.product.dto.ProductCreateRequestDto;
-import com.final_team4.finalbe.product.dto.ProductCreateResponseDto;
+import com.final_team4.finalbe.product.dto.*;
 import com.final_team4.finalbe.product.mapper.ProductContentMapper;
 import com.final_team4.finalbe.product.service.ProductService;
 import com.final_team4.finalbe.restClient.service.RestClientCallerService;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.List;
 
 @Transactional(readOnly = true)
@@ -62,6 +60,9 @@ public class ContentService {
             throw new IllegalArgumentException("해당 채널에 대한 권한이 없습니다.");
         }
 
+        ContentStatus status = validateStatus(request.getStatus());
+        ContentGenType generationType = validateGenerationType(request.getGenerationType());
+
         // 2. Content 생성
         Content content = Content.builder()
                 .jobId(request.getJobId())
@@ -69,8 +70,8 @@ public class ContentService {
                 .userId(request.getUserId())
                 .title(request.getTitle())
                 .body(request.getBody())
-                .status(ContentStatus.PENDING)
-                .generationType(ContentGenType.MANUAL)
+                .status(status)
+                .generationType(generationType)
                 .link(request.getLink())   // 추가
                 .keyword(request.getKeyword())    // 추가
                 .createdAt(LocalDateTime.now())
@@ -146,5 +147,19 @@ public class ContentService {
             throw new IllegalArgumentException("존재하지 않는 컨텐츠입니다: " + id);
         }
         return content;
+    }
+
+    private ContentStatus validateStatus(ContentStatus status) {
+        if (status == null || !EnumSet.allOf(ContentStatus.class).contains(status)) {
+            throw new IllegalArgumentException("유효하지 않은 컨텐츠 상태입니다.");
+        }
+        return status;
+    }
+
+    private ContentGenType validateGenerationType(ContentGenType generationType) {
+        if (generationType == null || !EnumSet.allOf(ContentGenType.class).contains(generationType)) {
+            throw new IllegalArgumentException("유효하지 않은 컨텐츠 생성 유형입니다.");
+        }
+        return generationType;
     }
 }
