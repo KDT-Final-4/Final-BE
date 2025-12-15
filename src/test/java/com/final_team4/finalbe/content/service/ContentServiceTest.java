@@ -10,8 +10,8 @@ import com.final_team4.finalbe.product.mapper.ProductContentMapper;
 import com.final_team4.finalbe.product.service.ProductService;
 import com.final_team4.finalbe.restClient.service.RestClientCallerService;
 import com.final_team4.finalbe.setting.domain.uploadChannel.Channel;
-import com.final_team4.finalbe.setting.domain.uploadChannel.UploadChannel;
-import com.final_team4.finalbe.setting.mapper.uploadChannel.UploadChannelMapper;
+import com.final_team4.finalbe.setting.dto.uploadChannel.UploadChannelItemPayloadDto;
+import com.final_team4.finalbe.setting.service.uploadChannel.UploadChannelService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +40,7 @@ class ContentServiceTest {
     ContentMapper contentMapper;
 
     @Mock
-    UploadChannelMapper uploadChannelMapper;
+    UploadChannelService uploadChannelService;
 
     @Mock
     ProductService productService;
@@ -90,14 +90,8 @@ class ContentServiceTest {
     @Test
     void createContent_success() {
         // given
-        UploadChannel channel = UploadChannel.builder()
-                .id(5L)
-                .userId(1L)
-                .name(Channel.X)
-                .apiKey("key")
-                .status(true)
-                .build();
-        given(uploadChannelMapper.findById(5L)).willReturn(channel);
+        UploadChannelItemPayloadDto channel = channelPayload(5L, 1L, Channel.X);
+        given(uploadChannelService.getActiveChannelById(1L)).willReturn(channel);
 
         ContentCreateRequestDto request = ContentCreateRequestDto.builder()
                 .jobId("job-123")
@@ -123,8 +117,8 @@ class ContentServiceTest {
 
         // then
         assertThat(response.getId()).isEqualTo(10L);
-        assertThat(response.getStatus()).isEqualTo(ContentStatus.PENDING);
-        assertThat(response.getGenerationType()).isEqualTo(ContentGenType.MANUAL);
+        assertThat(response.getStatus()).isEqualTo(ContentStatus.APPROVED);
+        assertThat(response.getGenerationType()).isEqualTo(ContentGenType.AUTO);
         verify(contentMapper).insert(any(Content.class));
         verify(productService).create(any(ProductCreateRequestDto.class));
         verify(productContentMapper).insert(77L, 10L);
@@ -133,7 +127,7 @@ class ContentServiceTest {
     @DisplayName("존재하지 않는 채널로 생성 시 예외")
     @Test
     void createContent_channelNotFound() {
-        given(uploadChannelMapper.findById(1L)).willReturn(null);
+        given(uploadChannelService.getActiveChannelById(1L)).willReturn(null);
 
         ContentCreateRequestDto request = ContentCreateRequestDto.builder()
                 .jobId("job")
@@ -156,12 +150,8 @@ class ContentServiceTest {
     @DisplayName("다른 사용자의 채널이면 생성할 수 없다")
     @Test
     void createContent_channelForbidden() {
-        UploadChannel channel = UploadChannel.builder()
-                .id(1L)
-                .userId(2L)
-                .name(Channel.X)
-                .build();
-        given(uploadChannelMapper.findById(1L)).willReturn(channel);
+        UploadChannelItemPayloadDto channel = channelPayload(1L, 2L, Channel.X);
+        given(uploadChannelService.getActiveChannelById(1L)).willReturn(channel);
 
         ContentCreateRequestDto request = ContentCreateRequestDto.builder()
                 .jobId("job")
@@ -206,12 +196,8 @@ class ContentServiceTest {
     void updateContentStatus_success() {
         Content content = content(4L, "job", "title");
         given(contentMapper.findById(1L, 4L)).willReturn(content);
-        UploadChannel channel = UploadChannel.builder()
-                .id(content.getUploadChannelId())
-                .userId(content.getUserId())
-                .name(Channel.X)
-                .build();
-        given(uploadChannelMapper.findById(content.getUploadChannelId())).willReturn(channel);
+        UploadChannelItemPayloadDto channel = channelPayload(content.getUploadChannelId(), content.getUserId(), Channel.X);
+        given(uploadChannelService.getActiveChannelById(1L)).willReturn(channel);
 
         ContentStatusUpdateRequestDto request = ContentStatusUpdateRequestDto.builder()
                 .status(ContentStatus.APPROVED)
@@ -232,7 +218,7 @@ class ContentServiceTest {
     void updateContentStatus_channelNotFound() {
         Content content = content(7L, "job", "title");
         given(contentMapper.findById(1L, 7L)).willReturn(content);
-        given(uploadChannelMapper.findById(content.getUploadChannelId())).willReturn(null);
+        given(uploadChannelService.getActiveChannelById(1L)).willReturn(null);
 
         ContentStatusUpdateRequestDto request = ContentStatusUpdateRequestDto.builder()
                 .status(ContentStatus.APPROVED)
@@ -309,6 +295,15 @@ class ContentServiceTest {
                 .thumbnail("thumb.jpg")
                 .price(12000L)
                 .category("digital")
+                .build();
+    }
+
+    private UploadChannelItemPayloadDto channelPayload(Long id, Long userId, Channel name) {
+        return UploadChannelItemPayloadDto.builder()
+                .id(id)
+                .userId(userId)
+                .name(name)
+                .status(true)
                 .build();
     }
 }
