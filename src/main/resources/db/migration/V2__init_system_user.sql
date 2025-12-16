@@ -14,23 +14,20 @@ values
      0
     );
 
-INSERT INTO LOG_TYPE (TYPE_NAME) VALUES
-                                     ('INFO'),
-                                     ('ERROR');
+-- Oracle 19는 다중 행 INSERT를 지원하지 않으므로 개별 INSERT 문 사용
+INSERT INTO LOG_TYPE (TYPE_NAME) VALUES ('INFO');
+INSERT INTO LOG_TYPE (TYPE_NAME) VALUES ('ERROR');
 
-INSERT INTO NOTIFICATION_CHANNEL(NAME, DESCRIPTION) VALUES
-                                                        ('EMAIL', '이메일'),
-                                                        ('SLACK', '슬랙');
+INSERT INTO NOTIFICATION_CHANNEL(NAME, DESCRIPTION) VALUES ('EMAIL', '이메일');
+INSERT INTO NOTIFICATION_CHANNEL(NAME, DESCRIPTION) VALUES ('SLACK', '슬랙');
 
-INSERT INTO NOTIFICATION_TYPE (NAME, DESCRIPTION) VALUES
-                                                      ('UPLOAD_SUCCESS', '업로드가 성공했음을 알리는 알림입니다.'),
-                                                      ('UPLOAD_FAILURE', '업로드가 실패했음을 알리는 알림입니다.'),
-                                                      ('API_KEY_EXPIRED', 'API 키가 만료되었음을 알리는 알림입니다.'),
-                                                      ('SCHEDULER_ERROR', '스케줄러 실행 중 오류가 발생했음을 알리는 알림입니다.'),
-                                                      ('TREND_DETECTED', '신규 트렌드가 감지되었음을 알리는 알림입니다.');
+INSERT INTO NOTIFICATION_TYPE (NAME, DESCRIPTION) VALUES ('UPLOAD_SUCCESS', '업로드가 성공했음을 알리는 알림입니다.');
+INSERT INTO NOTIFICATION_TYPE (NAME, DESCRIPTION) VALUES ('UPLOAD_FAILURE', '업로드가 실패했음을 알리는 알림입니다.');
+INSERT INTO NOTIFICATION_TYPE (NAME, DESCRIPTION) VALUES ('API_KEY_EXPIRED', 'API 키가 만료되었음을 알리는 알림입니다.');
+INSERT INTO NOTIFICATION_TYPE (NAME, DESCRIPTION) VALUES ('SCHEDULER_ERROR', '스케줄러 실행 중 오류가 발생했음을 알리는 알림입니다.');
+INSERT INTO NOTIFICATION_TYPE (NAME, DESCRIPTION) VALUES ('TREND_DETECTED', '신규 트렌드가 감지되었음을 알리는 알림입니다.');
 
-INSERT INTO CATEGORY (NAME, DESCRIPTION) VALUES
-                                             ('DIGITAL', '전자기기 및 디지털 관련 상품 카테고리'),
-                                             ('FASHION', '의류 및 패션 관련 상품 카테고리');
+INSERT INTO CATEGORY (NAME, DESCRIPTION) VALUES ('DIGITAL', '전자기기 및 디지털 관련 상품 카테고리');
+INSERT INTO CATEGORY (NAME, DESCRIPTION) VALUES ('FASHION', '의류 및 패션 관련 상품 카테고리');
 
 commit;

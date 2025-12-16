@@ -6,13 +6,48 @@ WHERE NOT EXISTS (
 );
 
 -- 2) CONTENT: trend FK/컬럼 제거, keyword 추가
-ALTER TABLE content DROP CONSTRAINT fk_content_trend;
-ALTER TABLE content DROP COLUMN trend_id;
+BEGIN
+   EXECUTE IMMEDIATE 'ALTER TABLE content DROP CONSTRAINT fk_content_trend';
+EXCEPTION
+   WHEN OTHERS THEN
+      IF SQLCODE != -2443 THEN  -- ORA-02443: Cannot drop constraint - does not exist
+         RAISE;
+      END IF;
+END;
+/
+
+BEGIN
+   EXECUTE IMMEDIATE 'ALTER TABLE content DROP COLUMN trend_id';
+EXCEPTION
+   WHEN OTHERS THEN
+      IF SQLCODE != -904 THEN  -- ORA-00904: invalid column name
+         RAISE;
+      END IF;
+END;
+/
+
 ALTER TABLE content ADD (keyword VARCHAR2(200));
 
 -- 3) LLM_CHANNEL: BASE_URL, TOP_P 컬럼 제거
-ALTER TABLE llm_channel DROP COLUMN base_url;
-ALTER TABLE llm_channel DROP COLUMN top_p;
+BEGIN
+   EXECUTE IMMEDIATE 'ALTER TABLE llm_channel DROP COLUMN base_url';
+EXCEPTION
+   WHEN OTHERS THEN
+      IF SQLCODE != -904 THEN  -- ORA-00904: invalid column name
+         RAISE;
+      END IF;
+END;
+/
+
+BEGIN
+   EXECUTE IMMEDIATE 'ALTER TABLE llm_channel DROP COLUMN top_p';
+EXCEPTION
+   WHEN OTHERS THEN
+      IF SQLCODE != -904 THEN  -- ORA-00904: invalid column name
+         RAISE;
+      END IF;
+END;
+/
 
 INSERT INTO PRODUCT_CATEGORY (NAME, DESCRIPTION) VALUES ('INNERWEAR_AND_PAJAMAS', '속옷·브라·팬티·이너웨어·잠옷');
 INSERT INTO PRODUCT_CATEGORY (NAME, DESCRIPTION) VALUES ('SHOES', '남녀 스니커즈, 부츠, 힐, 슬리퍼, 구두 등 신발');

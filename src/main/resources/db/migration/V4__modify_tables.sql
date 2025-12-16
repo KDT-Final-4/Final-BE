@@ -4,8 +4,16 @@ ALTER TABLE CONTENT ADD (job_id varchar2(128) not null);
 -- LOG 테이블에 job_id 컬럼의 타입 수정 --
 ALTER TABLE LOG MODIFY JOB_ID VARCHAR2(128) not null;
 
--- 필요 없는 테이블 DROP
-DROP TABLE user_notification_channel;
+-- 필요 없는 테이블 DROP (존재하는 경우에만)
+BEGIN
+   EXECUTE IMMEDIATE 'DROP TABLE user_notification_channel CASCADE CONSTRAINTS';
+EXCEPTION
+   WHEN OTHERS THEN
+      IF SQLCODE != -942 THEN  -- ORA-00942: table or view does not exist
+         RAISE;
+      END IF;
+END;
+/
 
 -- Category table name 변경
 RENAME CATEGORY to PRODUCT_CATEGORY;

@@ -1,5 +1,13 @@
--- 1) user_id FK 먼저 제거
-ALTER TABLE clicks DROP CONSTRAINT fk_clicks_user;
+-- 1) user_id FK 먼저 제거 (존재하는 경우에만)
+BEGIN
+   EXECUTE IMMEDIATE 'ALTER TABLE clicks DROP CONSTRAINT fk_clicks_user';
+EXCEPTION
+   WHEN OTHERS THEN
+      IF SQLCODE != -2443 THEN  -- ORA-02443: Cannot drop constraint - does not exist
+         RAISE;
+      END IF;
+END;
+/
 
 -- 2) user_id 컬럼 삭제
 ALTER TABLE clicks DROP COLUMN user_id;

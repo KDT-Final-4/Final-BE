@@ -1,5 +1,5 @@
--- LLM 채널 테이블에 PROMPT 컬럼 추가 (CLOB 타입)
-drop table SCHEDULE;
+-- SCHEDULE 테이블 삭제 후 재생성 (FK 제약조건도 함께 삭제)
+DROP TABLE SCHEDULE;
 
 CREATE TABLE schedule (
                           id                NUMBER GENERATED ALWAYS AS IDENTITY,

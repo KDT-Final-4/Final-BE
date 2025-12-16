@@ -9,6 +9,11 @@ spring:
     enabled: true
     baseline-on-migrate: true
     baseline-version: 0
+    repair-on-migrate: true
+    validate-on-migrate: false
+    clean-disabled: false
+    ignore-missing-migrations: true
+    ignore-future-migrations: true
   threads:
     virtual:
       enabled: true
@@ -31,6 +36,16 @@ security:
     issuer: final-be
     temp-validity: PT2H
     secret: ${JWT_SECRET}
+
+# Actuator 설정 (헬스 체크용)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: when-authorized
 
 #
 python-url: ${PYTHON_URL}
