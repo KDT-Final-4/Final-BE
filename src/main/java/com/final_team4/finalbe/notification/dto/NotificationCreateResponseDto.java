@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Getter
 @Builder
@@ -16,6 +17,7 @@ public class NotificationCreateResponseDto {
     private String title;
     private String message;
     private Long notificationLevel;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
     public static NotificationCreateResponseDto from(Notification entity) {

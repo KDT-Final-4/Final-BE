@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Getter
 @Builder
@@ -26,6 +27,7 @@ public class ScheduleSettingUpdateResponseDto {
     private Long retryOnFail;
 
     @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "Asia/Seoul")
     private LocalDateTime updatedAt;
 
     public static ScheduleSettingUpdateResponseDto from(ScheduleSetting scheduleSetting) {
