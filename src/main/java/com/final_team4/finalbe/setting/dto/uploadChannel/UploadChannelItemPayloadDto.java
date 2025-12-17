@@ -1,5 +1,6 @@
 package com.final_team4.finalbe.setting.dto.uploadChannel;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.final_team4.finalbe.setting.domain.uploadChannel.Channel;
 import com.final_team4.finalbe.setting.domain.uploadChannel.UploadChannel;
 import com.fasterxml.jackson.annotation.JsonFormat;
