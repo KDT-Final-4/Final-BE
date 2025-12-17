@@ -1,5 +1,6 @@
 package com.final_team4.finalbe._core.jwt;
 
+import com.final_team4.finalbe._core.security.AccessCookieManager;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,12 +17,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  private static final String BEARER_PREFIX = "Bearer ";
+
 
   private final JwtTokenService jwtTokenService;
 
-  public JwtAuthenticationFilter(JwtTokenService jwtTokenService) {
+  private final AccessCookieManager accessCookieManager;
+
+  public JwtAuthenticationFilter(JwtTokenService jwtTokenService, AccessCookieManager accessCookieManager) {
     this.jwtTokenService = jwtTokenService;
+      this.accessCookieManager = accessCookieManager;
   }
 
   @Override
@@ -31,20 +35,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       HttpServletRequest request,
       HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
-    try {
-      String token = extractToken(request);
-      if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-        Authentication authentication = jwtTokenService.authenticate(token);
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authentication);
-        SecurityContextHolder.setContext(context);
+      try {
+          String token = extractToken(request);
+          if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+              Authentication authentication = jwtTokenService.authenticate(token);
+              SecurityContext context = SecurityContextHolder.createEmptyContext();
+              context.setAuthentication(authentication);
+              SecurityContextHolder.setContext(context);
+          }
+          filterChain.doFilter(request, response);
       }
-    } catch (JwtException | IllegalArgumentException ex) {
-      SecurityContextHolder.clearContext();
-    }
+          catch (JwtException | IllegalArgumentException exception) {
+              SecurityContextHolder.clearContext();
+              accessCookieManager.clearAccessCookies(response);
+              writeUnauthorized(response);
+          }
 
-    filterChain.doFilter(request, response);
-  }
+      }
 
   private String extractToken(HttpServletRequest request) {
 
@@ -62,5 +69,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
       // 3) 둘 다 없으면 null
       return null;
+  }
+
+  private void writeUnauthorized(HttpServletResponse response) throws IOException {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      response.setContentType("application/json;charset=UTF-8");
+      response.getWriter().write("""
+            {"code":"AUTH_TOKEN_EXPIRED","message":"로그인이 만료되었습니다. 다시 로그인해 주세요."}
+        """);
   }
 }

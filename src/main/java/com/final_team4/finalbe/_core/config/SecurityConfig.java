@@ -3,6 +3,7 @@ package com.final_team4.finalbe._core.config;
 import com.final_team4.finalbe._core.jwt.JwtAuthenticationFilter;
 import com.final_team4.finalbe._core.jwt.JwtProperties;
 import com.final_team4.finalbe._core.jwt.JwtTokenService;
+import com.final_team4.finalbe._core.security.AccessCookieManager;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,10 +26,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtTokenService jwtTokenService;
+    private final AccessCookieManager accessCookieManager;
+
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtTokenService);
+        return new JwtAuthenticationFilter(jwtTokenService,accessCookieManager);
     }
 
     @Bean
@@ -49,8 +53,15 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated())
                 .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint((request, response, authException) ->
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED)));
+                        //인증이 안된 요청이 들어왔을 때 현재 Security Context를 비우고, 401, 응답메시지 반환
+                        .authenticationEntryPoint((request, response, authException) ->{
+                                    SecurityContextHolder.clearContext();
+                                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                    response.setContentType("application/json;charset=UTF-8");
+                                    response.getWriter().write("""
+                                                    {"code":"AUTH_TOKEN_EXPIRED","message":"로그인이 만료되었습니다. 다시 로그인해 주세요."}
+                                            """);
+                                }));
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
