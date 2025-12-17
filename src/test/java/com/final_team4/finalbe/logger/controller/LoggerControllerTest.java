@@ -2,13 +2,23 @@ package com.final_team4.finalbe.logger.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.final_team4.finalbe._core.security.JwtPrincipal;
+import com.final_team4.finalbe.dashboard.mapper.ClicksMapper;
+import com.final_team4.finalbe.dashboard.mapper.DashboardMapper;
+import com.final_team4.finalbe.link.mapper.LinkMapper;
 import com.final_team4.finalbe.logger.domain.type.LogType;
+import com.final_team4.finalbe.logger.dto.LogPageResponseDto;
 import com.final_team4.finalbe.logger.dto.LogResponseDto;
 import com.final_team4.finalbe.logger.dto.PipelineLogCreateRequest;
 import com.final_team4.finalbe.logger.service.LoggerService;
 import com.final_team4.finalbe.content.mapper.ContentMapper;
+import com.final_team4.finalbe.notification.mapper.NotificationMapper;
+import com.final_team4.finalbe.product.mapper.ProductCategoryMapper;
+import com.final_team4.finalbe.product.mapper.ProductContentMapper;
+import com.final_team4.finalbe.product.mapper.ProductMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper;
+import com.final_team4.finalbe.setting.mapper.llm.LlmChannelMapper;
+import com.final_team4.finalbe.setting.mapper.notification.NotificationCredentialMapper;
 import com.final_team4.finalbe.trend.mapper.TrendMapper;
 import com.final_team4.finalbe.setting.mapper.uploadChannel.UploadChannelMapper;
 import com.final_team4.finalbe.user.mapper.UserInfoMapper;
@@ -90,6 +100,34 @@ public class LoggerControllerTest {
 
   @MockitoBean
   AccessCookieManager accessCookieManager;
+
+  @MockitoBean
+  ClicksMapper clicksMapper;
+
+  @MockitoBean
+  DashboardMapper dashboardMapper;
+
+  @MockitoBean
+  LinkMapper linkMapper;
+
+  @MockitoBean
+  NotificationMapper notificationMapper;
+
+  @MockitoBean
+  ProductCategoryMapper productCategoryMapper;
+
+  @MockitoBean
+  ProductContentMapper productContentMapper;
+
+  @MockitoBean
+  ProductMapper productMapper;
+
+  @MockitoBean
+    LlmChannelMapper llmChannelMapper;
+
+  @MockitoBean
+  NotificationCredentialMapper notificationCredentialMapper;
+
 
   @TestConfiguration
   static class AuthenticationPrincipalResolverConfig implements WebMvcConfigurer {
@@ -181,11 +219,13 @@ public class LoggerControllerTest {
   void findLogs_success() throws Exception {
     // given
     JwtPrincipal principal = principalOf(1L);
-    List<LogResponseDto> responses = List.of(
+    List<LogResponseDto> items = List.of(
         LogResponseDto.builder().id(1L).logType(LogType.INFO).message("로그 메세지").jobId("job-111").build(),
         LogResponseDto.builder().id(2L).logType(LogType.ERROR).message("에러 메세지").jobId("job-222").build()
     );
-    given(loggerService.findLogs(eq(1L), eq("search"), eq(0), eq(2))).willReturn(responses);
+    LogPageResponseDto page = LogPageResponseDto.of(items, 2, 0, 2);
+
+    given(loggerService.findLogs(eq(1L), eq("search"), eq(0), eq(2))).willReturn(page);
     SecurityContextHolder.getContext().setAuthentication(authToken(principal));
 
     // when & then
@@ -194,13 +234,13 @@ public class LoggerControllerTest {
             .param("page", "0")
             .param("size", "2")
             .with(authentication(authToken(principal))))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].id").value(1))
-        .andExpect(jsonPath("$[0].logType").value("INFO"))
-        .andExpect(jsonPath("$[0].jobId").value("job-111"))
-        .andExpect(jsonPath("$[1].id").value(2))
-        .andExpect(jsonPath("$[1].logType").value("ERROR"))
-        .andExpect(jsonPath("$[1].jobId").value("job-222"));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.items[0].id").value(1))
+            .andExpect(jsonPath("$.items[0].logType").value("INFO"))
+            .andExpect(jsonPath("$.items[0].jobId").value("job-111"))
+            .andExpect(jsonPath("$.totalCount").value(2))
+            .andExpect(jsonPath("$.page").value(0))
+            .andExpect(jsonPath("$.size").value(2));
 
     verify(loggerService).findLogs(1L, "search", 0, 2);
   }
