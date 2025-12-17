@@ -3,10 +3,7 @@ package com.final_team4.finalbe.logger.service;
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe.logger.domain.Log;
 import com.final_team4.finalbe.logger.domain.type.LogType;
-import com.final_team4.finalbe.logger.dto.LogCreateRequestDto;
-import com.final_team4.finalbe.logger.dto.LogResponseDto;
-import com.final_team4.finalbe.logger.dto.LogTypeCountRow;
-import com.final_team4.finalbe.logger.dto.PipelineLogCreateRequest;
+import com.final_team4.finalbe.logger.dto.*;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
@@ -104,15 +101,17 @@ public class LoggerService {
   /**
    * 사용자 로그를 검색어와 페이지네이션으로 조회합니다.
    */
-  public List<LogResponseDto> findLogs(Long userId, String search, int page, int size) {
+  public LogPageResponseDto findLogs(Long userId, String search, int page, int size) {
     if (page < 0 || size <= 0) {
       throw new IllegalArgumentException("page는 0 이상, size는 1 이상이어야 합니다.");
     }
-    int offset = Math.max(page, 0) * size;
-    List<Log> logs = loggerMapper.findLogs(userId, search, size, offset);
-    return logs.stream()
-        .map(LogResponseDto::from)
-        .toList();
+    int offset = page * size;
+    List<LogResponseDto> items = loggerMapper.findLogs(userId, search, size, offset).stream()
+            .map(LogResponseDto::from)
+            .toList();
+    long totalCount = loggerMapper.countLogs(userId,search);
+
+    return LogPageResponseDto.of(items,totalCount,page,size);
   }
 
   /**

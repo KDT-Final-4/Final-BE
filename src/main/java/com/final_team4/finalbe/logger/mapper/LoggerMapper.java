@@ -40,4 +40,6 @@ public interface LoggerMapper {
    * 특정 jobId의 로그를 id 기준 이후 데이터만 조회합니다.
    */
   List<Log> findByJobIdAfterId(@Param("jobId") String jobId, @Param("fromId") Long fromId);
+
+  long countLogs(@Param("userId") Long userId, @Param("search") String search);
 }

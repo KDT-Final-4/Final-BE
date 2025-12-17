@@ -2,6 +2,7 @@ package com.final_team4.finalbe.logger.controller;
 
 import com.final_team4.finalbe._core.security.JwtPrincipal;
 import com.final_team4.finalbe.logger.domain.type.LogType;
+import com.final_team4.finalbe.logger.dto.LogPageResponseDto;
 import com.final_team4.finalbe.logger.dto.LogResponseDto;
 import com.final_team4.finalbe.logger.dto.PipelineLogCreateRequest;
 import com.final_team4.finalbe.logger.service.LoggerService;
@@ -41,10 +42,10 @@ public class LoggerController {
    * 검색어/페이지네이션으로 자신의 로그를 조회합니다.
    */
   @GetMapping("/log")
-  public List<LogResponseDto> findLogs(@AuthenticationPrincipal JwtPrincipal principal,
-                                       @RequestParam(required = false) String search,
-                                       @RequestParam int page,
-                                       @RequestParam int size) {
+  public LogPageResponseDto findLogs(@AuthenticationPrincipal JwtPrincipal principal,
+                                     @RequestParam(required = false) String search,
+                                     @RequestParam int page,
+                                     @RequestParam int size) {
     Long userId = principal.userId();
     return loggerService.findLogs(userId, search, page, size);
   }
