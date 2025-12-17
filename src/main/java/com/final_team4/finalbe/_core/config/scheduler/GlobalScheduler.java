@@ -25,7 +25,7 @@ public class GlobalScheduler {
         scheduleService.processDueSchedules();
     }
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 54 * * * *")
     public void searchTrend() {
       restService.callGetKeywords();
     }

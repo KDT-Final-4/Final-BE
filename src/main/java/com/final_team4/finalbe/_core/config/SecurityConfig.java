@@ -6,6 +6,7 @@ import com.final_team4.finalbe._core.jwt.JwtTokenService;
 import com.final_team4.finalbe._core.security.AccessCookieManager;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,12 +19,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
 
 @Configuration
 @EnableWebSecurity
 @EnableConfigurationProperties(JwtProperties.class)
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    @Value("${internal.token:}")
+    private String internalToken;
 
     private final JwtTokenService jwtTokenService;
     private final AccessCookieManager accessCookieManager;
@@ -36,19 +42,25 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        RequestMatcher pythonMatcher = request -> {
+            String token = request.getHeader("X-Internal-Token");
+            System.out.println("내 환경변수 토큰 값"+internalToken);
+            System.out.println("응답 받은 토큰 값"+token);
+            return token != null && token.equals(internalToken);
+        };
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(pythonMatcher).permitAll()//파이썬 서버 헤더가 있으면 무인증
                         .requestMatchers(
                                 "/api/user/register",
                                 "/api/auth/login",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/api/link/**",
-                                "/**")
+                                "/api/link/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
