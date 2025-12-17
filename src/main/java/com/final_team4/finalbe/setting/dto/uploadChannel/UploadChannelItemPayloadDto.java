@@ -1,7 +1,9 @@
 package com.final_team4.finalbe.setting.dto.uploadChannel;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.final_team4.finalbe.setting.domain.uploadChannel.Channel;
 import com.final_team4.finalbe.setting.domain.uploadChannel.UploadChannel;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,7 +19,9 @@ public class UploadChannelItemPayloadDto {
     private String clientId;
     private String clientPw;
     private Boolean status;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "Asia/Seoul")
     private LocalDateTime updatedAt;
 
     public static UploadChannelItemPayloadDto from(UploadChannel channel) {

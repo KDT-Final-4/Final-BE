@@ -10,9 +10,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/link")
@@ -33,9 +36,14 @@ public class LinkController {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "400", description = "jobId 누락 또는 잘못된 요청")
     })
-    public LinkResponseDto getLink(@RequestParam("jobId") @NotBlank String jobId, HttpServletRequest request) {
+    public ResponseEntity<Void> getLink(@RequestParam("jobId") @NotBlank String jobId, HttpServletRequest request) {
         String clientIp = resolveClientIp(request);
-        return linkService.resolveLink(jobId,clientIp);
+        LinkResponseDto link = linkService.resolveLink(jobId, clientIp);
+
+        // 302 응답과 Location 헤더를 내려 브라우저가 실제 링크로 이동하도록 처리
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(link.getLink()))
+                .build();
     }
 
     //사용자 Ip 수집

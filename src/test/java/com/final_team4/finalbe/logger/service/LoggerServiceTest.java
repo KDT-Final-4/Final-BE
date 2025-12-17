@@ -3,6 +3,7 @@ package com.final_team4.finalbe.logger.service;
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe.logger.domain.type.LogType;
 import com.final_team4.finalbe.logger.dto.LogCreateRequestDto;
+import com.final_team4.finalbe.logger.dto.LogPageResponseDto;
 import com.final_team4.finalbe.logger.dto.LogResponseDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -262,15 +263,15 @@ public class LoggerServiceTest {
         .message("target keyword other user")
         .build());
 
-    // when
-    Method findLogs = loggerService.getClass().getMethod("findLogs", Long.class, String.class, int.class, int.class);
-    @SuppressWarnings("unchecked")
-    List<LogResponseDto> logs = (List<LogResponseDto>) findLogs.invoke(loggerService, ownerId, "target", 0, 2);
-
+    LogPageResponseDto page = loggerService.findLogs(ownerId, "target", 0, 2);
+    List<LogResponseDto> logs = page.getItems();
     // then
     assertThat(logs).hasSize(2);
     assertThat(logs).extracting(LogResponseDto::getUserId).containsOnly(ownerId);
     assertThat(logs).allMatch(log -> log.getMessage().contains("target"));
+    assertThat(page.getTotalCount()).isEqualTo(2);
+    assertThat(page.getPage()).isEqualTo(0);
+    assertThat(page.getSize()).isEqualTo(2);
   }
 
   @DisplayName("로그 검색 - 음수 페이지나 0 이하 size면 예외를 던진다")
