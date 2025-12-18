@@ -13,7 +13,7 @@ public class NotificationCreateResponseDto {
     private Long id;
     private Long channelId;
     private Long typeId;
-    private Long contentId;
+    private String contentJobId;
     private String title;
     private String message;
     private Long notificationLevel;
@@ -25,7 +25,7 @@ public class NotificationCreateResponseDto {
                 .id(entity.getId())
                 .channelId(entity.getChannelId())
                 .typeId(entity.getTypeId())
-                .contentId(entity.getContentId())
+                .contentJobId(entity.getContentJobId())
                 .title(entity.getTitle())
                 .message(entity.getMessage())
                 .notificationLevel(entity.getNotificationLevel())

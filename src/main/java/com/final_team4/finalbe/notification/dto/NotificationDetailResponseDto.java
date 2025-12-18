@@ -13,7 +13,7 @@ public class NotificationDetailResponseDto {
     private Long id;
     private Long channelId;
     private Long typeId;
-    private Long contentId;
+    private String contentJobId;
     private String title;
     private String message;
     private Long notificationLevel;
@@ -25,7 +25,7 @@ public class NotificationDetailResponseDto {
                 .id(notification.getId())
                 .channelId(notification.getChannelId())
                 .typeId(notification.getTypeId())
-                .contentId(notification.getContentId())
+                .contentJobId(notification.getContentJobId())
                 .title(notification.getTitle())
                 .message(notification.getMessage())
                 .notificationLevel(notification.getNotificationLevel())
