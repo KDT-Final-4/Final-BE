@@ -17,7 +17,7 @@ public class NotificationWithTypeAndChannelAndCredential {
     private String typeName;
     private String credentialApiToken;
     private String credentialWebhook;
-    private Long contentId;
+    private String contentJobId;
     private String title;
     private String message;
     private Long notificationLevel;
