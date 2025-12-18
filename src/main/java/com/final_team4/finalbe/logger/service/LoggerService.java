@@ -3,11 +3,12 @@ package com.final_team4.finalbe.logger.service;
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe.logger.domain.Log;
 import com.final_team4.finalbe.logger.domain.type.LogType;
-import com.final_team4.finalbe.logger.dto.LogCreateRequestDto;
-import com.final_team4.finalbe.logger.dto.LogResponseDto;
-import com.final_team4.finalbe.logger.dto.LogTypeCountRow;
-import com.final_team4.finalbe.logger.dto.PipelineLogCreateRequest;
+import com.final_team4.finalbe.logger.dto.*;
 import com.final_team4.finalbe.logger.mapper.LoggerMapper;
+import com.final_team4.finalbe.notification.dto.NotificationCreateRequestDto;
+import com.final_team4.finalbe.notification.dto.NotificationCreateResponseDto;
+import com.final_team4.finalbe.notification.service.NotificationService;
+import com.final_team4.finalbe.notification.service.SlackService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
@@ -34,11 +35,15 @@ public class LoggerService {
   private final LoggerMapper loggerMapper;
 
   private final TaskExecutor taskExecutor;
+  private final NotificationService notificationService;
+  private final SlackService slackService;
 
-    public LoggerService(LoggerMapper loggerMapper, @Qualifier("virtualThreadTaskExecutor") TaskExecutor taskExecutor) {
+  public LoggerService(LoggerMapper loggerMapper, @Qualifier("virtualThreadTaskExecutor") TaskExecutor taskExecutor, NotificationService notificationService, SlackService slackService) {
         this.loggerMapper = loggerMapper;
         this.taskExecutor = taskExecutor;
-    }
+        this.notificationService = notificationService;
+        this.slackService = slackService;
+  }
 
     /**
    * 로그를 생성하고 콘솔에 출력합니다. 외부에서 직접 호출됩니다.
@@ -98,21 +103,24 @@ public class LoggerService {
         .jobId(request.getJobId())
         .message(formattedMessage)
         .build();
+    notificationCaller(request);
     return createLog(createRequest);
   }
 
   /**
    * 사용자 로그를 검색어와 페이지네이션으로 조회합니다.
    */
-  public List<LogResponseDto> findLogs(Long userId, String search, int page, int size) {
+  public LogPageResponseDto findLogs(Long userId, String search, int page, int size) {
     if (page < 0 || size <= 0) {
       throw new IllegalArgumentException("page는 0 이상, size는 1 이상이어야 합니다.");
     }
-    int offset = Math.max(page, 0) * size;
-    List<Log> logs = loggerMapper.findLogs(userId, search, size, offset);
-    return logs.stream()
-        .map(LogResponseDto::from)
-        .toList();
+    int offset = page * size;
+    List<LogResponseDto> items = loggerMapper.findLogs(userId, search, size, offset).stream()
+            .map(LogResponseDto::from)
+            .toList();
+    long totalCount = loggerMapper.countLogs(userId,search);
+
+    return LogPageResponseDto.of(items,totalCount,page,size);
   }
 
   /**
@@ -165,6 +173,7 @@ public class LoggerService {
   }
 
   private String formatPipelineMessage(PipelineLogCreateRequest request) {
+    System.out.println("getMessage: " + request.getMessage());
     String dateText = request.getLoggedDate() != null
         ? request.getLoggedDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         : "";
@@ -203,5 +212,28 @@ public class LoggerService {
       return "SYSTEM";
     }
     return "user_id: " + userId;
+  }
+
+  // notification에 보내기 위한 메서드
+  private void notificationCaller(PipelineLogCreateRequest request) {
+
+    if (request.getIsNotifiable()) {
+      String logProcess = request.getLoggedProcess();
+      System.out.println("logProcess: " + logProcess);
+      String promo = "promo";
+      String insertPlatform = "write";
+
+      if (logProcess.equals(promo) || logProcess.equals(insertPlatform) ) {
+        NotificationCreateResponseDto dto = notificationService.insert(request.getUserId(), NotificationCreateRequestDto.builder()
+                          .typeId(1L)
+                          .contentJobId(request.getJobId())
+                          .title(request.getMessage())
+                          .message(request.getSubmessage())
+                          .notificationLevel(request.getLogType().getId())
+                          .build());
+        slackService.sendNotification(request.getUserId(), dto.getId());
+      }
+    }
+
   }
 }

@@ -12,7 +12,7 @@ public class Notification {
     private Long channelId;
     private Long userId;
     private Long typeId;
-    private Long contentId;
+    private String contentJobId;
     private String title;
     private String message;
     private Long notificationLevel;
