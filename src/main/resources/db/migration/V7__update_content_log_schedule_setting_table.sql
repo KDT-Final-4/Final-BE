@@ -14,7 +14,7 @@ ALTER TABLE content
             REFERENCES trend(id);
 
 
--- 3) log 의 jobId nuulable로 변경
+-- 3) log 의 jobId nullable로 변경
 ALTER TABLE log
     MODIFY (job_id NULL);
 
