@@ -44,8 +44,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         RequestMatcher pythonMatcher = request -> {
             String token = request.getHeader("X-Internal-Token");
-            System.out.println("내 환경변수 토큰 값"+internalToken);
-            System.out.println("응답 받은 토큰 값"+token);
             return token != null && token.equals(internalToken);
         };
         http
