@@ -23,4 +23,5 @@ public class PipelineLogCreateRequest {
   private String message;
   private String submessage;
   private String jobId;
+  private Boolean isNotifiable;
 }

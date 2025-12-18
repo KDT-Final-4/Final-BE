@@ -14,8 +14,8 @@ public class NotificationCreateRequestDto {
     @NotNull
     private Long typeId;
 
-    @NotNull
-    private Long contentId;
+    @NotBlank
+    private String contentJobId;
 
     @NotBlank
     @Size(min = 1, max = 50)
@@ -31,7 +31,7 @@ public class NotificationCreateRequestDto {
                 .userId(userId)
                 .channelId(channelId)
                 .typeId(typeId)
-                .contentId(contentId)
+                .contentJobId(contentJobId)
                 .title(title)
                 .message(message)
                 .notificationLevel(notificationLevel)
