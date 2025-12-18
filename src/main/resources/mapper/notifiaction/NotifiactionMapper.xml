@@ -4,20 +4,20 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.final_team4.finalbe.notification.mapper.NotificationMapper">
     <resultMap id="NotificationWithCredentialMap" type="com.final_team4.finalbe.notification.vo.NotificationWithTypeAndChannelAndCredential">
-        <id     property="id"                  column="ID"/>
-        <result property="channelId"           column="CHANNEL_ID"/>
-        <result property="channelName"         column="CHANNEL_NAME"/>
-        <result property="userId"              column="USER_ID"/>
-        <result property="typeId"              column="TYPE_ID"/>
-        <result property="typeDescription"     column="TYPE_DESCRIPTION"/>
-        <result property="typeName"            column="TYPE_NAME"/>
-        <result property="credentialApiToken"  column="CREDENTIAL_API_TOKEN"/>
-        <result property="credentialWebhook"   column="CREDENTIAL_WEBHOOK"/>
-        <result property="contentId"           column="CONTENT_ID"/>
-        <result property="title"               column="TITLE"/>
-        <result property="message"             column="MESSAGE"/>
-        <result property="notificationLevel"   column="NOTIFICATION_LEVEL"/>
-        <result property="createdAt"           column="CREATED_AT"/>
+        <id     property="id"                       column="ID"/>
+        <result property="channelId"                column="CHANNEL_ID"/>
+        <result property="channelName"              column="CHANNEL_NAME"/>
+        <result property="userId"                   column="USER_ID"/>
+        <result property="typeId"                   column="TYPE_ID"/>
+        <result property="typeDescription"          column="TYPE_DESCRIPTION"/>
+        <result property="typeName"                 column="TYPE_NAME"/>
+        <result property="credentialApiToken"       column="CREDENTIAL_API_TOKEN"/>
+        <result property="credentialWebhook"        column="CREDENTIAL_WEBHOOK"/>
+        <result property="contentJobId"             column="CONTENT_JOB_ID"/>
+        <result property="title"                    column="TITLE"/>
+        <result property="message"                  column="MESSAGE"/>
+        <result property="notificationLevel"        column="NOTIFICATION_LEVEL"/>
+        <result property="createdAt"                column="CREATED_AT"/>
     </resultMap>
     <select id="findById" parameterType="long" resultType="Notification" >
         SELECT
@@ -39,7 +39,7 @@
             nt.NAME         AS TYPE_NAME,
             unc.API_TOKEN   AS CREDENTIAL_API_TOKEN,
             unc.WEBHOOK_URL AS CREDENTIAL_WEBHOOK,
-            n.CONTENT_ID,
+            n.CONTENT_JOB_ID,
             n.TITLE,
             n.MESSAGE,
             n.NOTIFICATION_LEVEL,
@@ -72,7 +72,7 @@
             channel_id,
             user_id,
             type_id,
-            content_id,
+            CONTENT_JOB_ID,
             title,
             message,
             notification_level,
@@ -81,7 +81,7 @@
             #{channelId},
             #{userId},
             #{typeId},
-            #{contentId},
+            #{contentJobId},
             #{title},
             #{message},
             #{notificationLevel},
