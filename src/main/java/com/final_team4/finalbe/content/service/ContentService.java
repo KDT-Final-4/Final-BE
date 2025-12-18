@@ -135,10 +135,18 @@ public class ContentService {
     public void updateContentLink(ContentLinkUpdateRequestDto request) {
         Content content = contentMapper.findByJobId(request.getJobId());
         if (content == null) {
-            throw new IllegalArgumentException("존재하지 않는 jobId입니다: " + request.getJobId());
+            throw new IllegalArgumentException("존재하지 않는 jobId 입니다: " + request.getJobId());
         }
 
         contentMapper.updateLinkByJobId(request.getJobId(), request.getLink());
+    }
+
+    public ContentDetailResponseDto getContentByJobId(String jobId) {
+        Content content = contentMapper.findByJobId(jobId);
+        if (content == null) {
+            throw new IllegalArgumentException("존재하지 않는 jobId 입니다: " + jobId);
+        }
+        return ContentDetailResponseDto.from(content);
     }
 
     private Content getVerifiedContent(Long userId, Long id) {
