@@ -20,6 +20,7 @@ public class DashboardContentItemDto {
     private long clickCount;
     private Long categoryId;
     private String categoryName;
+    private String categoryDescription;
 
     public static DashboardContentItemDto from(DashboardContentSummary summary) {
         return DashboardContentItemDto.builder()
@@ -32,6 +33,7 @@ public class DashboardContentItemDto {
                 .clickCount(summary.getClickCount())
                 .categoryId(summary.getCategoryId())
                 .categoryName(summary.getCategoryName())
+                .categoryDescription(summary.getCategoryDescription())
                 .build();
     }
 
