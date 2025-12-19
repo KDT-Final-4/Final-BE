@@ -25,4 +25,5 @@ public class DashboardContentSummary {
     private LocalDateTime updatedAt;
     private Long categoryId;
     private String categoryName;
+    private String categoryDescription;
 }
