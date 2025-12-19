@@ -14,10 +14,11 @@
     <select id="findByJobId" parameterType="string"
             resultMap="LinkTargetMap">
         SELECT
-        pc.PRODUCT_ID AS productId,
-        c.LINK        AS link
-        FROM CONTENT c
-        LEFT JOIN PRODUCT_CONTENT pc ON pc.CONTENT_ID = c.ID
+            p.ID AS productId,
+            p.LINK AS link
+        FROM PRODUCT p
+            LEFT JOIN PRODUCT_CONTENT pc ON pc.product_id= p.ID
+            LEFT JOIN CONTENT c ON pc.CONTENT_ID= c.ID
         WHERE c.JOB_ID = #{jobId}
         FETCH FIRST 1 ROWS ONLY
     </select>
