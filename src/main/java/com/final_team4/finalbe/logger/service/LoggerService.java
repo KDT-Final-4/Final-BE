@@ -103,8 +103,10 @@ public class LoggerService {
         .jobId(request.getJobId())
         .message(formattedMessage)
         .build();
-    notificationCaller(request);
-    return createLog(createRequest);
+
+    LogResponseDto response = createLog(createRequest);
+    callNotificationAsync(request);
+    return response;
   }
 
   /**
@@ -215,25 +217,35 @@ public class LoggerService {
   }
 
   // notification에 보내기 위한 메서드
-  private void notificationCaller(PipelineLogCreateRequest request) {
+  private void callNotificationAsync(PipelineLogCreateRequest request) {
+    taskExecutor.execute(() -> {
+      try {
+        notificationCaller(request);
+      } catch (ContentNotFoundException e) {
+        System.out.println(e.getMessage());
+      } catch (Exception e) {
+        System.out.println("알림 전송 중 오류가 발생했습니다: " + e.getMessage());
+      }
+    });
+  }
 
+  private void notificationCaller(PipelineLogCreateRequest request) {
     if (request.getIsNotifiable()) {
       String logProcess = request.getLoggedProcess();
       System.out.println("logProcess: " + logProcess);
       String promo = "promo";
       String insertPlatform = "write";
 
-      if (logProcess.equals(promo) || logProcess.equals(insertPlatform) ) {
+      if (logProcess.equals(promo) || logProcess.equals(insertPlatform)) {
         NotificationCreateResponseDto dto = notificationService.insert(request.getUserId(), NotificationCreateRequestDto.builder()
-                          .typeId(1L)
-                          .contentJobId(request.getJobId())
-                          .title(request.getMessage())
-                          .message(request.getSubmessage())
-                          .notificationLevel(request.getLogType().getId())
-                          .build());
+            .typeId(1L)
+            .contentJobId(request.getJobId())
+            .title(request.getMessage())
+            .message(request.getSubmessage())
+            .notificationLevel(request.getLogType().getId())
+            .build());
         slackService.sendNotification(request.getUserId(), dto.getId());
       }
     }
-
   }
 }
