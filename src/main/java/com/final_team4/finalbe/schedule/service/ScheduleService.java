@@ -2,12 +2,14 @@ package com.final_team4.finalbe.schedule.service;
 
 import com.final_team4.finalbe._core.exception.ContentNotFoundException;
 import com.final_team4.finalbe._core.exception.PermissionDeniedException;
+import com.final_team4.finalbe.log.LogProcess;
 import com.final_team4.finalbe.schedule.domain.RepeatInterval;
 import com.final_team4.finalbe.schedule.domain.Schedule;
 import com.final_team4.finalbe.schedule.dto.schedule.*;
 import com.final_team4.finalbe.schedule.mapper.ScheduleMapper;
 import com.final_team4.finalbe.trend.dto.TrendCreateContentRequestDto;
 import com.final_team4.finalbe.trend.service.TrendService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class ScheduleService {
@@ -34,6 +37,7 @@ public class ScheduleService {
 
     // Create
     @Transactional
+    @LogProcess(action = "스케쥴 설정 생성", keys = {"userId"})
     public ScheduleCreateResponseDto insert(Long userId, ScheduleCreateRequestDto createRequestDto) {
         Schedule entity = createRequestDto.toEntity(userId);
         scheduleMapper.insert(entity);
@@ -41,12 +45,14 @@ public class ScheduleService {
     }
 
     // Read - List
+    @LogProcess(action = "스케쥴 정보 전체 조회", keys = {"userId"})
     public List<ScheduleDetailResponseDto> findAll(Long userId) {
         List<Schedule> entities = scheduleMapper.findAll(userId);
         return entities.stream().map(ScheduleDetailResponseDto::from).toList();
     }
 
     // Read - One
+    @LogProcess(action = "스케쥴 단일 조회", keys = {"userId", "id"})
     public ScheduleDetailResponseDto findById(Long userId, Long id) {
         Schedule entity = findVerifiedSchedule(userId, id);
         return ScheduleDetailResponseDto.from(entity);
@@ -54,6 +60,7 @@ public class ScheduleService {
 
     // Update
     @Transactional
+    @LogProcess(action = "스케쥴 업데이트", keys = {"userId", "id"})
     public ScheduleUpdateResponseDto update(Long userId, Long id, ScheduleUpdateRequestDto updateRequestDto) {
         Schedule entity = findVerifiedSchedule(userId, id);
 
@@ -68,6 +75,7 @@ public class ScheduleService {
     }
 
     @Transactional
+    @LogProcess(action = "스케쥴 활성 상태 업데이트", keys = {"userId", "id"})
     public void updateIsActive(Long userId, Long id) {
         Schedule verifiedSchedule = findVerifiedSchedule(userId, id);
         Boolean status = !verifiedSchedule.getIsActive();
@@ -76,6 +84,7 @@ public class ScheduleService {
 
     // Delete
     @Transactional
+    @LogProcess(action = "스케쥴 삭제", keys = {"userId", "id"})
     public void deleteById(Long userId, Long id) {
         Schedule verifiedSchedule = findVerifiedSchedule(userId, id);
         scheduleMapper.deleteById(userId, verifiedSchedule.getId());
@@ -95,6 +104,7 @@ public class ScheduleService {
         return entity;
     }
 
+    @LogProcess(action = "자동 스케쥴 실행")
     @Transactional
     public void processDueSchedules() {
         // 실행 할 스케쥴 찾기
@@ -113,9 +123,9 @@ public class ScheduleService {
                 throw e;
             }
         }
-
     }
 
+    @LogProcess(action = "스케줄 실행", keys = {"userId", "startTime"})
     private void executeSchedule(Schedule schedule) {
         try {
             // 컨텐츠 생성하기 위한 준비
