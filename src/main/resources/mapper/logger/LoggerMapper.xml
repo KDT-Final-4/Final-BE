@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.final_team4.finalbe.logger.mapper.LoggerMapper">
+
+    <resultMap id="LogResultMap" type="Log">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="logType" column="type_id" typeHandler="com.final_team4.finalbe._core.config.mybatis.LogTypeHandler"/>
+        <result property="jobId" column="job_id"/>
+        <result property="message" column="message"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="Log" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO LOG (
+            user_id,
+            type_id,
+            job_id,
+            message,
+            created_at
+        ) VALUES (
+            #{userId},
+            #{logType, typeHandler=com.final_team4.finalbe._core.config.mybatis.LogTypeHandler},
+            #{jobId},
+            #{message},
+            #{createdAt}
+        )
+    </insert>
+
+    <select id="findById" parameterType="long" resultMap="LogResultMap">
+        SELECT
+            id,
+            user_id,
+            type_id,
+            job_id,
+            message,
+            created_at
+        FROM LOG
+        WHERE id = #{id}
+    </select>
+
+    <select id="findRecentLogs" resultMap="LogResultMap">
+        SELECT
+            *
+        FROM (
+            SELECT
+                id,
+                user_id,
+                type_id,
+                job_id,
+                message,
+                created_at
+            FROM LOG
+            WHERE user_id = #{userId}
+              AND type_id = #{typeId}
+            ORDER BY created_at DESC
+            FETCH NEXT #{limit} ROWS ONLY
+        ) logs_recent
+        ORDER BY created_at ASC
+    </select>
+
+    <select id="findByJobId" parameterType="string" resultMap="LogResultMap">
+        SELECT
+            id,
+            user_id,
+            type_id,
+            job_id,
+            message,
+            created_at
+        FROM LOG
+        WHERE job_id = #{jobId}
+        ORDER BY created_at ASC
+    </select>
+
+    <select id="findLogs" resultMap="LogResultMap">
+        SELECT
+            id,
+            user_id,
+            type_id,
+            job_id,
+            message,
+            created_at
+        FROM LOG
+        WHERE user_id = #{userId}
+        <if test="search != null and search != ''">
+          AND (LOWER(message) LIKE '%' || LOWER(#{search}) || '%')
+        </if>
+        ORDER BY created_at DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="countLogsByType" parameterType="long" resultType="com.final_team4.finalbe.logger.dto.LogTypeCountRow">
+        SELECT
+            type_id AS typeId,
+            COUNT(*) AS count
+        FROM LOG
+        WHERE user_id = #{userId}
+        GROUP BY type_id
+    </select>
+
+    <select id="findByJobIdAfterId" resultMap="LogResultMap">
+        SELECT
+            id,
+            user_id,
+            type_id,
+            job_id,
+            message,
+            created_at
+        FROM LOG
+        WHERE job_id = #{jobId}
+        <if test="fromId != null">
+            AND id &gt; #{fromId}
+        </if>
+        ORDER BY created_at ASC
+    </select>
+
+
+    <select id="countLogs" parameterType="map" resultType="long">
+        SELECT COUNT(*) FROM LOG
+        WHERE user_id = #{userId}
+        <if test="search != null and search != ''">
+            AND (LOWER(message) LIKE '%' || LOWER(#{search}) || '%')
+        </if>
+    </select>
+
+</mapper>

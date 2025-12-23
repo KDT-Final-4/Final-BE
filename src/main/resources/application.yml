@@ -1,0 +1,55 @@
+spring:
+  config:
+    import: "optional:file:.env[.properties]"
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    repair-on-migrate: true
+    validate-on-migrate: false
+    clean-disabled: false
+    ignore-missing-migrations: true
+    ignore-future-migrations: true
+  threads:
+    virtual:
+      enabled: true
+  docker:
+    compose:
+      enabled: false
+
+mybatis:
+  # 매퍼 XML 위치
+  mapper-locations: classpath:mapper/**/*.xml
+
+  # alias 설정 추가하려면 ,로 구분
+  type-aliases-package: com.final_team4.finalbe.*.domain
+  type-handlers-package: com.final_team4.finalbe._core.config.mybatis
+
+  # camelCase ↔ snake_case 자동 변환
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+security:
+  jwt:
+    issuer: final-be
+    temp-validity: PT2H
+    secret: ${JWT_SECRET}
+
+# Actuator 설정 (헬스 체크용)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: when-authorized
+
+#
+python-url: ${PYTHON_URL}
+front-url: ${FRONT_URL}

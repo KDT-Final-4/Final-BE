@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.final_team4.finalbe.schedule.mapper.ScheduleSettingMapper">
+
+    <!-- Create -->
+    <insert id="insert" parameterType="ScheduleSetting" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO SCHEDULE_SETTING
+        (
+            USER_ID,
+            IS_RUN,
+            MAX_DAILY_RUNS,
+            RETRY_ON_FAIL
+        )
+        VALUES
+        (
+            #{userId},
+            #{isRun},
+            #{maxDailyRuns},
+            #{retryOnFail}
+        )
+    </insert>
+
+    <!-- Read(one) -->
+    <select id="findById" parameterType="long" resultType="ScheduleSetting">
+        SELECT
+            *
+        FROM
+            SCHEDULE_SETTING
+        WHERE
+            USER_ID = #{userId}
+        and
+            ID = #{id}
+    </select>
+
+    <select id="findByUserId" parameterType="long" resultType="ScheduleSetting">
+        SELECT
+            *
+        FROM
+            SCHEDULE_SETTING
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
+    <!-- Read(List)-->
+    <select id="findAll" parameterType="long" resultType="ScheduleSetting">
+        SELECT
+            *
+        FROM
+            SCHEDULE_SETTING
+        WHERE
+            USER_ID = #{userId}
+    </select>
+
+    <!-- Update -->
+    <update id="update" parameterType="ScheduleSetting">
+        UPDATE SCHEDULE_SETTING set
+                                    IS_RUN = #{isRun},
+                                    MAX_DAILY_RUNS = #{maxDailyRuns},
+                                    RETRY_ON_FAIL = #{retryOnFail},
+                                    UPDATED_AT = SYSDATE
+        WHERE
+            ID = #{id}
+        and
+            USER_ID = #{userId}
+    </update>
+
+    <!-- Delete -->
+    <delete id="delete" parameterType="long">
+        DELETE FROM SCHEDULE_SETTING
+        WHERE
+            ID = #{id}
+        and
+            USER_ID = #{userId}
+    </delete>
+
+
+</mapper>

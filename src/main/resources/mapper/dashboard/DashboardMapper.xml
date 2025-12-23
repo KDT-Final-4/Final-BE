@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.final_team4.finalbe.dashboard.mapper.DashboardMapper">
+
+    <select id="findContentsByUserId"
+            parameterType="map"
+            resultType="com.final_team4.finalbe.dashboard.dto.DashboardContentSummary">
+        SELECT
+        c.ID          AS contentId,
+        c.TITLE,
+        c.KEYWORD,
+        c.LINK,
+        COALESCE(COUNT(ck.ID), 0) AS clickCount,
+        c.CREATED_AT  AS createdAt,
+        c.UPDATED_AT  AS updatedAt,
+        p.CATEGORY_ID AS categoryId,
+        pcg.NAME      AS categoryName,
+        pcg.DESCRIPTION AS categoryDescription
+        FROM CONTENT c
+        LEFT JOIN PRODUCT_CONTENT pc ON pc.CONTENT_ID = c.ID
+        LEFT JOIN PRODUCT p ON p.ID = pc.PRODUCT_ID
+        LEFT JOIN PRODUCT_CATEGORY pcg ON pcg.ID = p.CATEGORY_ID
+        LEFT JOIN CLICKS ck ON ck.PRODUCT_ID = pc.PRODUCT_ID
+        WHERE c.USER_ID = #{userId}
+        GROUP BY c.ID, c.TITLE, c.KEYWORD, c.CREATED_AT, c.UPDATED_AT, c.LINK, p.CATEGORY_ID, pcg.NAME, pcg.DESCRIPTION
+        ORDER BY c.UPDATED_AT DESC, c.CREATED_AT DESC
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{size} ROWS ONLY
+    </select>
+
+    <select id="countAllContentsByUserId"
+            resultType="long">
+        SELECT COUNT(*) AS contentsCount
+        FROM CONTENT
+        WHERE USER_ID = #{userId}
+    </select>
+
+
+</mapper>

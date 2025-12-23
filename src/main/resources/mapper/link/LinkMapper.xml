@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.final_team4.finalbe.link.mapper.LinkMapper">
+
+    <resultMap id="LinkTargetMap" type="com.final_team4.finalbe.link.domain.LinkTarget">
+        <constructor>
+            <arg column="productId" javaType="Long"/>
+            <arg column="link" javaType="String"/>
+        </constructor>
+    </resultMap>
+
+    <select id="findByJobId" parameterType="string"
+            resultMap="LinkTargetMap">
+        SELECT
+            p.ID AS productId,
+            p.LINK AS link
+        FROM PRODUCT p
+            LEFT JOIN PRODUCT_CONTENT pc ON pc.product_id= p.ID
+            LEFT JOIN CONTENT c ON pc.CONTENT_ID= c.ID
+        WHERE c.JOB_ID = #{jobId}
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <insert id="insertClick">
+        MERGE INTO CLICKS c
+        USING (SELECT #{productId} AS productId, #{ip} AS ip FROM dual) src
+        ON (c.PRODUCT_ID = src.productId AND c.IP = src.ip)
+        WHEN NOT MATCHED THEN
+        INSERT (PRODUCT_ID, IP, CLICKED_AT)
+        VALUES (src.productId, src.ip, SYSTIMESTAMP)
+    </insert>
+
+</mapper>

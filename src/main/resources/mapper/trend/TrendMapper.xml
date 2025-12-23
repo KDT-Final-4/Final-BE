@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.final_team4.finalbe.trend.mapper.TrendMapper">
+
+    <insert id="insert" parameterType="Trend" useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
+        INSERT INTO TREND (
+            CATEGORY_ID,
+            KEYWORD,
+            SEARCH_VOLUME,
+            CREATED_AT,
+            SNS_TYPE
+        ) VALUES (
+            #{categoryId},
+            #{keyword},
+            #{searchVolume},
+            #{createdAt},
+            #{snsType}
+        )
+    </insert>
+
+    <select id="findAll" resultType="Trend">
+        SELECT
+            t.ID,
+            t.CATEGORY_ID,
+            c.DESCRIPTION AS category_name,
+            t.KEYWORD,
+            t.SEARCH_VOLUME,
+            t.CREATED_AT,
+            t.SNS_TYPE
+        FROM TREND t
+        JOIN PRODUCT_CATEGORY c ON c.ID = t.CATEGORY_ID
+        <where>
+            <if test="snsType != null">
+                t.SNS_TYPE = #{snsType}
+            </if>
+        </where>
+        ORDER BY t.CREATED_AT DESC, t.SEARCH_VOLUME DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*)
+        FROM TREND
+        <where>
+            <if test="snsType != null">
+                SNS_TYPE = #{snsType}
+            </if>
+        </where>
+    </select>
+
+</mapper>

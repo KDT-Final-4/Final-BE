@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.final_team4.finalbe.product.mapper.ProductMapper">
+    <insert id="insert" parameterType="Product" keyProperty="id" keyColumn="id" useGeneratedKeys="true">
+        INSERT INTO PRODUCT (
+            CATEGORY_ID,
+            NAME,
+            LINK,
+            THUMBNAIL,
+            PRICE,
+            CREATED_AT
+        ) VALUES (
+             #{categoryId},
+             #{name},
+             #{link},
+             #{thumbnail},
+             #{price},
+             SYSDATE
+        )
+    </insert>
+    <select id="findById" parameterType="long" resultType="Product">
+        SELECT *
+        FROM
+            PRODUCT
+        WHERE
+            ID = #{id}
+    </select>
+    <select id="findAll" resultType="Product">
+        SELECT *
+        FROM
+            PRODUCT
+    </select>
+    <select id="findByCategory" parameterType="long" resultType="Product">
+        SELECT *
+        FROM
+            PRODUCT
+        WHERE
+            CATEGORY_ID = #{categoryId}
+    </select>
+</mapper>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.final_team4.finalbe.schedule.mapper.ScheduleMapper">
+
+    <!--    Create-->
+    <insert id="insert" parameterType="Schedule" useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
+        INSERT INTO SCHEDULE (
+            user_id,
+            title,
+            start_time,
+            repeat_interval,
+            next_execution_at
+        ) VALUES (
+            #{userId},
+            #{title},
+            #{startTime},
+            #{repeatInterval},
+            #{nextExecutionAt}
+        )
+    </insert>
+    <!--    Read - List -->
+    <select id="findAll" resultType="Schedule" parameterType="long">
+        SELECT
+            *
+        FROM
+            SCHEDULE
+        WHERE
+            user_id = #{userId}
+    </select>
+    <!--    Read - One -->
+    <select id="findById" parameterType="long" resultType="Schedule">
+        SELECT
+            *
+        FROM
+            SCHEDULE
+        WHERE
+            id = #{id}
+    </select>
+    <!--    Update-->
+    <update id="update" parameterType="Schedule">
+        UPDATE SCHEDULE
+        SET
+            title = #{title},
+            start_time = #{startTime},
+            repeat_interval = #{repeatInterval},
+            updated_at = SYSDATE
+        WHERE
+            id = #{id}
+        and
+            USER_ID = #{userId}
+    </update>
+
+    <update id="updateIsActive" >
+        UPDATE
+            SCHEDULE
+        SET
+            IS_ACTIVE = #{isActive}
+        WHERE
+            id = #{id}
+        and
+            USER_ID = #{userId}
+    </update>
+
+    <!--    Delete-->
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM
+            SCHEDULE
+        WHERE
+            id = #{id}
+        and
+            USER_ID = #{userId}
+    </delete>
+
+    <select id="findDueSchedules" resultType="Schedule">
+        <![CDATA[
+        SELECT *
+        FROM SCHEDULE
+        WHERE TRUNC(next_execution_at, 'MI') <= TRUNC(SYSDATE, 'MI')
+          AND is_active = 1
+          AND is_locked = 0
+        ]]>
+    </select>
+
+    <update id="lockSchedule">
+        UPDATE SCHEDULE
+        SET
+            is_locked = 1
+        WHERE
+            id = #{id}
+        AND
+            is_locked = 0
+    </update>
+
+    <update id="unlockSchedule">
+        UPDATE SCHEDULE
+        SET
+            is_locked = 0
+        WHERE
+            id = #{id}
+    </update>
+
+    <update id="updateNextExecution">
+        UPDATE SCHEDULE
+        SET
+            last_executed_at = sysdate,
+            next_execution_at = #{nextExecutionAt},
+            updated_at = sysdate
+        WHERE id = #{id}
+    </update>
+</mapper>

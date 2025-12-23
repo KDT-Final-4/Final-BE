@@ -1,0 +1,27 @@
+{
+  "name": "final-be-infra",
+  "version": "0.1.0",
+  "description": "AWS CDK infra for Final-BE ECS/RDS deployment",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "synth": "cdk synth",
+    "deploy": "cdk deploy",
+    "destroy": "cdk destroy",
+    "postinstall": "node -e \"try{require('dotenv').config({ path: require('path').resolve(__dirname, '..', '.env') });}catch(e){}\""
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.99.0",
+    "constructs": "^10.1.208",
+    "dotenv": "^16.4.4"
+  },
+  "devDependencies": {
+    "aws-cdk": "^2.99.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2",
+    "@types/node": "^20.0.0"
+  }
+}
+

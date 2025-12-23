@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.final_team4.finalbe.user.mapper.UserMapper">
+
+    <resultMap id="UserResultMap" type="com.final_team4.finalbe.user.domain.User">
+        <id column="ID" property="id"/>
+        <result column="ROLE_ID" property="roleId"/>
+        <result column="NAME" property="name"/>
+        <result column="EMAIL" property="email"/>
+        <result column="PASSWORD" property="password"/>
+        <result column="CREATED_AT" property="createdAt"/>
+        <result column="UPDATED_AT" property="updatedAt"/>
+        <result column="IS_DELETE" property="isDelete"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        ID,
+        ROLE_ID,
+        NAME,
+        EMAIL,
+        PASSWORD,
+        CREATED_AT,
+        UPDATED_AT,
+        IS_DELETE
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="UserResultMap">
+        SELECT
+            <include refid="BaseColumns"/>
+        FROM
+            USERS
+        WHERE
+            ID = #{id}
+    </select>
+
+    <select id="findByEmail" parameterType="string" resultMap="UserResultMap">
+        SELECT
+            <include refid="BaseColumns"/>
+        FROM
+            USERS
+        WHERE
+            EMAIL = #{email}
+    </select>
+
+    <select id="findByAvailableEmail" parameterType="string" resultMap="UserResultMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        USERS
+        WHERE
+        EMAIL = #{email}
+        AND IS_DELETE = 0
+    </select>
+
+
+    <select id="findAvailableById" parameterType="long" resultMap="UserResultMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM USERS
+        WHERE
+        ID = #{id}
+        AND IS_DELETE = 0
+    </select>
+
+    <insert id="insert" parameterType="com.final_team4.finalbe.user.domain.User" keyProperty="id" useGeneratedKeys="true" keyColumn="id">
+        INSERT INTO users (
+            role_id,
+            name,
+            email,
+            password,
+            is_delete,
+            created_at,
+            updated_at
+        ) VALUES (
+                     #{roleId},
+                     #{name},
+                     #{email},
+                     #{password},
+                     #{isDelete},
+                     SYSTIMESTAMP,
+                     SYSTIMESTAMP
+                 )
+    </insert>
+
+    <update id="updateProfile">
+        UPDATE USERS
+        SET
+            NAME = #{name},
+            UPDATED_AT = SYSTIMESTAMP
+        WHERE ID = #{id}
+          AND IS_DELETE = 0
+    </update>
+
+    <update id="updatePassword">
+        UPDATE USERS
+        SET PASSWORD = #{password},
+            UPDATED_AT = SYSTIMESTAMP
+        WHERE ID = #{id}
+          AND IS_DELETE = 0
+    </update>
+</mapper>
